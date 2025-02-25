@@ -211,6 +211,16 @@ const weaponTemplates: TierTemplate[] = [
     ]
   },
   {
+    id: 'weapon-favorite',
+    name: '推し武器Tier',
+    tiers: [
+      { id: 'weapon-love', name: '推し', color: 'bg-pink-500' },
+      { id: 'weapon-like', name: '好き', color: 'bg-purple-500' },
+      { id: 'weapon-ok', name: '普通', color: 'bg-blue-500' },
+      { id: 'weapon-dislike', name: '嫌い', color: 'bg-gray-500' },
+    ]
+  },
+  {
     id: 'weapon-wanted',
     name: '欲しい武器Tier',
     tiers: [
@@ -451,6 +461,8 @@ export default function TierMakerPage() {
   const [customWeaponTemplates, setCustomWeaponTemplates] = useState<TierTemplate[]>([]);
   const [isWeaponEditMode, setIsWeaponEditMode] = useState(false);
   const [customWeaponTemplate, setCustomWeaponTemplate] = useState<TierTemplate | null>(null);
+  const [newWeaponTierName, setNewWeaponTierName] = useState('');
+  const [newWeaponTierColor, setNewWeaponTierColor] = useState('bg-gray-500');
   
   // 編集モード関連の状態
   const [isEditMode, setIsEditMode] = useState(false);
@@ -897,6 +909,124 @@ export default function TierMakerPage() {
     }
   };
   
+  // 武器ティア名の変更ハンドラ
+  const handleWeaponTierNameChange = (index: number, newName: string) => {
+    if (!customWeaponTemplate) return;
+    
+    const updatedTiers = [...customWeaponTemplate.tiers];
+    updatedTiers[index] = { ...updatedTiers[index], name: newName };
+    
+    setCustomWeaponTemplate({
+      ...customWeaponTemplate,
+      tiers: updatedTiers
+    });
+  };
+  
+  // 武器ティア色の変更ハンドラ
+  const handleWeaponTierColorChange = (index: number, newColor: string) => {
+    if (!customWeaponTemplate) return;
+    
+    const updatedTiers = [...customWeaponTemplate.tiers];
+    updatedTiers[index] = { ...updatedTiers[index], color: newColor };
+    
+    setCustomWeaponTemplate({
+      ...customWeaponTemplate,
+      tiers: updatedTiers
+    });
+  };
+  
+  // 武器ティア順序の変更（上に移動）
+  const moveWeaponTierUp = (index: number) => {
+    if (!customWeaponTemplate || index === 0) return;
+    
+    const updatedTiers = [...customWeaponTemplate.tiers];
+    const temp = updatedTiers[index];
+    updatedTiers[index] = updatedTiers[index - 1];
+    updatedTiers[index - 1] = temp;
+    
+    setCustomWeaponTemplate({
+      ...customWeaponTemplate,
+      tiers: updatedTiers
+    });
+  };
+  
+  // 武器ティア順序の変更（下に移動）
+  const moveWeaponTierDown = (index: number) => {
+    if (!customWeaponTemplate || index === customWeaponTemplate.tiers.length - 1) return;
+    
+    const updatedTiers = [...customWeaponTemplate.tiers];
+    const temp = updatedTiers[index];
+    updatedTiers[index] = updatedTiers[index + 1];
+    updatedTiers[index + 1] = temp;
+    
+    setCustomWeaponTemplate({
+      ...customWeaponTemplate,
+      tiers: updatedTiers
+    });
+  };
+  
+  // 武器ティアの削除
+  const removeWeaponTier = (index: number) => {
+    if (!customWeaponTemplate) return;
+    
+    // 削除するティアのIDを取得
+    const tierIdToRemove = customWeaponTemplate.tiers[index].id;
+    
+    // このティアに属している武器を「未割り当て」に移動
+    setWeaponTiers(prev => {
+      const newState = { ...prev };
+      
+      // 削除するティアの武器を取得
+      const weaponsToMove = newState[tierIdToRemove] || [];
+      
+      // 未割り当てリストに追加
+      if (weaponsToMove.length > 0) {
+        newState['weapon-unassigned'] = [
+          ...(newState['weapon-unassigned'] || []),
+          ...weaponsToMove
+        ];
+      }
+      
+      // 削除するティアを削除
+      delete newState[tierIdToRemove];
+      
+      return newState;
+    });
+    
+    // ティアリストから削除
+    const updatedTiers = customWeaponTemplate.tiers.filter((_, i) => i !== index);
+    
+    setCustomWeaponTemplate({
+      ...customWeaponTemplate,
+      tiers: updatedTiers
+    });
+  };
+  
+  // 新しい武器ティアの追加
+  const addNewWeaponTier = () => {
+    if (!customWeaponTemplate || !newWeaponTierName) return;
+    
+    // ユニークなIDを生成
+    const newId = `weapon-tier-${Date.now()}`;
+    
+    const updatedTiers = [
+      ...customWeaponTemplate.tiers,
+      {
+        id: newId,
+        name: newWeaponTierName,
+        color: newWeaponTierColor
+      }
+    ];
+    
+    setCustomWeaponTemplate({
+      ...customWeaponTemplate,
+      tiers: updatedTiers
+    });
+    
+    // フォームをリセット
+    setNewWeaponTierName('');
+  };
+  
   // 武器ドロップハンドラー
   const handleWeaponDrop = (weaponId: string, targetTierId: string) => {
     console.log(`DROP: 武器 ${weaponId} を ${targetTierId} に移動します`);
@@ -1338,6 +1468,95 @@ export default function TierMakerPage() {
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
                   placeholder="テンプレート名"
                 />
+              </div>
+              
+              {/* 既存ティアの編集 */}
+              <div className="mb-4">
+                <h3 className="text-lg font-medium mb-2 text-gray-700 dark:text-gray-300">既存の武器ティア</h3>
+                <div className="space-y-2">
+                  {customWeaponTemplate.tiers.map((tier, index) => (
+                    <div key={tier.id} className="flex flex-wrap gap-2 items-center p-2 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                      <div className={`${tier.color} w-8 h-8 rounded-md flex-shrink-0`}></div>
+                      <input
+                        type="text"
+                        value={tier.name}
+                        onChange={(e) => handleWeaponTierNameChange(index, e.target.value)}
+                        className="flex-grow px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+                        placeholder="ティア名"
+                      />
+                      <select
+                        value={tier.color}
+                        onChange={(e) => handleWeaponTierColorChange(index, e.target.value)}
+                        className="px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+                      >
+                        {availableColors.map(color => (
+                          <option key={color.value} value={color.value}>{color.label}</option>
+                        ))}
+                      </select>
+                      
+                      {/* ティア順序の変更ボタン */}
+                      <div className="flex gap-1">
+                        <button
+                          onClick={() => moveWeaponTierUp(index)}
+                          disabled={index === 0}
+                          className={`p-1 rounded ${index === 0 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
+                          title="上に移動"
+                        >
+                          ↑
+                        </button>
+                        <button
+                          onClick={() => moveWeaponTierDown(index)}
+                          disabled={index === customWeaponTemplate.tiers.length - 1}
+                          className={`p-1 rounded ${index === customWeaponTemplate.tiers.length - 1 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
+                          title="下に移動"
+                        >
+                          ↓
+                        </button>
+                      </div>
+                      
+                      <button
+                        onClick={() => removeWeaponTier(index)}
+                        className="p-2 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 rounded-lg"
+                        title="削除"
+                      >
+                        <span className="text-sm">削除</span>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* 新規ティアの追加 */}
+              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-medium mb-2 text-gray-700 dark:text-gray-300">新しい武器ティアを追加</h3>
+                <div className="flex flex-wrap gap-2 items-center">
+                  <div className={`${newWeaponTierColor} w-8 h-8 rounded-md flex-shrink-0`}></div>
+                  <input
+                    type="text"
+                    value={newWeaponTierName}
+                    onChange={(e) => setNewWeaponTierName(e.target.value)}
+                    className="flex-grow px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+                    placeholder="新しいティア名"
+                  />
+                  <select
+                    value={newWeaponTierColor}
+                    onChange={(e) => setNewWeaponTierColor(e.target.value)}
+                    className="px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+                  >
+                    {availableColors.map(color => (
+                      <option key={color.value} value={color.value}>{color.label}</option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={addNewWeaponTier}
+                    disabled={!newWeaponTierName.trim()}
+                    className={`px-4 py-1 rounded-lg text-white ${
+                      newWeaponTierName.trim() ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'
+                    }`}
+                  >
+                    追加
+                  </button>
+                </div>
               </div>
             </div>
           )}
