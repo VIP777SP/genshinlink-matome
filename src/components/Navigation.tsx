@@ -40,6 +40,11 @@ export default function Navigation() {
     }
   }, []);
 
+  // パスが変わったらモバイルメニューを閉じる
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
+
   // ホバー時の音声再生
   const playHoverSound = () => {
     if (hoverSound) {
@@ -59,23 +64,31 @@ export default function Navigation() {
   return (
     <nav className="backdrop-blur-md bg-black/70 text-white sticky top-0 z-50 transition-all duration-300 shadow-lg">
       {/* モバイル用トグルボタン */}
-      <div className="md:hidden p-4 flex justify-between items-center">
-        <span className="text-xl font-bold">原神リンク集</span>
+      <div className="md:hidden p-3 flex justify-between items-center">
+        <Link href="/" className="text-lg font-bold text-amber-400 hover:text-amber-300 transition-colors">
+          原神リンク集
+        </Link>
         <button 
           onClick={() => setIsOpen(!isOpen)}
           className="text-white p-2 rounded-lg hover:bg-orange-600 transition-colors"
+          aria-label={isOpen ? "メニューを閉じる" : "メニューを開く"}
         >
           <i className={`fas ${isOpen ? 'fa-times' : 'fa-bars'}`}></i>
         </button>
       </div>
 
       {/* デスクトップ＆モバイル展開時メニュー */}
-      <div className={`
-        md:flex md:flex-row md:justify-center
-        transition-all duration-300 ease-in-out
-        ${isOpen ? 'max-h-screen opacity-100' : 'max-h-0 md:max-h-screen opacity-0 md:opacity-100 overflow-hidden'}
-      `}>
-        <ul className="md:flex md:flex-row md:space-x-1 p-2">
+      <div 
+        className={`
+          md:flex md:flex-row md:justify-center md:flex-wrap
+          transition-all duration-300 ease-in-out
+          ${isOpen 
+            ? 'max-h-[500px] opacity-100 border-t border-amber-700' 
+            : 'max-h-0 md:max-h-screen opacity-0 md:opacity-100 overflow-hidden border-t-0'
+          }
+        `}
+      >
+        <ul className="md:flex md:flex-row md:flex-wrap md:justify-center md:space-x-1 p-2 overflow-y-auto max-h-[calc(100vh-60px)] md:max-h-none">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -83,19 +96,26 @@ export default function Navigation() {
                 <Link
                   href={item.href}
                   className={`
-                    flex items-center px-4 py-2 rounded-lg
+                    flex items-center px-3 py-2 rounded-lg
                     transition-all duration-300 ease-in-out
                     transform hover:scale-105 hover:bg-orange-600
                     ${isActive ? 'bg-orange-700 font-bold' : 'hover:text-white'}
+                    text-sm md:text-base
                   `}
-                  onClick={playClickSound}
+                  onClick={() => {
+                    playClickSound();
+                    // モバイルの場合はクリック後にメニューを閉じる
+                    if (window.innerWidth < 768) {
+                      setIsOpen(false);
+                    }
+                  }}
                   onMouseEnter={playHoverSound}
                 >
                   <i className={`fas ${item.icon} mr-2`}></i>
                   <span>{item.label}</span>
                   {/* アクティブなメニューには装飾を追加 */}
                   {isActive && (
-                    <span className="ml-2 animate-pulse">●</span>
+                    <span className="ml-2 animate-pulse text-xs">●</span>
                   )}
                 </Link>
               </li>

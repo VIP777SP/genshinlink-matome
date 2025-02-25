@@ -60,19 +60,19 @@ const cards = [
 
 export default function Home() {
   return (
-    <main className="container mx-auto">
-      <div className="grid grid-cols-3 gap-4">
+    <main className="container mx-auto px-2 py-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {cards.map((card, index) => (
           <Link 
             key={index}
             href={card.href} 
             className={`
               relative overflow-hidden
-              p-6 rounded-lg transition-all duration-300
+              p-4 sm:p-6 rounded-lg transition-all duration-300
               transform hover:scale-105
-              hover:shadow-lg hover:shadow-${card.element}
+              hover:shadow-lg
               bg-gradient-to-br from-orange-500 to-orange-600
-              group
+              group flex flex-col justify-between min-h-[120px] sm:min-h-[140px]
             `}
           >
             {/* キラキラエフェクト */}
@@ -80,8 +80,8 @@ export default function Home() {
               <div className="absolute inset-0 bg-white/10 animate-sparkle"></div>
             </div>
             
-            <h2 className="text-base font-bold text-white relative z-10">{card.title}</h2>
-            <p className="text-3xl font-bold mt-2 opacity-90 text-center text-white relative z-10">
+            <h2 className="text-sm sm:text-base font-bold text-white relative z-10">{card.title}</h2>
+            <p className="text-lg sm:text-xl md:text-2xl font-bold mt-2 text-center text-white relative z-10">
               {card.subtitle}
             </p>
           </Link>
