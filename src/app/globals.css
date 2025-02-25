@@ -19,3 +19,45 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@keyframes sparkle {
+  0% {
+    transform: scale(0) rotate(45deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1) rotate(45deg);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(0) rotate(45deg);
+    opacity: 0;
+  }
+}
+
+.animate-sparkle {
+  animation: sparkle 2s infinite;
+}
+
+/* 元素カラー */
+.shadow-anemo { --tw-shadow-color: #74c2a8; }
+.shadow-geo { --tw-shadow-color: #fab632; }
+.shadow-electro { --tw-shadow-color: #af8ec1; }
+.shadow-dendro { --tw-shadow-color: #a5c83b; }
+.shadow-hydro { --tw-shadow-color: #4cc2f1; }
+.shadow-pyro { --tw-shadow-color: #ef7938; }
+.shadow-cryo { --tw-shadow-color: #9fd6e3; }
+
+/* 元素シンボルの回転アニメーション */
+@keyframes elementRotate {
+  from {
+    transform: translate(25%, 25%) rotate(0deg);
+  }
+  to {
+    transform: translate(25%, 25%) rotate(360deg);
+  }
+}
+
+.group:hover .element-symbol {
+  animation: elementRotate 10s linear infinite;
+}
