@@ -263,6 +263,7 @@ export default function TierMakerPage() {
     // 未割り当てキャラクターのTierを追加
     initialTiers['unassigned'] = characters.map(char => char.id);
     
+    console.log('Tiers初期化:', initialTiers);
     setCharacterTiers(initialTiers);
   };
   
@@ -273,17 +274,16 @@ export default function TierMakerPage() {
     console.log(`移動キャラクター: ${characterId}, 対象Tier: ${targetTierId}`);
     console.log('実行前のTier状態:', JSON.stringify(characterTiers));
     
-    // 現在のTierからキャラクターを削除
-    // 重要: スプレッド演算子で新しいオブジェクトを作成して状態の変異を避ける
-    const updatedTiers = JSON.parse(JSON.stringify(characterTiers));
-    
-    // キャラクターが現在どのTierにいるか確認
+    // 現在のキャラクターがどのTierにいるかを確認
     let currentTierId = '';
-    Object.keys(updatedTiers).forEach(tierId => {
-      if (updatedTiers[tierId] && updatedTiers[tierId].includes(characterId)) {
+    const tierEntries = Object.entries(characterTiers);
+    
+    for (const [tierId, charIds] of tierEntries) {
+      if (charIds.includes(characterId)) {
         currentTierId = tierId;
+        break;
       }
-    });
+    }
     
     console.log(`キャラクターの現在のTier: ${currentTierId}`);
     
@@ -293,32 +293,33 @@ export default function TierMakerPage() {
       return;
     }
     
-    // 現在のTierからキャラクターを削除
-    if (currentTierId && updatedTiers[currentTierId]) {
-      console.log(`Tier ${currentTierId} から削除前:`, updatedTiers[currentTierId]);
-      updatedTiers[currentTierId] = updatedTiers[currentTierId].filter(id => id !== characterId);
-      console.log(`Tier ${currentTierId} から削除後:`, updatedTiers[currentTierId]);
-    }
-    
-    // ターゲットTierが存在するか確認し、存在しない場合は初期化
-    if (!updatedTiers[targetTierId]) {
-      updatedTiers[targetTierId] = [];
-      console.log(`新規Tier ${targetTierId} を作成`);
-    }
-    
-    // ターゲットTierにキャラクターを追加
-    console.log(`Tier ${targetTierId} に追加前:`, updatedTiers[targetTierId]);
-    updatedTiers[targetTierId] = [...updatedTiers[targetTierId], characterId];
-    console.log(`Tier ${targetTierId} に追加後:`, updatedTiers[targetTierId]);
-    
-    console.log('実行後のTier状態:', JSON.stringify(updatedTiers));
-    console.log(`--------- ドロップ処理終了 ---------`);
-    
-    // 状態を更新（関数形式で前の状態を参照して更新）
-    setCharacterTiers(prev => {
-      console.log('setCharacterTiers実行時の前の状態:', JSON.stringify(prev));
-      console.log('setCharacterTiers実行時の新しい状態:', JSON.stringify(updatedTiers));
-      return updatedTiers;
+    // React 状態更新の関数形式を使用
+    setCharacterTiers(prevTiers => {
+      // 完全な新しいオブジェクトを作成
+      const newTiers = {...prevTiers};
+      
+      // 現在のTierからキャラクターを削除
+      if (currentTierId && newTiers[currentTierId]) {
+        console.log(`Tier ${currentTierId} から削除前:`, [...newTiers[currentTierId]]);
+        newTiers[currentTierId] = newTiers[currentTierId].filter(id => id !== characterId);
+        console.log(`Tier ${currentTierId} から削除後:`, [...newTiers[currentTierId]]);
+      }
+      
+      // ターゲットTierが存在するか確認
+      if (!newTiers[targetTierId]) {
+        newTiers[targetTierId] = [];
+        console.log(`新規Tier ${targetTierId} を作成`);
+      }
+      
+      // ターゲットTierにキャラクターを追加
+      console.log(`Tier ${targetTierId} に追加前:`, [...newTiers[targetTierId]]);
+      newTiers[targetTierId] = [...newTiers[targetTierId], characterId];
+      console.log(`Tier ${targetTierId} に追加後:`, [...newTiers[targetTierId]]);
+      
+      console.log('最終的なTier状態:', JSON.stringify(newTiers));
+      console.log(`--------- ドロップ処理終了 ---------`);
+      
+      return newTiers;
     });
   };
   
