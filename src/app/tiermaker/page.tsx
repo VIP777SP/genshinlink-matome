@@ -269,11 +269,13 @@ export default function TierMakerPage() {
   // ドロップハンドラー
   const handleDrop = (characterId: string, targetTierId: string) => {
     // コンソールログでデバッグ情報を出力
-    console.log(`Moving character ${characterId} to tier ${targetTierId}`);
-    console.log('Current tiers state:', characterTiers);
+    console.log(`--------- ドロップ処理開始 ---------`);
+    console.log(`移動キャラクター: ${characterId}, 対象Tier: ${targetTierId}`);
+    console.log('実行前のTier状態:', JSON.stringify(characterTiers));
     
     // 現在のTierからキャラクターを削除
-    const updatedTiers = { ...characterTiers };
+    // 重要: スプレッド演算子で新しいオブジェクトを作成して状態の変異を避ける
+    const updatedTiers = JSON.parse(JSON.stringify(characterTiers));
     
     // キャラクターが現在どのTierにいるか確認
     let currentTierId = '';
@@ -283,36 +285,41 @@ export default function TierMakerPage() {
       }
     });
     
-    console.log(`Character is currently in tier: ${currentTierId}`);
+    console.log(`キャラクターの現在のTier: ${currentTierId}`);
     
     // 同じTierにドロップした場合は何もしない
     if (currentTierId === targetTierId) {
-      console.log('Same tier, no changes needed');
+      console.log('同じTierなので変更なし - 処理終了');
       return;
     }
     
     // 現在のTierからキャラクターを削除
     if (currentTierId && updatedTiers[currentTierId]) {
+      console.log(`Tier ${currentTierId} から削除前:`, updatedTiers[currentTierId]);
       updatedTiers[currentTierId] = updatedTiers[currentTierId].filter(id => id !== characterId);
-      console.log(`Removed from tier ${currentTierId}, remaining:`, updatedTiers[currentTierId]);
+      console.log(`Tier ${currentTierId} から削除後:`, updatedTiers[currentTierId]);
     }
     
     // ターゲットTierが存在するか確認し、存在しない場合は初期化
     if (!updatedTiers[targetTierId]) {
       updatedTiers[targetTierId] = [];
-      console.log(`Created new tier ${targetTierId}`);
+      console.log(`新規Tier ${targetTierId} を作成`);
     }
     
-    // ターゲットTierにキャラクターを追加（スプレッド演算子で確実に新しい配列を作成）
-    const updatedTargetTier = [...updatedTiers[targetTierId]];
-    updatedTargetTier.push(characterId);
-    updatedTiers[targetTierId] = updatedTargetTier;
+    // ターゲットTierにキャラクターを追加
+    console.log(`Tier ${targetTierId} に追加前:`, updatedTiers[targetTierId]);
+    updatedTiers[targetTierId] = [...updatedTiers[targetTierId], characterId];
+    console.log(`Tier ${targetTierId} に追加後:`, updatedTiers[targetTierId]);
     
-    console.log(`Added to tier ${targetTierId}, now contains:`, updatedTiers[targetTierId]);
-    console.log('Updated tiers state:', updatedTiers);
+    console.log('実行後のTier状態:', JSON.stringify(updatedTiers));
+    console.log(`--------- ドロップ処理終了 ---------`);
     
-    // 状態を更新
-    setCharacterTiers(updatedTiers);
+    // 状態を更新（関数形式で前の状態を参照して更新）
+    setCharacterTiers(prev => {
+      console.log('setCharacterTiers実行時の前の状態:', JSON.stringify(prev));
+      console.log('setCharacterTiers実行時の新しい状態:', JSON.stringify(updatedTiers));
+      return updatedTiers;
+    });
   };
   
   // 特定のTierに割り当てられたキャラクターを取得
