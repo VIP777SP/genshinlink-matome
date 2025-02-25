@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import React from 'react';
 
 // 属性タイプの定義
 type ElementType = 'pyro' | 'hydro' | 'anemo' | 'electro' | 'dendro' | 'cryo' | 'geo';
@@ -196,8 +197,8 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
   );
 };
 
-// Tier行コンポーネント
-const TierRow = ({ tier, charactersInTier, onDrop }: TierRowProps) => {
+// Tier行コンポーネント - メモ化してパフォーマンスを向上
+const TierRow = React.memo(({ tier, charactersInTier, onDrop }: TierRowProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const [{ isOver }, drop] = useDrop(() => ({
     accept: ItemTypes.CHARACTER,
@@ -206,6 +207,8 @@ const TierRow = ({ tier, charactersInTier, onDrop }: TierRowProps) => {
       isOver: !!monitor.isOver(),
     }),
   }));
+  
+  console.log(`TierRow ${tier.id} rendering with ${charactersInTier.length} characters`);
   
   // ref と drop を接続
   drop(ref);
@@ -235,7 +238,7 @@ const TierRow = ({ tier, charactersInTier, onDrop }: TierRowProps) => {
       </div>
     </div>
   );
-};
+});
 
 // メインTiermakerページコンポーネント
 export default function TierMakerPage() {
@@ -325,10 +328,26 @@ export default function TierMakerPage() {
   
   // 特定のTierに割り当てられたキャラクターを取得
   const getCharactersInTier = (tierId: string): Character[] => {
-    if (!characterTiers[tierId]) return [];
-    return characterTiers[tierId]
-      .map(id => characters.find(char => char.id === id))
+    // 存在チェックと防御的コーディング
+    if (!characterTiers || !characterTiers[tierId]) {
+      console.log(`Tier ${tierId} が存在しないか空です`);
+      return [];
+    }
+    
+    console.log(`getCharactersInTier(${tierId})の呼び出し:`, characterTiers[tierId]);
+    
+    const result = characterTiers[tierId]
+      .map(id => {
+        const char = characters.find(c => c.id === id);
+        if (!char) {
+          console.warn(`ID ${id} に一致するキャラクターが見つかりません`);
+        }
+        return char;
+      })
       .filter((char): char is Character => char !== undefined);
+    
+    console.log(`getCharactersInTier(${tierId})の結果: ${result.length} キャラクター`);
+    return result;
   };
   
   // キャラクター検索フィルター
@@ -340,10 +359,21 @@ export default function TierMakerPage() {
   
   // 未割り当てのキャラクターを取得
   const getUnassignedCharacters = (): Character[] => {
-    if (!characterTiers['unassigned']) return [];
-    return filteredCharacters.filter(char => 
+    // characterTiers['unassigned']が存在するか確認
+    if (!characterTiers || !characterTiers['unassigned']) {
+      console.log('未割り当てTierが存在しません');
+      return [];
+    }
+    
+    console.log('getUnassignedCharacters() - unassignedリスト:', characterTiers['unassigned']);
+    console.log('getUnassignedCharacters() - フィルター前のキャラ数:', filteredCharacters.length);
+    
+    const result = filteredCharacters.filter(char => 
       characterTiers['unassigned'].includes(char.id)
     );
+    
+    console.log('getUnassignedCharacters() - フィルター後のキャラ数:', result.length);
+    return result;
   };
   
   return (
