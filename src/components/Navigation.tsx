@@ -15,10 +15,11 @@ const navItems: NavItem[] = [
   { href: '/recsite', label: 'お役立ちサイト', icon: 'fa-globe' },
   { href: '/reccommunity', label: 'コミュニティ', icon: 'fa-users' },
   { href: '/recyoutuber', label: 'YouTuber', icon: 'fa-youtube' },
-  { href: '/characters', label: 'キャラ攻略', icon: 'fa-user-astronaut' },
+  { href: '/characters', label: 'キャラクター図鑑', icon: 'fa-user-astronaut' },
+  { href: '/calendar', label: '攻略カレンダー', icon: 'fa-calendar-alt' },
+  { href: '/calculator', label: '素材計算機', icon: 'fa-calculator' },
   { href: '/artifacts', label: '聖遺物攻略', icon: 'fa-gem' },
   { href: '/maps', label: 'マップ', icon: 'fa-map' },
-  { href: '/events', label: 'イベント', icon: 'fa-calendar-alt' },
   { href: '/teams', label: 'パーティー編成', icon: 'fa-users-cog' },
   { href: '/news', label: 'ニュース', icon: 'fa-newspaper' },
 ];
