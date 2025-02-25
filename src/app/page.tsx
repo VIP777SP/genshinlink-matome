@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 
 // カードの情報を配列として管理

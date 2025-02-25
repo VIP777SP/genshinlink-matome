@@ -14,10 +14,9 @@ type Comment = {
 
 type CommentSectionProps = {
   pageId: string;
-  pageTitle: string;
 };
 
-export default function CommentSection({ pageId, pageTitle }: CommentSectionProps) {
+export default function CommentSection({ pageId }: CommentSectionProps) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [name, setName] = useState('');
@@ -30,6 +29,7 @@ export default function CommentSection({ pageId, pageTitle }: CommentSectionProp
   // コメント読み込み
   useEffect(() => {
     loadComments();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageId]);
 
   // ローカルストレージからコメントをロード

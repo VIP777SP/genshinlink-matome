@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useFavorites, FavoriteItem } from '@/components/FavoritesContext';
+import { useFavorites } from '@/components/FavoritesContext';
 import Link from 'next/link';
 
 export default function FavoritesPage() {

@@ -289,8 +289,8 @@ export default function CalculatorPage() {
     }
     
     let totalMora = 0;
-    let totalBooks = [0, 0, 0]; // 教え、導き、哲学の順
-    let totalMaterials = [0, 0, 0]; // 通常、レア、ボス素材の順
+    const totalBooks = [0, 0, 0]; // 教え、導き、哲学の順
+    const totalMaterials = [0, 0, 0]; // 通常、レア、ボス素材の順
     
     // 現在のレベルから目標レベルまで各レベルの必要素材を加算
     for (let level = currentLevel + 1; level <= targetLevel; level++) {
@@ -367,7 +367,7 @@ export default function CalculatorPage() {
     const moraNeeded = targetMora - currentMora;
     
     // 武器素材の必要数を簡易計算（実際のゲームではもっと複雑）
-    const weaponMaterialCount = Math.ceil(expNeeded / 10000);
+    // const weaponMaterialCount = Math.ceil(expNeeded / 10000);
     const ascensionMaterialCount = Math.ceil((targetLevelIndex - currentLevelIndex) / 20);
     
     const result: MaterialQuantity[] = [];

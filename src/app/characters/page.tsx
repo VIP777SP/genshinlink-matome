@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import { useSound } from '@/components/SoundService';
 import FavoriteButton from '@/components/FavoriteButton';

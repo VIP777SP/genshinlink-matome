@@ -84,6 +84,7 @@ export function SoundProvider({ children }: { children: ReactNode }) {
         }
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settings, initialized, sounds]);
 
   // サウンドの有効/無効を切り替え

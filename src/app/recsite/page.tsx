@@ -1,6 +1,5 @@
 'use client';
 
-import Link from "next/link";
 import CommentSection from "@/components/CommentSection";
 import FavoriteButton from "@/components/FavoriteButton";
 import { useState } from "react";

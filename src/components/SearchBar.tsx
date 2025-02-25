@@ -30,7 +30,7 @@ export default function SearchBar() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [typingSound, setTypingSound] = useState<HTMLAudioElement | null>(null);
+  const [typingSound] = useState<HTMLAudioElement | null>(null);
   const searchRef = useRef<HTMLDivElement>(null);
 
   // 音声の初期化
