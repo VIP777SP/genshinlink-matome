@@ -249,6 +249,26 @@ export default function TierMakerPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [elementFilter, setElementFilter] = useState<ElementType | 'all'>('all');
   
+  // 編集モード関連の状態
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [customTemplate, setCustomTemplate] = useState<TierTemplate | null>(null);
+  const [newTierName, setNewTierName] = useState('');
+  const [newTierColor, setNewTierColor] = useState('bg-gray-500');
+  const [customTemplates, setCustomTemplates] = useState<TierTemplate[]>([]);
+  
+  // カスタムテンプレートのロード
+  useEffect(() => {
+    // ローカルストレージからカスタムテンプレートをロード
+    const storedTemplates = localStorage.getItem('customTierTemplates');
+    if (storedTemplates) {
+      try {
+        setCustomTemplates(JSON.parse(storedTemplates));
+      } catch (error) {
+        console.error('カスタムテンプレートの読み込みに失敗しました', error);
+      }
+    }
+  }, []);
+  
   // 状態変更をデバッグするための効果
   useEffect(() => {
     console.log('State update - characterTiers:', characterTiers);
@@ -258,6 +278,14 @@ export default function TierMakerPage() {
   useEffect(() => {
     initializeTiers();
   }, [selectedTemplate]);
+  
+  // カスタムテンプレートの初期化
+  useEffect(() => {
+    if (isEditMode && !customTemplate) {
+      // 選択されたテンプレートのディープコピーを作成
+      setCustomTemplate(JSON.parse(JSON.stringify(selectedTemplate)));
+    }
+  }, [isEditMode, customTemplate, selectedTemplate]);
   
   // Tierの初期化
   const initializeTiers = () => {
@@ -275,7 +303,202 @@ export default function TierMakerPage() {
     setCharacterTiers(initialTiers);
   };
   
-  // ドロップハンドラー - 完全に書き直し、シンプルで信頼性の高い実装
+  // テンプレート名の変更ハンドラ
+  const handleTemplateNameChange = (newName: string) => {
+    if (!customTemplate) return;
+    
+    setCustomTemplate({
+      ...customTemplate,
+      name: newName
+    });
+  };
+  
+  // 編集モードの切り替え
+  const toggleEditMode = () => {
+    const newEditMode = !isEditMode;
+    setIsEditMode(newEditMode);
+    
+    // 編集モードを終了する場合
+    if (!newEditMode && customTemplate) {
+      // 変更を適用
+      setSelectedTemplate(customTemplate);
+      setCustomTemplate(null);
+    }
+  };
+  
+  // カスタムテンプレートを保存
+  const saveCustomTemplate = () => {
+    if (!customTemplate) return;
+    
+    // ユニークなIDを生成
+    const templateToSave = {
+      ...customTemplate,
+      id: `custom-${Date.now()}`
+    };
+    
+    // 既存のカスタムテンプレートに追加
+    const updatedCustomTemplates = [...customTemplates, templateToSave];
+    setCustomTemplates(updatedCustomTemplates);
+    
+    // ローカルストレージに保存
+    localStorage.setItem('customTierTemplates', JSON.stringify(updatedCustomTemplates));
+    
+    // 通知
+    alert('テンプレートを保存しました！');
+  };
+  
+  // カスタムテンプレートを削除
+  const deleteCustomTemplate = (templateId: string) => {
+    // カスタムテンプレートのみを削除可能
+    if (!templateId.startsWith('custom-')) return;
+    
+    const updatedTemplates = customTemplates.filter(t => t.id !== templateId);
+    setCustomTemplates(updatedTemplates);
+    
+    // ローカルストレージに更新を保存
+    localStorage.setItem('customTierTemplates', JSON.stringify(updatedTemplates));
+    
+    // 削除したテンプレートが現在選択されている場合、デフォルトのテンプレートに切り替え
+    if (selectedTemplate.id === templateId) {
+      setSelectedTemplate(templates[0]);
+    }
+  };
+  
+  // ティア名の変更ハンドラ
+  const handleTierNameChange = (index: number, newName: string) => {
+    if (!customTemplate) return;
+    
+    const updatedTiers = [...customTemplate.tiers];
+    updatedTiers[index] = { ...updatedTiers[index], name: newName };
+    
+    setCustomTemplate({
+      ...customTemplate,
+      tiers: updatedTiers
+    });
+  };
+  
+  // ティア順序の変更（上に移動）
+  const moveTierUp = (index: number) => {
+    if (!customTemplate || index === 0) return;
+    
+    const updatedTiers = [...customTemplate.tiers];
+    const temp = updatedTiers[index];
+    updatedTiers[index] = updatedTiers[index - 1];
+    updatedTiers[index - 1] = temp;
+    
+    setCustomTemplate({
+      ...customTemplate,
+      tiers: updatedTiers
+    });
+  };
+  
+  // ティア順序の変更（下に移動）
+  const moveTierDown = (index: number) => {
+    if (!customTemplate || index === customTemplate.tiers.length - 1) return;
+    
+    const updatedTiers = [...customTemplate.tiers];
+    const temp = updatedTiers[index];
+    updatedTiers[index] = updatedTiers[index + 1];
+    updatedTiers[index + 1] = temp;
+    
+    setCustomTemplate({
+      ...customTemplate,
+      tiers: updatedTiers
+    });
+  };
+  
+  // ティア色の変更ハンドラ
+  const handleTierColorChange = (index: number, newColor: string) => {
+    if (!customTemplate) return;
+    
+    const updatedTiers = [...customTemplate.tiers];
+    updatedTiers[index] = { ...updatedTiers[index], color: newColor };
+    
+    setCustomTemplate({
+      ...customTemplate,
+      tiers: updatedTiers
+    });
+  };
+  
+  // 新しいティアの追加
+  const addNewTier = () => {
+    if (!customTemplate || !newTierName) return;
+    
+    // ユニークなIDを生成
+    const newId = `tier-${Date.now()}`;
+    
+    const updatedTiers = [
+      ...customTemplate.tiers,
+      {
+        id: newId,
+        name: newTierName,
+        color: newTierColor
+      }
+    ];
+    
+    setCustomTemplate({
+      ...customTemplate,
+      tiers: updatedTiers
+    });
+    
+    // フォームをリセット
+    setNewTierName('');
+  };
+  
+  // ティアの削除
+  const removeTier = (index: number) => {
+    if (!customTemplate) return;
+    
+    // 削除するティアのIDを取得
+    const tierIdToRemove = customTemplate.tiers[index].id;
+    
+    // このティアに属しているキャラクターを「未割り当て」に移動
+    setCharacterTiers(prev => {
+      const newState = { ...prev };
+      
+      // 削除するティアのキャラクターを取得
+      const charactersToMove = newState[tierIdToRemove] || [];
+      
+      // 未割り当てリストに追加
+      if (charactersToMove.length > 0) {
+        newState['unassigned'] = [
+          ...(newState['unassigned'] || []),
+          ...charactersToMove
+        ];
+      }
+      
+      // 削除するティアを削除
+      delete newState[tierIdToRemove];
+      
+      return newState;
+    });
+    
+    // ティアリストから削除
+    const updatedTiers = customTemplate.tiers.filter((_, i) => i !== index);
+    
+    setCustomTemplate({
+      ...customTemplate,
+      tiers: updatedTiers
+    });
+  };
+  
+  // 利用可能な背景色のリスト
+  const availableColors = [
+    { value: 'bg-red-600', label: '赤' },
+    { value: 'bg-orange-500', label: 'オレンジ' },
+    { value: 'bg-yellow-500', label: '黄色' },
+    { value: 'bg-green-500', label: '緑' },
+    { value: 'bg-blue-500', label: '青' },
+    { value: 'bg-indigo-500', label: '藍' },
+    { value: 'bg-purple-500', label: '紫' },
+    { value: 'bg-pink-500', label: 'ピンク' },
+    { value: 'bg-gray-500', label: 'グレー' }
+  ];
+  
+  // 利用可能なテンプレート（デフォルト + カスタム）
+  const allTemplates = [...templates, ...customTemplates];
+  
+  // ドロップハンドラー
   const handleDrop = (characterId: string, targetTierId: string) => {
     console.log(`DROP: キャラクター ${characterId} を ${targetTierId} に移動します`);
     
@@ -410,21 +633,168 @@ export default function TierMakerPage() {
           </p>
         </div>
         
-        {/* テンプレート選択 */}
+        {/* テンプレート選択とカスタマイズモード切り替え */}
         <div className="mb-6">
-          <label className="block text-lg font-medium text-gray-700 dark:text-gray-200 mb-2">テンプレート選択</label>
-          <div className="flex flex-wrap gap-3">
-            {templates.map(template => (
-              <button
-                key={template.id}
-                className={`px-4 py-2 rounded-lg ${selectedTemplate.id === template.id ? 'bg-amber-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'} hover:bg-amber-400 dark:hover:bg-amber-600 transition-colors`}
-                onClick={() => setSelectedTemplate(template)}
-              >
-                {template.name}
-              </button>
-            ))}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
+            <label className="block text-lg font-medium text-gray-700 dark:text-gray-200 mb-2 sm:mb-0">テンプレート選択</label>
+            <button
+              onClick={toggleEditMode}
+              className={`px-4 py-2 rounded-lg text-white ${
+                isEditMode ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'
+              } transition-colors`}
+            >
+              {isEditMode ? '編集を適用' : 'ティアをカスタマイズ'}
+            </button>
           </div>
+          
+          {!isEditMode && (
+            <div className="flex flex-wrap gap-3">
+              {allTemplates.map(template => (
+                <div key={template.id} className="relative group">
+                  <button
+                    className={`px-4 py-2 rounded-lg ${selectedTemplate.id === template.id ? 'bg-amber-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'} hover:bg-amber-400 dark:hover:bg-amber-600 transition-colors`}
+                    onClick={() => setSelectedTemplate(template)}
+                  >
+                    {template.name}
+                  </button>
+                  
+                  {/* カスタムテンプレートの削除ボタン */}
+                  {template.id.startsWith('custom-') && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (confirm(`「${template.name}」テンプレートを削除してもよろしいですか？`)) {
+                          deleteCustomTemplate(template.id);
+                        }
+                      }}
+                      className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      title="テンプレートを削除"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
+        
+        {/* 編集モード時のティア管理UI */}
+        {isEditMode && customTemplate && (
+          <div className="mb-6 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">ティアをカスタマイズ</h2>
+              
+              <button
+                onClick={saveCustomTemplate}
+                className="mt-2 sm:mt-0 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center"
+              >
+                <span className="mr-1">新規テンプレートとして保存</span>
+              </button>
+            </div>
+            
+            {/* テンプレート名の編集 */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">テンプレート名</label>
+              <input
+                type="text"
+                value={customTemplate.name}
+                onChange={(e) => handleTemplateNameChange(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+                placeholder="テンプレート名"
+              />
+            </div>
+            
+            {/* 既存ティアの編集 */}
+            <div className="mb-4">
+              <h3 className="text-lg font-medium mb-2 text-gray-700 dark:text-gray-300">既存のティア</h3>
+              <div className="space-y-2">
+                {customTemplate.tiers.map((tier, index) => (
+                  <div key={tier.id} className="flex flex-wrap gap-2 items-center p-2 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                    <div className={`${tier.color} w-8 h-8 rounded-md flex-shrink-0`}></div>
+                    <input
+                      type="text"
+                      value={tier.name}
+                      onChange={(e) => handleTierNameChange(index, e.target.value)}
+                      className="flex-grow px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+                      placeholder="ティア名"
+                    />
+                    <select
+                      value={tier.color}
+                      onChange={(e) => handleTierColorChange(index, e.target.value)}
+                      className="px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+                    >
+                      {availableColors.map(color => (
+                        <option key={color.value} value={color.value}>{color.label}</option>
+                      ))}
+                    </select>
+                    
+                    {/* ティア順序の変更ボタン */}
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => moveTierUp(index)}
+                        disabled={index === 0}
+                        className={`p-1 rounded ${index === 0 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
+                        title="上に移動"
+                      >
+                        ↑
+                      </button>
+                      <button
+                        onClick={() => moveTierDown(index)}
+                        disabled={index === customTemplate.tiers.length - 1}
+                        className={`p-1 rounded ${index === customTemplate.tiers.length - 1 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
+                        title="下に移動"
+                      >
+                        ↓
+                      </button>
+                    </div>
+                    
+                    <button
+                      onClick={() => removeTier(index)}
+                      className="p-2 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 rounded-lg"
+                      title="削除"
+                    >
+                      <span className="text-sm">削除</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* 新規ティアの追加 */}
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+              <h3 className="text-lg font-medium mb-2 text-gray-700 dark:text-gray-300">新しいティアを追加</h3>
+              <div className="flex flex-wrap gap-2 items-center">
+                <div className={`${newTierColor} w-8 h-8 rounded-md flex-shrink-0`}></div>
+                <input
+                  type="text"
+                  value={newTierName}
+                  onChange={(e) => setNewTierName(e.target.value)}
+                  className="flex-grow px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+                  placeholder="新しいティア名"
+                />
+                <select
+                  value={newTierColor}
+                  onChange={(e) => setNewTierColor(e.target.value)}
+                  className="px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+                >
+                  {availableColors.map(color => (
+                    <option key={color.value} value={color.value}>{color.label}</option>
+                  ))}
+                </select>
+                <button
+                  onClick={addNewTier}
+                  disabled={!newTierName.trim()}
+                  className={`px-4 py-1 rounded-lg text-white ${
+                    newTierName.trim() ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'
+                  }`}
+                >
+                  追加
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* フィルターと検索 */}
         <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -462,8 +832,8 @@ export default function TierMakerPage() {
         
         {/* Tierリスト */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">{selectedTemplate.name}</h2>
-          {selectedTemplate.tiers.map(tier => (
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">{isEditMode && customTemplate ? customTemplate.name : selectedTemplate.name}</h2>
+          {(isEditMode && customTemplate ? customTemplate.tiers : selectedTemplate.tiers).map(tier => (
             <TierRow 
               key={tier.id}
               tier={tier}
