@@ -11,6 +11,18 @@ type ElementType = 'pyro' | 'hydro' | 'anemo' | 'electro' | 'dendro' | 'cryo' | 
 type WeaponType = 'sword' | 'claymore' | 'polearm' | 'bow' | 'catalyst';
 type RarityType = 4 | 5;
 
+// 武器データの型定義
+interface Weapon {
+  id: string;
+  name: string;
+  type: WeaponType;
+  rarity: RarityType;
+  baseAtk: number;
+  subStat: string;
+  passive: string;
+  imageUrl: string;
+}
+
 // キャラクター型の定義
 interface Character {
   id: string;
@@ -83,6 +95,60 @@ const characters: Character[] = [
   }
 ];
 
+// 武器データ
+const weapons: Weapon[] = [
+  {
+    id: 'mistsplitter',
+    name: '霧切の廻光',
+    type: 'sword',
+    rarity: 5,
+    baseAtk: 48,
+    subStat: '会心ダメージ',
+    passive: '霧切の極意：元素ダメージバフ最大12%/24%/28%(3層)、元素スキル使用後+12%',
+    imageUrl: '/images/weapons/mistsplitter.png'
+  },
+  {
+    id: 'homa',
+    name: '護摩の杖',
+    type: 'polearm',
+    rarity: 5,
+    baseAtk: 46,
+    subStat: '会心ダメージ',
+    passive: '無攬の従容：HP上限20%アップ、HP上限の0.8%分攻撃力アップ、HP50%以下で1.8%',
+    imageUrl: '/images/weapons/homa.png'
+  },
+  {
+    id: 'thundering_pulse',
+    name: '飛雷の鼓槌',
+    type: 'bow',
+    rarity: 5,
+    baseAtk: 46,
+    subStat: '会心ダメージ',
+    passive: '飛雷の巴紋：通常攻撃ダメージ最大40%アップ(3層)、攻撃力20%アップ',
+    imageUrl: '/images/weapons/thundering_pulse.png'
+  },
+  {
+    id: 'wolf_gravestone',
+    name: '狼の末路',
+    type: 'claymore',
+    rarity: 5,
+    baseAtk: 46,
+    subStat: '攻撃力%',
+    passive: '狼の渇望：攻撃力20%アップ、HP30%以下の敵を攻撃すると、チーム全員の攻撃力40%アップ',
+    imageUrl: '/images/weapons/wolf_gravestone.png'
+  },
+  {
+    id: 'lost_prayer',
+    name: '四風原典',
+    type: 'catalyst',
+    rarity: 5,
+    baseAtk: 46,
+    subStat: '会心率',
+    passive: '無辺際の祝詞：移動速度10%アップ、戦闘中4秒毎に元素ダメージ8%アップ(最大4層)',
+    imageUrl: '/images/weapons/lost_prayer.png'
+  }
+];
+
 // テンプレート型の定義
 interface TierTemplate {
   id: string;
@@ -130,9 +196,36 @@ const templates: TierTemplate[] = [
   }
 ];
 
+// 武器用のテンプレート
+const weaponTemplates: TierTemplate[] = [
+  {
+    id: 'weapon-strongest',
+    name: '最強武器Tier',
+    tiers: [
+      { id: 'weapon-s', name: 'S', color: 'bg-red-600' },
+      { id: 'weapon-a', name: 'A', color: 'bg-orange-500' },
+      { id: 'weapon-b', name: 'B', color: 'bg-yellow-500' },
+      { id: 'weapon-c', name: 'C', color: 'bg-green-500' },
+      { id: 'weapon-d', name: 'D', color: 'bg-blue-500' },
+      { id: 'weapon-f', name: 'F', color: 'bg-purple-500' },
+    ]
+  },
+  {
+    id: 'weapon-wanted',
+    name: '欲しい武器Tier',
+    tiers: [
+      { id: 'weapon-must', name: '必須', color: 'bg-red-600' },
+      { id: 'weapon-want', name: '欲しい', color: 'bg-orange-500' },
+      { id: 'weapon-maybe', name: '検討中', color: 'bg-yellow-500' },
+      { id: 'weapon-skip', name: 'スキップ', color: 'bg-gray-500' },
+    ]
+  }
+];
+
 // ドラッグアイテムタイプの定義
 const ItemTypes = {
-  CHARACTER: 'character'
+  CHARACTER: 'character',
+  WEAPON: 'weapon'
 };
 
 // ドラッグアイテムの型定義
@@ -197,6 +290,104 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
   );
 };
 
+// 武器カードのProps型定義
+interface WeaponCardProps {
+  weapon: Weapon;
+  onDrop: (weaponId: string, tierId: string) => void;
+  currentTier: string;
+}
+
+// 武器カードコンポーネント
+const WeaponCard = ({ weapon, onDrop, currentTier }: WeaponCardProps) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: ItemTypes.WEAPON,
+    item: { id: weapon.id } as DragItem,
+    collect: monitor => ({
+      isDragging: !!monitor.isDragging(),
+    }),
+  }));
+  
+  // ref と drag を接続
+  drag(ref);
+
+  return (
+    <div
+      ref={ref}
+      className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden 
+                  border-2 border-amber-200 dark:border-amber-800
+                  shadow-md cursor-move transition-transform
+                  ${isDragging ? 'opacity-50' : 'opacity-100'}
+                  hover:scale-105 hover:shadow-lg hover:z-10`}
+      style={{ opacity: isDragging ? 0.5 : 1 }}
+    >
+      <Image
+        src={weapon.imageUrl}
+        alt={weapon.name}
+        fill
+        className="object-cover"
+      />
+      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-1">
+        <p className="text-xs text-white truncate text-center">{weapon.name}</p>
+      </div>
+      <div className="absolute top-0 right-0 bg-amber-500 text-white text-xs px-1 rounded-bl">★{weapon.rarity}</div>
+      <div className="absolute top-0 left-0 bg-blue-500/70 text-white text-xs px-1 rounded-br">{weapon.type}</div>
+    </div>
+  );
+};
+
+// 武器Tier行コンポーネントのProps型定義
+interface WeaponTierRowProps {
+  tier: {
+    id: string;
+    name: string;
+    color: string;
+  };
+  weaponsInTier: Weapon[];
+  onDrop: (weaponId: string, tierId: string) => void;
+}
+
+// 武器Tier行コンポーネント - メモ化してパフォーマンスを向上
+const WeaponTierRow = React.memo(({ tier, weaponsInTier, onDrop }: WeaponTierRowProps) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: ItemTypes.WEAPON,
+    drop: (item: DragItem) => onDrop(item.id, tier.id),
+    collect: monitor => ({
+      isOver: !!monitor.isOver(),
+    }),
+  }));
+  
+  // ref と drop を接続
+  drop(ref);
+
+  return (
+    <div 
+      ref={ref} 
+      className={`flex items-center mb-2 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} rounded-lg overflow-hidden transition-colors`}
+    >
+      <div className={`${tier.color} text-white font-bold w-24 py-3 px-4 flex items-center justify-center`}>
+        {tier.name}
+      </div>
+      <div className="flex-1 min-h-24 p-2 flex flex-wrap gap-2">
+        {weaponsInTier.map(weapon => (
+          <WeaponCard 
+            key={weapon.id} 
+            weapon={weapon} 
+            onDrop={onDrop} 
+            currentTier={tier.id} 
+          />
+        ))}
+        {weaponsInTier.length === 0 && (
+          <div className="w-full h-20 flex items-center justify-center text-gray-400 dark:text-gray-500 italic">
+            ここに武器をドラッグ
+          </div>
+        )}
+      </div>
+    </div>
+  );
+});
+
 // Tier行コンポーネント - メモ化してパフォーマンスを向上
 const TierRow = React.memo(({ tier, charactersInTier, onDrop }: TierRowProps) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -242,12 +433,24 @@ const TierRow = React.memo(({ tier, charactersInTier, onDrop }: TierRowProps) =>
 
 // メインTiermakerページコンポーネント
 export default function TierMakerPage() {
+  // キャラクターTiermaker用の状態
   const [selectedTemplate, setSelectedTemplate] = useState<TierTemplate>(templates[0]);
   const [characterTiers, setCharacterTiers] = useState<Record<string, string[]>>({
     unassigned: characters.map(char => char.id)
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [elementFilter, setElementFilter] = useState<ElementType | 'all'>('all');
+  
+  // 武器Tiermaker用の状態
+  const [selectedWeaponTemplate, setSelectedWeaponTemplate] = useState<TierTemplate>(weaponTemplates[0]);
+  const [weaponTiers, setWeaponTiers] = useState<Record<string, string[]>>({
+    'weapon-unassigned': weapons.map(weapon => weapon.id)
+  });
+  const [weaponSearchQuery, setWeaponSearchQuery] = useState('');
+  const [weaponTypeFilter, setWeaponTypeFilter] = useState<WeaponType | 'all'>('all');
+  const [customWeaponTemplates, setCustomWeaponTemplates] = useState<TierTemplate[]>([]);
+  const [isWeaponEditMode, setIsWeaponEditMode] = useState(false);
+  const [customWeaponTemplate, setCustomWeaponTemplate] = useState<TierTemplate | null>(null);
   
   // 編集モード関連の状態
   const [isEditMode, setIsEditMode] = useState(false);
@@ -269,6 +472,19 @@ export default function TierMakerPage() {
     }
   }, []);
   
+  // 武器用カスタムテンプレートのロード
+  useEffect(() => {
+    // ローカルストレージから武器用カスタムテンプレートをロード
+    const storedWeaponTemplates = localStorage.getItem('customWeaponTierTemplates');
+    if (storedWeaponTemplates) {
+      try {
+        setCustomWeaponTemplates(JSON.parse(storedWeaponTemplates));
+      } catch (error) {
+        console.error('武器用カスタムテンプレートの読み込みに失敗しました', error);
+      }
+    }
+  }, []);
+  
   // 状態変更をデバッグするための効果
   useEffect(() => {
     console.log('State update - characterTiers:', characterTiers);
@@ -279,6 +495,11 @@ export default function TierMakerPage() {
     initializeTiers();
   }, [selectedTemplate]);
   
+  // 武器テンプレート変更時に武器の配置をリセット
+  useEffect(() => {
+    initializeWeaponTiers();
+  }, [selectedWeaponTemplate]);
+  
   // カスタムテンプレートの初期化
   useEffect(() => {
     if (isEditMode && !customTemplate) {
@@ -286,6 +507,14 @@ export default function TierMakerPage() {
       setCustomTemplate(JSON.parse(JSON.stringify(selectedTemplate)));
     }
   }, [isEditMode, customTemplate, selectedTemplate]);
+  
+  // 武器用カスタムテンプレートの初期化
+  useEffect(() => {
+    if (isWeaponEditMode && !customWeaponTemplate) {
+      // 選択された武器テンプレートのディープコピーを作成
+      setCustomWeaponTemplate(JSON.parse(JSON.stringify(selectedWeaponTemplate)));
+    }
+  }, [isWeaponEditMode, customWeaponTemplate, selectedWeaponTemplate]);
   
   // Tierの初期化
   const initializeTiers = () => {
@@ -301,6 +530,22 @@ export default function TierMakerPage() {
     
     console.log('Tiers初期化:', initialTiers);
     setCharacterTiers(initialTiers);
+  };
+  
+  // 武器Tierの初期化
+  const initializeWeaponTiers = () => {
+    const initialWeaponTiers: Record<string, string[]> = {};
+    
+    // 各Tierに空の配列を初期化
+    selectedWeaponTemplate.tiers.forEach(tier => {
+      initialWeaponTiers[tier.id] = [];
+    });
+    
+    // 未割り当て武器のTierを追加
+    initialWeaponTiers['weapon-unassigned'] = weapons.map(weapon => weapon.id);
+    
+    console.log('武器Tiers初期化:', initialWeaponTiers);
+    setWeaponTiers(initialWeaponTiers);
   };
   
   // テンプレート名の変更ハンドラ
@@ -591,6 +836,153 @@ export default function TierMakerPage() {
     return result;
   };
   
+  // 武器テンプレート名の変更ハンドラ
+  const handleWeaponTemplateNameChange = (newName: string) => {
+    if (!customWeaponTemplate) return;
+    
+    setCustomWeaponTemplate({
+      ...customWeaponTemplate,
+      name: newName
+    });
+  };
+  
+  // 武器編集モードの切り替え
+  const toggleWeaponEditMode = () => {
+    const newEditMode = !isWeaponEditMode;
+    setIsWeaponEditMode(newEditMode);
+    
+    // 編集モードを終了する場合
+    if (!newEditMode && customWeaponTemplate) {
+      // 変更を適用
+      setSelectedWeaponTemplate(customWeaponTemplate);
+      setCustomWeaponTemplate(null);
+    }
+  };
+  
+  // 武器カスタムテンプレートを保存
+  const saveWeaponCustomTemplate = () => {
+    if (!customWeaponTemplate) return;
+    
+    // ユニークなIDを生成
+    const templateToSave = {
+      ...customWeaponTemplate,
+      id: `weapon-custom-${Date.now()}`
+    };
+    
+    // 既存のカスタムテンプレートに追加
+    const updatedCustomTemplates = [...customWeaponTemplates, templateToSave];
+    setCustomWeaponTemplates(updatedCustomTemplates);
+    
+    // ローカルストレージに保存
+    localStorage.setItem('customWeaponTierTemplates', JSON.stringify(updatedCustomTemplates));
+    
+    // 通知
+    alert('武器テンプレートを保存しました！');
+  };
+  
+  // 武器カスタムテンプレートを削除
+  const deleteWeaponCustomTemplate = (templateId: string) => {
+    // カスタムテンプレートのみを削除可能
+    if (!templateId.startsWith('weapon-custom-')) return;
+    
+    const updatedTemplates = customWeaponTemplates.filter(t => t.id !== templateId);
+    setCustomWeaponTemplates(updatedTemplates);
+    
+    // ローカルストレージに更新を保存
+    localStorage.setItem('customWeaponTierTemplates', JSON.stringify(updatedTemplates));
+    
+    // 削除したテンプレートが現在選択されている場合、デフォルトのテンプレートに切り替え
+    if (selectedWeaponTemplate.id === templateId) {
+      setSelectedWeaponTemplate(weaponTemplates[0]);
+    }
+  };
+  
+  // 武器ドロップハンドラー
+  const handleWeaponDrop = (weaponId: string, targetTierId: string) => {
+    console.log(`DROP: 武器 ${weaponId} を ${targetTierId} に移動します`);
+    
+    setWeaponTiers(prev => {
+      // すべてのtierからこの武器を削除した新しいオブジェクトを作成
+      const newState: Record<string, string[]> = {};
+      
+      // すべてのtierを処理して武器を除外
+      let foundInTier = '';
+      Object.entries(prev).forEach(([tierId, weaponIds]) => {
+        // このtierに武器があるか確認
+        if (weaponIds.includes(weaponId)) {
+          foundInTier = tierId;
+          // この武器以外のものだけ保持
+          newState[tierId] = weaponIds.filter(id => id !== weaponId);
+        } else {
+          // 変更なしで維持
+          newState[tierId] = [...weaponIds];
+        }
+      });
+      
+      console.log(`武器は元々 ${foundInTier || 'どこにも見つからない'} にありました`);
+      
+      // 同じtierに移動する場合は早期リターン
+      if (foundInTier === targetTierId) {
+        console.log('同じTierへの移動なので、状態は変更しません');
+        return prev;
+      }
+      
+      // ターゲットtierが存在することを確認
+      if (!newState[targetTierId]) {
+        newState[targetTierId] = [];
+      }
+      
+      // ターゲットtierに追加
+      newState[targetTierId] = [...newState[targetTierId], weaponId];
+      
+      console.log('新しい武器Tier状態:', newState);
+      return newState;
+    });
+  };
+  
+  // 特定のTierに割り当てられた武器を取得
+  const getWeaponsInTier = (tierId: string): Weapon[] => {
+    // 存在チェックと防御的コーディング
+    if (!weaponTiers || !weaponTiers[tierId]) {
+      console.log(`武器Tier ${tierId} が存在しないか空です`);
+      return [];
+    }
+    
+    const result = weaponTiers[tierId]
+      .map(id => {
+        const weapon = weapons.find(w => w.id === id);
+        if (!weapon) {
+          console.warn(`ID ${id} に一致する武器が見つかりません`);
+        }
+        return weapon;
+      })
+      .filter((weapon): weapon is Weapon => weapon !== undefined);
+    
+    return result;
+  };
+  
+  // 武器検索フィルター
+  const filteredWeapons = weapons.filter(weapon => {
+    const matchesSearch = weapon.name.toLowerCase().includes(weaponSearchQuery.toLowerCase());
+    const matchesType = weaponTypeFilter === 'all' || weapon.type === weaponTypeFilter;
+    return matchesSearch && matchesType;
+  });
+  
+  // 未割り当ての武器を取得
+  const getUnassignedWeapons = (): Weapon[] => {
+    // weaponTiers['weapon-unassigned']が存在するか確認
+    if (!weaponTiers || !weaponTiers['weapon-unassigned']) {
+      console.log('未割り当て武器Tierが存在しません');
+      return [];
+    }
+    
+    const result = filteredWeapons.filter(weapon => 
+      weaponTiers['weapon-unassigned'].includes(weapon.id)
+    );
+    
+    return result;
+  };
+  
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="relative min-h-screen py-8 px-4 sm:px-6 lg:px-8">
@@ -864,6 +1256,161 @@ export default function TierMakerPage() {
                 すべてのキャラクターが配置されました！
               </div>
             )}
+          </div>
+        </div>
+        
+        {/* 武器Tiermaker */}
+        <div className="mt-12 pt-12 border-t-2 border-amber-200 dark:border-amber-800">
+          <div className="mb-8 text-center">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">【武器Tierメーカー】</h1>
+            <p className="text-md text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              原神の武器をTierリストで整理しよう！武器をドラッグ＆ドロップして、性能や好みに応じて分類できます。
+            </p>
+          </div>
+          
+          {/* 武器テンプレート選択とカスタマイズモード切り替え */}
+          <div className="mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
+              <label className="block text-lg font-medium text-gray-700 dark:text-gray-200 mb-2 sm:mb-0">武器テンプレート選択</label>
+              <button
+                onClick={toggleWeaponEditMode}
+                className={`px-4 py-2 rounded-lg text-white ${
+                  isWeaponEditMode ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'
+                } transition-colors`}
+              >
+                {isWeaponEditMode ? '編集を適用' : 'ティアをカスタマイズ'}
+              </button>
+            </div>
+            
+            {!isWeaponEditMode && (
+              <div className="flex flex-wrap gap-3">
+                {[...weaponTemplates, ...customWeaponTemplates].map(template => (
+                  <div key={template.id} className="relative group">
+                    <button
+                      className={`px-4 py-2 rounded-lg ${selectedWeaponTemplate.id === template.id ? 'bg-amber-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'} hover:bg-amber-400 dark:hover:bg-amber-600 transition-colors`}
+                      onClick={() => setSelectedWeaponTemplate(template)}
+                    >
+                      {template.name}
+                    </button>
+                    
+                    {/* カスタムテンプレートの削除ボタン */}
+                    {template.id.startsWith('weapon-custom-') && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (confirm(`「${template.name}」テンプレートを削除してもよろしいですか？`)) {
+                            deleteWeaponCustomTemplate(template.id);
+                          }
+                        }}
+                        className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        title="テンプレートを削除"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          
+          {/* 武器編集モード時のティア管理UI */}
+          {isWeaponEditMode && customWeaponTemplate && (
+            <div className="mb-6 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+                <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">武器ティアをカスタマイズ</h2>
+                
+                <button
+                  onClick={saveWeaponCustomTemplate}
+                  className="mt-2 sm:mt-0 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center"
+                >
+                  <span className="mr-1">新規テンプレートとして保存</span>
+                </button>
+              </div>
+              
+              {/* テンプレート名の編集 */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">テンプレート名</label>
+                <input
+                  type="text"
+                  value={customWeaponTemplate.name}
+                  onChange={(e) => handleWeaponTemplateNameChange(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+                  placeholder="テンプレート名"
+                />
+              </div>
+            </div>
+          )}
+          
+          {/* 武器フィルターと検索 */}
+          <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">武器タイプフィルター</label>
+              <div className="flex flex-wrap gap-2">
+                <button 
+                  className={`px-3 py-1 rounded ${weaponTypeFilter === 'all' ? 'bg-gray-800 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
+                  onClick={() => setWeaponTypeFilter('all')}
+                >
+                  全て
+                </button>
+                {(['sword', 'claymore', 'polearm', 'bow', 'catalyst'] as WeaponType[]).map(type => (
+                  <button 
+                    key={type}
+                    className={`px-3 py-1 rounded ${weaponTypeFilter === type ? 'bg-amber-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
+                    onClick={() => setWeaponTypeFilter(type)}
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">武器検索</label>
+              <input
+                type="text"
+                value={weaponSearchQuery}
+                onChange={(e) => setWeaponSearchQuery(e.target.value)}
+                placeholder="武器名を検索..."
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+              />
+            </div>
+          </div>
+          
+          {/* 武器Tierリスト */}
+          <div className="mb-8">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">{isWeaponEditMode && customWeaponTemplate ? customWeaponTemplate.name : selectedWeaponTemplate.name}</h2>
+            {(isWeaponEditMode && customWeaponTemplate ? customWeaponTemplate.tiers : selectedWeaponTemplate.tiers).map(tier => (
+              <WeaponTierRow 
+                key={tier.id}
+                tier={tier}
+                weaponsInTier={getWeaponsInTier(tier.id)}
+                onDrop={handleWeaponDrop}
+              />
+            ))}
+          </div>
+          
+          {/* 未割り当て武器 */}
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">利用可能な武器</h2>
+            <div 
+              className="min-h-40 p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex flex-wrap gap-3"
+              style={{ justifyContent: getUnassignedWeapons().length > 0 ? 'flex-start' : 'center' }}
+            >
+              {getUnassignedWeapons().length > 0 ? (
+                getUnassignedWeapons().map(weapon => (
+                  <WeaponCard 
+                    key={weapon.id}
+                    weapon={weapon}
+                    onDrop={handleWeaponDrop}
+                    currentTier="weapon-unassigned"
+                  />
+                ))
+              ) : (
+                <div className="w-full text-center text-gray-500 dark:text-gray-400 py-8">
+                  すべての武器が配置されました！
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
