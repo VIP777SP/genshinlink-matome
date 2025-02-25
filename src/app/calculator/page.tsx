@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useSound } from '@/components/SoundService';
 import FavoriteButton from '@/components/FavoriteButton';
 import CommentSection from '@/components/CommentSection';
@@ -358,8 +359,8 @@ export default function CalculatorPage() {
       return;
     }
     
-    const currentExp = weaponExpData[currentWeaponLevel].exp;
-    const targetExp = weaponExpData[targetWeaponLevel].exp;
+    // const currentExp = weaponExpData[currentWeaponLevel].exp;
+    // const targetExp = weaponExpData[targetWeaponLevel].exp;
     // const expNeeded = targetExp - currentExp;
     
     const currentMora = weaponExpData[currentWeaponLevel].mora;
@@ -653,11 +654,12 @@ export default function CalculatorPage() {
                   key={index}
                   className={`p-4 rounded-lg border ${colors.bg} ${colors.border} ${colors.darkBg} ${colors.darkBorder} flex items-center`}
                 >
-                  <div className="w-12 h-12 mr-4 flex-shrink-0">
-                    <img 
+                  <div className="w-12 h-12 mr-4 flex-shrink-0 relative">
+                    <Image 
                       src={result.material.imageUrl} 
                       alt={result.material.name}
-                      className="w-full h-full object-contain"
+                      fill
+                      className="object-contain"
                     />
                   </div>
                   <div>
