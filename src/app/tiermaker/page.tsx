@@ -287,6 +287,11 @@ export default function TierMakerPage() {
       updatedTiers[currentTierId] = updatedTiers[currentTierId].filter(id => id !== characterId);
     }
     
+    // ターゲットTierが存在するか確認し、存在しない場合は初期化
+    if (!updatedTiers[targetTierId]) {
+      updatedTiers[targetTierId] = [];
+    }
+    
     // ターゲットTierにキャラクターを追加
     updatedTiers[targetTierId] = [...updatedTiers[targetTierId], characterId];
     
