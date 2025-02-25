@@ -414,12 +414,71 @@ export default function CalculatorPage() {
   };
 
   return (
-    <main className="max-w-6xl mx-auto">
+    <main className="max-w-6xl mx-auto relative">
+      {/* 背景装飾パターン */}
+      <div className="absolute inset-0 -z-10 opacity-[0.03] dark:opacity-[0.02] pointer-events-none overflow-hidden">
+        {/* 直接SVGパターンを描画 */}
+        <svg width="100%" height="100%" className="absolute inset-0">
+          <defs>
+            <pattern id="genshin-pattern-calculator" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+              {/* 元素記号：風 */}
+              <path d="M20,20 C25,15 35,15 40,20 C45,25 45,35 40,40 C35,45 25,45 20,40 C15,35 15,25 20,20 Z" 
+                   fill="none" stroke="#D4AF37" strokeWidth="1" opacity="0.6"/>
+              
+              {/* 元素記号：岩 */}
+              <path d="M70,20 L90,20 L80,40 Z" 
+                   fill="none" stroke="#D4AF37" strokeWidth="1" opacity="0.6"/>
+              
+              {/* 元素記号：雷 */}
+              <path d="M20,70 L25,80 L30,70 L35,90 L20,70" 
+                   fill="none" stroke="#D4AF37" strokeWidth="1" opacity="0.6"/>
+              
+              {/* 元素記号：氷 */}
+              <path d="M70,70 L90,70 M80,60 L80,80 M75,65 L85,75 M75,75 L85,65" 
+                   fill="none" stroke="#D4AF37" strokeWidth="1" opacity="0.6"/>
+              
+              {/* 装飾的な円形 */}
+              <circle cx="50" cy="50" r="20" fill="none" stroke="#D4AF37" strokeWidth="0.5" opacity="0.4"/>
+              <circle cx="50" cy="50" r="25" fill="none" stroke="#D4AF37" strokeWidth="0.3" opacity="0.3"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#genshin-pattern-calculator)"/>
+        </svg>
+        
+        {/* カラフルなグラデーションの円 */}
+        <div className="absolute top-20 left-1/4 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-40 right-1/4 w-80 h-80 bg-orange-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/3 right-1/3 w-72 h-72 bg-yellow-500/10 rounded-full blur-3xl"></div>
+      </div>
+
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-amber-700 dark:text-amber-500">
-          【素材計算機】
-        </h1>
-        <FavoriteButton
+        <div className="flex items-center gap-3">
+          {/* SVGロゴを直接描画 */}
+          <div className="relative w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0">
+            <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+              {/* 外側円 */}
+              <circle cx="50" cy="50" r="48" fill="none" stroke="#FFB13B" strokeWidth="2" opacity="0.9"/>
+              
+              {/* 内側円 */}
+              <circle cx="50" cy="50" r="40" fill="none" stroke="#FFB13B" strokeWidth="1.5" opacity="0.7"/>
+              
+              {/* 十字の星模様 */}
+              <path d="M50,10 L50,90 M10,50 L90,50 M25,25 L75,75 M25,75 L75,25" 
+                    stroke="#FFB13B" strokeWidth="1.5" opacity="0.8" strokeLinecap="round"/>
+              
+              {/* 装飾的な円 */}
+              <circle cx="50" cy="50" r="20" fill="none" stroke="#FFB13B" strokeWidth="1" opacity="0.6"/>
+              
+              {/* 中央のシンボル */}
+              <circle cx="50" cy="50" r="10" fill="#FFB13B" opacity="0.8"/>
+              <circle cx="50" cy="50" r="6" fill="#FFF5E6" opacity="0.9"/>
+            </svg>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-amber-700 dark:text-amber-500 drop-shadow-sm">
+            【素材計算機】
+          </h1>
+        </div>
+        <FavoriteButton 
           id="calculator-page"
           title="素材計算機"
           url="/calculator"
@@ -428,7 +487,7 @@ export default function CalculatorPage() {
       </div>
 
       <p className="mb-6 text-lg text-gray-700 dark:text-gray-300">
-        キャラクターや武器のレベルアップに必要な素材を計算できます。
+        キャラクターや武器のレベルアップに必要な素材を計算できます。効率的な育成計画を立てましょう。
       </p>
 
       {/* 計算タイプタブ */}

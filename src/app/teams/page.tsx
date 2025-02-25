@@ -310,47 +310,106 @@ const teams: Team[] = [
 
 export default function TeamsPage() {
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
-  const [filter, setFilter] = useState<ElementType | 'all'>('all');
+  const [elementFilter, setElementFilter] = useState<ElementType | 'all'>('all');
   const { playSound } = useSound();
 
-  // 元素でフィルタリング
+  // 元素フィルター適用
   const handleFilterChange = (element: ElementType | 'all') => {
-    setFilter(element);
+    setElementFilter(element);
     playSound('click');
   };
 
-  // フィルタリングされたチームリストを取得
-  const filteredTeams = filter === 'all'
-    ? teams
-    : teams.filter(team => team.characters.some(char => char.element === filter));
-
-  // 難易度に応じたラベルとクラスを取得
+  // 難易度に基づく表示情報取得
   const getDifficultyInfo = (difficulty: 'easy' | 'medium' | 'hard') => {
     switch (difficulty) {
       case 'easy':
-        return {
-          label: '初心者向け',
-          class: 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300'
+        return { 
+          label: '初心者向け', 
+          color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
         };
       case 'medium':
-        return {
-          label: '中級者向け',
-          class: 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300'
+        return { 
+          label: '中級者向け', 
+          color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' 
         };
       case 'hard':
-        return {
-          label: '上級者向け',
-          class: 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300'
+        return { 
+          label: '上級者向け', 
+          color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' 
         };
     }
   };
 
+  // フィルター適用されたチーム一覧
+  const filteredTeams = elementFilter === 'all' 
+    ? teams 
+    : teams.filter(team => team.characters.some(char => char.element === elementFilter));
+
   return (
-    <main className="max-w-6xl mx-auto">
+    <main className="max-w-6xl mx-auto relative">
+      {/* 背景装飾パターン */}
+      <div className="absolute inset-0 -z-10 opacity-[0.03] dark:opacity-[0.02] pointer-events-none overflow-hidden">
+        {/* 直接SVGパターンを描画 */}
+        <svg width="100%" height="100%" className="absolute inset-0">
+          <defs>
+            <pattern id="genshin-pattern-teams" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+              {/* 元素記号：風 */}
+              <path d="M20,20 C25,15 35,15 40,20 C45,25 45,35 40,40 C35,45 25,45 20,40 C15,35 15,25 20,20 Z" 
+                   fill="none" stroke="#D4AF37" strokeWidth="1" opacity="0.6"/>
+              
+              {/* 元素記号：岩 */}
+              <path d="M70,20 L90,20 L80,40 Z" 
+                   fill="none" stroke="#D4AF37" strokeWidth="1" opacity="0.6"/>
+              
+              {/* 元素記号：雷 */}
+              <path d="M20,70 L25,80 L30,70 L35,90 L20,70" 
+                   fill="none" stroke="#D4AF37" strokeWidth="1" opacity="0.6"/>
+              
+              {/* 元素記号：氷 */}
+              <path d="M70,70 L90,70 M80,60 L80,80 M75,65 L85,75 M75,75 L85,65" 
+                   fill="none" stroke="#D4AF37" strokeWidth="1" opacity="0.6"/>
+              
+              {/* 装飾的な円形 */}
+              <circle cx="50" cy="50" r="20" fill="none" stroke="#D4AF37" strokeWidth="0.5" opacity="0.4"/>
+              <circle cx="50" cy="50" r="25" fill="none" stroke="#D4AF37" strokeWidth="0.3" opacity="0.3"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#genshin-pattern-teams)"/>
+        </svg>
+        
+        {/* カラフルなグラデーションの円 */}
+        <div className="absolute top-20 left-1/4 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-40 right-1/4 w-80 h-80 bg-orange-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/3 right-1/3 w-72 h-72 bg-yellow-500/10 rounded-full blur-3xl"></div>
+      </div>
+
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-amber-700 dark:text-amber-500">
-          【最強パーティー編成ガイド】
-        </h1>
+        <div className="flex items-center gap-3">
+          {/* SVGロゴを直接描画 */}
+          <div className="relative w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0">
+            <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+              {/* 外側円 */}
+              <circle cx="50" cy="50" r="48" fill="none" stroke="#FFB13B" strokeWidth="2" opacity="0.9"/>
+              
+              {/* 内側円 */}
+              <circle cx="50" cy="50" r="40" fill="none" stroke="#FFB13B" strokeWidth="1.5" opacity="0.7"/>
+              
+              {/* 十字の星模様 */}
+              <path d="M50,10 L50,90 M10,50 L90,50 M25,25 L75,75 M25,75 L75,25" 
+                    stroke="#FFB13B" strokeWidth="1.5" opacity="0.8" strokeLinecap="round"/>
+              
+              {/* 装飾的な円 */}
+              <circle cx="50" cy="50" r="20" fill="none" stroke="#FFB13B" strokeWidth="1" opacity="0.6"/>
+              
+              {/* 中央のシンボル */}
+              <circle cx="50" cy="50" r="10" fill="#FFB13B" opacity="0.8"/>
+              <circle cx="50" cy="50" r="6" fill="#FFF5E6" opacity="0.9"/>
+            </svg>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-amber-700 dark:text-amber-500 drop-shadow-sm">
+            【パーティー編成ガイド】
+          </h1>
+        </div>
         <FavoriteButton 
           id="teams-page"
           title="パーティー編成"
@@ -360,7 +419,7 @@ export default function TeamsPage() {
       </div>
 
       <p className="mb-6 text-lg text-gray-700 dark:text-gray-300">
-        各コンテンツを攻略するためのおすすめパーティー編成を紹介します。自分のプレイスタイルに合ったチームを見つけて、より効率的に冒険を進めましょう。
+        効率的で強力なパーティー編成を紹介します。様々な状況に対応できるチーム構成を見つけて、あなたの冒険をさらに充実させましょう。
       </p>
 
       {selectedTeam ? (
@@ -393,7 +452,7 @@ export default function TeamsPage() {
                   <i className="fas fa-star mr-1"></i>おすすめ
                 </span>
               )}
-              <span className={`ml-2 px-2 py-1 text-xs rounded ${getDifficultyInfo(selectedTeam.difficulty).class}`}>
+              <span className={`ml-2 px-2 py-1 text-xs rounded ${getDifficultyInfo(selectedTeam.difficulty).color}`}>
                 {getDifficultyInfo(selectedTeam.difficulty).label}
               </span>
             </div>
@@ -568,7 +627,7 @@ export default function TeamsPage() {
             <div className="flex flex-wrap gap-2">
               <button
                 className={`px-3 py-1 rounded-lg text-sm transition-colors ${
-                  filter === 'all'
+                  elementFilter === 'all'
                     ? 'bg-amber-600 text-white' 
                     : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-amber-100 dark:hover:bg-amber-900/30'
                 }`}
@@ -581,7 +640,7 @@ export default function TeamsPage() {
                 <button
                   key={element}
                   className={`px-3 py-1 rounded-lg text-sm transition-colors flex items-center ${
-                    filter === element
+                    elementFilter === element
                       ? 'bg-amber-600 text-white' 
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-amber-100 dark:hover:bg-amber-900/30'
                   }`}
@@ -625,7 +684,7 @@ export default function TeamsPage() {
                           <i className="fas fa-star mr-1"></i>おすすめ
                         </span>
                       )}
-                      <span className={`px-2 py-1 text-xs rounded ${getDifficultyInfo(team.difficulty).class}`}>
+                      <span className={`px-2 py-1 text-xs rounded ${getDifficultyInfo(team.difficulty).color}`}>
                         {getDifficultyInfo(team.difficulty).label}
                       </span>
                     </div>

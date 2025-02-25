@@ -24,6 +24,7 @@ const navItems: NavItem[] = [
   { href: '/artifacts', label: '聖遺物攻略', icon: 'fa-gem' },
   { href: '/maps', label: 'マップ', icon: 'fa-map' },
   { href: '/teams', label: 'パーティー編成', icon: 'fa-users-cog' },
+  { href: '/tiermaker', label: 'Tierメーカー', icon: 'fa-list-ol' },
   { href: '/news', label: 'ニュース', icon: 'fa-newspaper' },
 ];
 
