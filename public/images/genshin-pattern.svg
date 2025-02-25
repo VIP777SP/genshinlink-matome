@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- 原神のシンボル的なパターン -->
+    <pattern id="genshin-pattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+      <!-- 元素記号：風 -->
+      <path d="M20,20 C25,15 35,15 40,20 C45,25 45,35 40,40 C35,45 25,45 20,40 C15,35 15,25 20,20 Z" 
+            fill="none" stroke="#D4AF37" stroke-width="1" opacity="0.6"/>
+      
+      <!-- 元素記号：岩 -->
+      <path d="M70,20 L90,20 L80,40 Z" 
+            fill="none" stroke="#D4AF37" stroke-width="1" opacity="0.6"/>
+      
+      <!-- 元素記号：雷 -->
+      <path d="M20,70 L25,80 L30,70 L35,90 L20,70" 
+            fill="none" stroke="#D4AF37" stroke-width="1" opacity="0.6"/>
+      
+      <!-- 元素記号：氷 -->
+      <path d="M70,70 L90,70 M80,60 L80,80 M75,65 L85,75 M75,75 L85,65" 
+            fill="none" stroke="#D4AF37" stroke-width="1" opacity="0.6"/>
+      
+      <!-- 装飾的な円形 -->
+      <circle cx="50" cy="50" r="20" fill="none" stroke="#D4AF37" stroke-width="0.5" opacity="0.4"/>
+      <circle cx="50" cy="50" r="25" fill="none" stroke="#D4AF37" stroke-width="0.3" opacity="0.3"/>
+    </pattern>
+  </defs>
+  
+  <!-- パターンを適用した背景 -->
+  <rect width="100%" height="100%" fill="url(#genshin-pattern)"/>
+</svg> 
