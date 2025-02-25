@@ -157,7 +157,7 @@ export default function RecSite() {
       </div>
       
       {/* コメントセクション */}
-      <CommentSection pageId="recsite" pageTitle="おすすめ便利サイト" />
+      <CommentSection pageId="recsite" />
     </main>
   );
 } 

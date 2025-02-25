@@ -398,7 +398,7 @@ export default function CharactersPage() {
       </div>
       
       {/* コメントセクション */}
-      <CommentSection pageId="characters" pageTitle="キャラクター図鑑" />
+      <CommentSection pageId="characters" />
     </main>
   );
 } 

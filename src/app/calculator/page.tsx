@@ -360,7 +360,7 @@ export default function CalculatorPage() {
     
     const currentExp = weaponExpData[currentWeaponLevel].exp;
     const targetExp = weaponExpData[targetWeaponLevel].exp;
-    const expNeeded = targetExp - currentExp;
+    // const expNeeded = targetExp - currentExp;
     
     const currentMora = weaponExpData[currentWeaponLevel].mora;
     const targetMora = weaponExpData[targetWeaponLevel].mora;
@@ -686,7 +686,7 @@ export default function CalculatorPage() {
       )}
       
       {/* コメントセクション */}
-      <CommentSection pageId="calculator" pageTitle="素材計算機" />
+      <CommentSection pageId="calculator" />
     </main>
   );
 } 

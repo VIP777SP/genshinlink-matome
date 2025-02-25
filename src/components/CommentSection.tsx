@@ -105,7 +105,7 @@ export default function CommentSection({ pageId }: CommentSectionProps) {
   };
 
   // 星評価のレンダリング
-  const renderStars = (value: number) => {
+  const renderStars = () => {
     return (
       <div className="flex">
         {[1, 2, 3, 4, 5].map((star) => (
@@ -165,7 +165,7 @@ export default function CommentSection({ pageId }: CommentSectionProps) {
 
         <div className="mb-4">
           <label className="block text-gray-700 dark:text-gray-300 mb-2">評価</label>
-          {renderStars(rating)}
+          {renderStars()}
         </div>
 
         {errorMessage && (

@@ -636,7 +636,7 @@ export default function CalendarPage() {
       
       {/* コメントセクション */}
       <div className="mt-8">
-        <CommentSection pageId="calendar" pageTitle="攻略カレンダー" />
+        <CommentSection pageId="calendar" />
       </div>
     </main>
   );
