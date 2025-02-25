@@ -249,6 +249,11 @@ export default function TierMakerPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [elementFilter, setElementFilter] = useState<ElementType | 'all'>('all');
   
+  // 状態変更をデバッグするための効果
+  useEffect(() => {
+    console.log('State update - characterTiers:', characterTiers);
+  }, [characterTiers]);
+  
   // テンプレート変更時にキャラクターの配置をリセット
   useEffect(() => {
     initializeTiers();
@@ -270,59 +275,46 @@ export default function TierMakerPage() {
     setCharacterTiers(initialTiers);
   };
   
-  // ドロップハンドラー
+  // ドロップハンドラー - 完全に書き直し、シンプルで信頼性の高い実装
   const handleDrop = (characterId: string, targetTierId: string) => {
-    // コンソールログでデバッグ情報を出力
-    console.log(`--------- ドロップ処理開始 ---------`);
-    console.log(`移動キャラクター: ${characterId}, 対象Tier: ${targetTierId}`);
-    console.log('実行前のTier状態:', JSON.stringify(characterTiers));
+    console.log(`DROP: キャラクター ${characterId} を ${targetTierId} に移動します`);
     
-    // 現在のキャラクターがどのTierにいるかを確認
-    let currentTierId = '';
-    const tierEntries = Object.entries(characterTiers);
-    
-    for (const [tierId, charIds] of tierEntries) {
-      if (charIds.includes(characterId)) {
-        currentTierId = tierId;
-        break;
-      }
-    }
-    
-    console.log(`キャラクターの現在のTier: ${currentTierId}`);
-    
-    // 同じTierにドロップした場合は何もしない
-    if (currentTierId === targetTierId) {
-      console.log('同じTierなので変更なし - 処理終了');
-      return;
-    }
-    
-    // React 状態更新の関数形式を使用
-    setCharacterTiers(prevTiers => {
-      // 完全な新しいオブジェクトを作成
-      const newTiers = {...prevTiers};
+    setCharacterTiers(prev => {
+      // すべてのtierからこのキャラクターを削除した新しいオブジェクトを作成
+      const newState: Record<string, string[]> = {};
       
-      // 現在のTierからキャラクターを削除
-      if (currentTierId && newTiers[currentTierId]) {
-        console.log(`Tier ${currentTierId} から削除前:`, [...newTiers[currentTierId]]);
-        newTiers[currentTierId] = newTiers[currentTierId].filter(id => id !== characterId);
-        console.log(`Tier ${currentTierId} から削除後:`, [...newTiers[currentTierId]]);
+      // すべてのtierを処理してキャラクターを除外
+      let foundInTier = '';
+      Object.entries(prev).forEach(([tierId, charIds]) => {
+        // このtierにキャラクターがあるか確認
+        if (charIds.includes(characterId)) {
+          foundInTier = tierId;
+          // このキャラクター以外のものだけ保持
+          newState[tierId] = charIds.filter(id => id !== characterId);
+        } else {
+          // 変更なしで維持
+          newState[tierId] = [...charIds];
+        }
+      });
+      
+      console.log(`キャラクターは元々 ${foundInTier || 'どこにも見つからない'} にありました`);
+      
+      // 同じtierに移動する場合は早期リターン
+      if (foundInTier === targetTierId) {
+        console.log('同じTierへの移動なので、状態は変更しません');
+        return prev;
       }
       
-      // ターゲットTierが存在するか確認
-      if (!newTiers[targetTierId]) {
-        newTiers[targetTierId] = [];
-        console.log(`新規Tier ${targetTierId} を作成`);
+      // ターゲットtierが存在することを確認
+      if (!newState[targetTierId]) {
+        newState[targetTierId] = [];
       }
       
-      // ターゲットTierにキャラクターを追加
-      console.log(`Tier ${targetTierId} に追加前:`, [...newTiers[targetTierId]]);
-      newTiers[targetTierId] = [...newTiers[targetTierId], characterId];
-      console.log(`Tier ${targetTierId} に追加後:`, [...newTiers[targetTierId]]);
+      // ターゲットtierに追加
+      newState[targetTierId] = [...newState[targetTierId], characterId];
       
-      console.log('最終的なTier状態:', JSON.stringify(newTiers));
-      console.log(`--------- ドロップ処理終了 ---------`);
-      
-      return newTiers;
+      console.log('新しい状態:', newState);
+      return newState;
     });
   };
   
