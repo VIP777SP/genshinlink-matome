@@ -268,33 +268,50 @@ export default function TierMakerPage() {
   
   // ドロップハンドラー
   const handleDrop = (characterId: string, targetTierId: string) => {
+    // コンソールログでデバッグ情報を出力
+    console.log(`Moving character ${characterId} to tier ${targetTierId}`);
+    console.log('Current tiers state:', characterTiers);
+    
     // 現在のTierからキャラクターを削除
     const updatedTiers = { ...characterTiers };
     
     // キャラクターが現在どのTierにいるか確認
     let currentTierId = '';
     Object.keys(updatedTiers).forEach(tierId => {
-      if (updatedTiers[tierId].includes(characterId)) {
+      if (updatedTiers[tierId] && updatedTiers[tierId].includes(characterId)) {
         currentTierId = tierId;
       }
     });
     
+    console.log(`Character is currently in tier: ${currentTierId}`);
+    
     // 同じTierにドロップした場合は何もしない
-    if (currentTierId === targetTierId) return;
+    if (currentTierId === targetTierId) {
+      console.log('Same tier, no changes needed');
+      return;
+    }
     
     // 現在のTierからキャラクターを削除
-    if (currentTierId) {
+    if (currentTierId && updatedTiers[currentTierId]) {
       updatedTiers[currentTierId] = updatedTiers[currentTierId].filter(id => id !== characterId);
+      console.log(`Removed from tier ${currentTierId}, remaining:`, updatedTiers[currentTierId]);
     }
     
     // ターゲットTierが存在するか確認し、存在しない場合は初期化
     if (!updatedTiers[targetTierId]) {
       updatedTiers[targetTierId] = [];
+      console.log(`Created new tier ${targetTierId}`);
     }
     
-    // ターゲットTierにキャラクターを追加
-    updatedTiers[targetTierId] = [...updatedTiers[targetTierId], characterId];
+    // ターゲットTierにキャラクターを追加（スプレッド演算子で確実に新しい配列を作成）
+    const updatedTargetTier = [...updatedTiers[targetTierId]];
+    updatedTargetTier.push(characterId);
+    updatedTiers[targetTierId] = updatedTargetTier;
     
+    console.log(`Added to tier ${targetTierId}, now contains:`, updatedTiers[targetTierId]);
+    console.log('Updated tiers state:', updatedTiers);
+    
+    // 状態を更新
     setCharacterTiers(updatedTiers);
   };
   
