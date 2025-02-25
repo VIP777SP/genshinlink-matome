@@ -52,13 +52,34 @@ export function SoundProvider({ children }: { children: ReactNode }) {
 
       // 音声ファイルを読み込み
       const loadedSounds: Record<SoundType, HTMLAudioElement | null> = {
-        'hover': new Audio('/sounds/hover.mp3'),
-        'click': new Audio('/sounds/click.mp3'),
-        'typing': new Audio('/sounds/typing.mp3'),
-        'favorite-add': new Audio('/sounds/favorite-add.mp3'),
-        'favorite-remove': new Audio('/sounds/favorite-remove.mp3'),
-        'theme-toggle': new Audio('/sounds/theme-toggle.mp3'),
+        'hover': null,
+        'click': null,
+        'typing': null,
+        'favorite-add': null,
+        'favorite-remove': null,
+        'theme-toggle': null,
       };
+
+      try {
+        // 安全に音声ファイルを読み込む
+        const soundTypes: SoundType[] = ['hover', 'click', 'typing', 'favorite-add', 'favorite-remove', 'theme-toggle'];
+        
+        soundTypes.forEach(type => {
+          try {
+            loadedSounds[type] = new Audio(`/sounds/${type}.mp3`);
+            // 音声ファイルの読み込みエラーをハンドリング
+            loadedSounds[type]?.addEventListener('error', () => {
+              console.warn(`音声ファイルの読み込みに失敗しました: ${type}.mp3`);
+              loadedSounds[type] = null;
+            });
+          } catch (e) {
+            console.warn(`音声の初期化に失敗しました: ${type}`, e);
+            loadedSounds[type] = null;
+          }
+        });
+      } catch (e) {
+        console.warn('音声の初期化に失敗しました', e);
+      }
 
       // 音量を設定
       Object.values(loadedSounds).forEach((sound) => {
@@ -84,7 +105,6 @@ export function SoundProvider({ children }: { children: ReactNode }) {
         }
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settings, initialized, sounds]);
 
   // サウンドの有効/無効を切り替え
@@ -101,10 +121,14 @@ export function SoundProvider({ children }: { children: ReactNode }) {
   const playSound = (type: SoundType) => {
     if (!settings.enabled || !sounds[type]) return;
 
-    const sound = sounds[type];
-    if (sound) {
-      sound.currentTime = 0;
-      sound.play().catch(e => console.log('Audio play failed:', e));
+    try {
+      const sound = sounds[type];
+      if (sound) {
+        sound.currentTime = 0;
+        sound.play().catch(e => console.warn('Audio play failed:', e));
+      }
+    } catch (e) {
+      console.warn(`音声の再生に失敗しました: ${type}`, e);
     }
   };
 
