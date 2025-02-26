@@ -135,75 +135,101 @@ const weaponIcons: Record<WeaponType, string> = {
   catalyst: 'fa-book-sparkles'
 };
 
-export default function CharactersPage() {
-  const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
-  const [filters, setFilters] = useState({
-    element: 'all',
-    weapon: 'all',
-    rarity: 'all',
-    region: 'all'
-  });
+// C2R1前提のティア表
+const tiersC2R1: TierDefinition[] = [
+  {
+    rank: 'SS',
+    name: '最強ランク',
+    description: 'C2・専用武器R1で圧倒的性能を持ち、メタを支配するキャラクター。どんなパーティでも主力として活躍できる。',
+    color: 'bg-red-600',
+    characters: [
+      characters.find(c => c.id === 'raiden-shogun')!,
+      characters.find(c => c.id === 'nahida')!,
+      characters.find(c => c.id === 'hutao')!,
+    ]
+  },
+  {
+    rank: 'S',
+    name: '超強力ランク',
+    description: 'C2・専用武器R1で非常に強力な性能を発揮し、ほとんどのコンテンツで活躍できるキャラクター。',
+    color: 'bg-orange-500',
+    characters: [
+      characters.find(c => c.id === 'ayaka')!,
+      characters.find(c => c.id === 'ganyu')!,
+      characters.find(c => c.id === 'kazuha')!,
+    ]
+  },
+  {
+    rank: 'A',
+    name: '強力ランク',
+    description: 'C2・専用武器R1で十分な性能を発揮し、特定の役割で優れた活躍をするキャラクター。',
+    color: 'bg-amber-500',
+    characters: [
+      characters.find(c => c.id === 'zhongli')!,
+      characters.find(c => c.id === 'xiangling')!,
+    ]
+  },
+  {
+    rank: 'B',
+    name: '平均ランク',
+    description: 'C2・専用武器R1でも一般的な性能を持ち、特定のパーティ編成や状況で活躍できるキャラクター。',
+    color: 'bg-green-600',
+    characters: [
+      characters.find(c => c.id === 'xingqiu')!,
+    ]
+  },
+  {
+    rank: 'C',
+    name: '改善待ちランク',
+    description: 'C2・専用武器R1でもより上位の凸数か高精錬が必要なキャラクター。',
+    color: 'bg-blue-600',
+    characters: [
+      characters.find(c => c.id === 'bennett')!,
+    ]
+  },
+];
+
+export default function CharacterTierPage() {
+  const [tierMode, setTierMode] = useState<'c0' | 'c2r1'>('c0');
   const { playSound } = useSound();
 
-  // フィルター項目とユニークな値を取得
-  const elements = ['all', ...new Set(characters.map(char => char.element))];
-  const weapons = ['all', ...new Set(characters.map(char => char.weapon))];
-  const rarities = ['all', ...new Set(characters.map(char => char.rarity.toString()))];
-  const regions = ['all', ...new Set(characters.map(char => char.region))];
+  // 使用するティア表を決定
+  const currentTiers = tierMode === 'c0' ? tiersC0 : tiersC2R1;
 
-  // フィルター適用された結果
-  const filteredCharacters = characters.filter(char => {
-    return (
-      (filters.element === 'all' || char.element === filters.element) &&
-      (filters.weapon === 'all' || char.weapon === filters.weapon) &&
-      (filters.rarity === 'all' || char.rarity.toString() === filters.rarity) &&
-      (filters.region === 'all' || char.region === filters.region)
-    );
-  });
-
-  // フィルター変更ハンドラー
-  const handleFilterChange = (filterType: string, value: string) => {
-    playSound('click');
-    setFilters(prev => ({ ...prev, [filterType]: value }));
+  // ティア内のキャラクターをアタッカーとサポーターに分割する関数
+  const getRoleSplit = (characters: Character[]) => {
+    return {
+      attackers: characters.filter(c => c.role === 'attacker'),
+      supporters: characters.filter(c => c.role === 'supporter')
+    };
   };
 
-  // キャラクター選択ハンドラー
-  const handleCharacterSelect = (char: Character) => {
+  // モード切り替えハンドラー
+  const handleModeChange = (mode: 'c0' | 'c2r1') => {
     playSound('click');
-    setSelectedCharacter(char);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTierMode(mode);
   };
 
   return (
     <main className="max-w-6xl mx-auto relative">
-      {/* 背景装飾パターン */}
+      {/* 背景装飾 */}
       <div className="absolute inset-0 -z-10 opacity-[0.03] dark:opacity-[0.02] pointer-events-none overflow-hidden">
-        {/* 直接SVGパターンを描画 */}
         <svg width="100%" height="100%" className="absolute inset-0">
           <defs>
-            <pattern id="genshin-pattern-characters" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
-              {/* 元素記号：風 */}
+            <pattern id="genshin-pattern-tier" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
               <path d="M20,20 C25,15 35,15 40,20 C45,25 45,35 40,40 C35,45 25,45 20,40 C15,35 15,25 20,20 Z" 
-                   fill="none" stroke="#D4AF37" strokeWidth="1" opacity="0.6"/>
-              
-              {/* 元素記号：岩 */}
+                  fill="none" stroke="#D4AF37" strokeWidth="1" opacity="0.6"/>
               <path d="M70,20 L90,20 L80,40 Z" 
-                   fill="none" stroke="#D4AF37" strokeWidth="1" opacity="0.6"/>
-              
-              {/* 元素記号：雷 */}
+                  fill="none" stroke="#D4AF37" strokeWidth="1" opacity="0.6"/>
               <path d="M20,70 L25,80 L30,70 L35,90 L20,70" 
-                   fill="none" stroke="#D4AF37" strokeWidth="1" opacity="0.6"/>
-              
-              {/* 元素記号：氷 */}
+                  fill="none" stroke="#D4AF37" strokeWidth="1" opacity="0.6"/>
               <path d="M70,70 L90,70 M80,60 L80,80 M75,65 L85,75 M75,75 L85,65" 
-                   fill="none" stroke="#D4AF37" strokeWidth="1" opacity="0.6"/>
-              
-              {/* 装飾的な円形 */}
+                  fill="none" stroke="#D4AF37" strokeWidth="1" opacity="0.6"/>
               <circle cx="50" cy="50" r="20" fill="none" stroke="#D4AF37" strokeWidth="0.5" opacity="0.4"/>
               <circle cx="50" cy="50" r="25" fill="none" stroke="#D4AF37" strokeWidth="0.3" opacity="0.3"/>
             </pattern>
           </defs>
-          <rect width="100%" height="100%" fill="url(#genshin-pattern-characters)"/>
+          <rect width="100%" height="100%" fill="url(#genshin-pattern-tier)"/>
         </svg>
         
         {/* カラフルなグラデーションの円 */}
@@ -214,250 +240,220 @@ export default function CharactersPage() {
 
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-3">
-          {/* SVGロゴを直接描画 */}
+          {/* SVGロゴ */}
           <div className="relative w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0">
             <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
-              {/* 外側円 */}
               <circle cx="50" cy="50" r="48" fill="none" stroke="#FFB13B" strokeWidth="2" opacity="0.9"/>
-              
-              {/* 内側円 */}
               <circle cx="50" cy="50" r="40" fill="none" stroke="#FFB13B" strokeWidth="1.5" opacity="0.7"/>
-              
-              {/* 十字の星模様 */}
               <path d="M50,10 L50,90 M10,50 L90,50 M25,25 L75,75 M25,75 L75,25" 
                     stroke="#FFB13B" strokeWidth="1.5" opacity="0.8" strokeLinecap="round"/>
-              
-              {/* 装飾的な円 */}
               <circle cx="50" cy="50" r="20" fill="none" stroke="#FFB13B" strokeWidth="1" opacity="0.6"/>
-              
-              {/* 中央のシンボル */}
               <circle cx="50" cy="50" r="10" fill="#FFB13B" opacity="0.8"/>
               <circle cx="50" cy="50" r="6" fill="#FFF5E6" opacity="0.9"/>
             </svg>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-amber-700 dark:text-amber-500 drop-shadow-sm">
-            【キャラクター図鑑】
+            【最強キャラティア】
           </h1>
         </div>
         <FavoriteButton 
-          id="characters-page"
-          title="キャラクター図鑑"
-          url="/characters"
+          id="character-tier-page"
+          title="最強キャラティア"
+          url="/characters/tier"
           category="攻略情報"
         />
       </div>
 
       <p className="mb-6 text-lg text-gray-700 dark:text-gray-300">
-        原神の魅力的なキャラクターたちの情報をご紹介します。属性や武器タイプでフィルタリングできます。
+        原神における最強キャラクターのランキングをご紹介します。メタゲームの状況やアビスの環境に基づいて、各キャラクターの強さを評価しています。
+        定期的に更新されますので、最新の環境に合わせた編成を考える参考にしてください。
       </p>
 
-      {/* 選択されたキャラクターの詳細表示 */}
-      {selectedCharacter && (
-        <div className="mb-8 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-amber-200 dark:border-amber-900 animate-fadeIn">
-          <div className="flex justify-between mb-4">
-            <button 
-              onClick={() => {
-                setSelectedCharacter(null);
-                playSound('click');
-              }}
-              className="text-amber-600 dark:text-amber-500 hover:text-amber-800 dark:hover:text-amber-300"
-            >
-              <i className="fas fa-arrow-left mr-2"></i>戻る
-            </button>
-            <FavoriteButton 
-              id={`character-${selectedCharacter.id}`}
-              title={selectedCharacter.name}
-              url={`/characters?id=${selectedCharacter.id}`}
-              category="キャラクター"
-            />
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-1 flex justify-center">
-              <div className="relative w-60 h-72 overflow-hidden rounded-lg shadow-md">
-                <div className={`absolute inset-0 ${elementColors[selectedCharacter.element].bg} ${elementColors[selectedCharacter.element].darkBg} opacity-30`}></div>
-                <Image
-                  src={selectedCharacter.imageUrl}
-                  alt={selectedCharacter.name}
-                  width={240}
-                  height={288}
-                  className="object-cover"
-                />
-              </div>
-            </div>
-            
-            <div className="md:col-span-2">
-              <div className="flex items-center mb-2">
-                <h2 className="text-3xl font-bold text-gray-800 dark:text-white mr-3">{selectedCharacter.name}</h2>
-                <span className={`px-2 py-1 rounded ${elementColors[selectedCharacter.element].bg} ${elementColors[selectedCharacter.element].text} ${elementColors[selectedCharacter.element].darkBg} ${elementColors[selectedCharacter.element].darkText}`}>
-                  {selectedCharacter.element}
-                </span>
-              </div>
-              
-              <p className="text-xl text-amber-600 dark:text-amber-400 mb-4">{selectedCharacter.title}</p>
-              
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                  <h3 className="text-gray-600 dark:text-gray-400 mb-1">レアリティ</h3>
-                  <div className="text-amber-500">
-                    {[...Array(selectedCharacter.rarity)].map((_, i) => (
-                      <i key={i} className="fas fa-star mr-1"></i>
-                    ))}
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 className="text-gray-600 dark:text-gray-400 mb-1">武器タイプ</h3>
-                  <p className="flex items-center">
-                    <i className={`fas ${weaponIcons[selectedCharacter.weapon]} mr-2 text-amber-600 dark:text-amber-500`}></i>
-                    <span className="text-gray-800 dark:text-gray-200 capitalize">{selectedCharacter.weapon}</span>
-                  </p>
-                </div>
-                
-                <div>
-                  <h3 className="text-gray-600 dark:text-gray-400 mb-1">出身地域</h3>
-                  <p className="text-gray-800 dark:text-gray-200">{selectedCharacter.region}</p>
-                </div>
-              </div>
-              
-              <div>
-                <h3 className="text-gray-600 dark:text-gray-400 mb-2">キャラクター紹介</h3>
-                <p className="text-gray-800 dark:text-gray-200">{selectedCharacter.description}</p>
-              </div>
-            </div>
-          </div>
+      {/* 条件切り替えバー */}
+      <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm p-3 rounded-lg shadow-md border border-amber-200/40 dark:border-amber-800/30 mb-6">
+        <div className="flex justify-center gap-4">
+          <button
+            onClick={() => handleModeChange('c0')}
+            className={`px-4 py-2 rounded-lg transition-colors ${
+              tierMode === 'c0'
+                ? 'bg-amber-600 text-white'
+                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-amber-100 dark:hover:bg-amber-900/30'
+            }`}
+          >
+            <span className="font-medium">C0・星4武器前提</span>
+          </button>
+          <button
+            onClick={() => handleModeChange('c2r1')}
+            className={`px-4 py-2 rounded-lg transition-colors ${
+              tierMode === 'c2r1'
+                ? 'bg-amber-600 text-white'
+                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-amber-100 dark:hover:bg-amber-900/30'
+            }`}
+          >
+            <span className="font-medium">C2・専用武器R1条件</span>
+          </button>
         </div>
-      )}
-
-      {/* フィルター */}
-      <div className="mb-6 p-4 bg-amber-50 dark:bg-gray-900 rounded-lg">
-        <h2 className="text-xl font-semibold mb-4 text-amber-800 dark:text-amber-400">キャラクターを絞り込む</h2>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* 元素フィルター */}
-          <div>
-            <label className="block text-gray-700 dark:text-gray-300 mb-2">元素</label>
-            <select
-              value={filters.element}
-              onChange={(e) => handleFilterChange('element', e.target.value)}
-              className="w-full p-2 border border-amber-300 dark:border-amber-700 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200"
-            >
-              {elements.map((element) => (
-                <option key={element} value={element}>
-                  {element === 'all' ? 'すべての元素' : element}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          {/* 武器フィルター */}
-          <div>
-            <label className="block text-gray-700 dark:text-gray-300 mb-2">武器タイプ</label>
-            <select
-              value={filters.weapon}
-              onChange={(e) => handleFilterChange('weapon', e.target.value)}
-              className="w-full p-2 border border-amber-300 dark:border-amber-700 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200"
-            >
-              {weapons.map((weapon) => (
-                <option key={weapon} value={weapon}>
-                  {weapon === 'all' ? 'すべての武器' : weapon}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          {/* レアリティフィルター */}
-          <div>
-            <label className="block text-gray-700 dark:text-gray-300 mb-2">レアリティ</label>
-            <select
-              value={filters.rarity}
-              onChange={(e) => handleFilterChange('rarity', e.target.value)}
-              className="w-full p-2 border border-amber-300 dark:border-amber-700 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200"
-            >
-              {rarities.map((rarity) => (
-                <option key={rarity} value={rarity}>
-                  {rarity === 'all' ? 'すべてのレアリティ' : `${rarity}★`}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          {/* 地域フィルター */}
-          <div>
-            <label className="block text-gray-700 dark:text-gray-300 mb-2">出身地域</label>
-            <select
-              value={filters.region}
-              onChange={(e) => handleFilterChange('region', e.target.value)}
-              className="w-full p-2 border border-amber-300 dark:border-amber-700 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200"
-            >
-              {regions.map((region) => (
-                <option key={region} value={region}>
-                  {region === 'all' ? 'すべての地域' : region}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+        <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-2">
+          {tierMode === 'c0' 
+            ? '無凸・星4武器装備を前提としたキャラクターの評価です' 
+            : '2凸・専用星5武器を装備した場合のキャラクターの評価です'}
+        </p>
       </div>
 
-      {/* キャラクターカードグリッド */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {filteredCharacters.length === 0 ? (
-          <div className="col-span-full text-center py-12 text-gray-500 dark:text-gray-400">
-            <i className="fas fa-search text-4xl mb-4"></i>
-            <p>条件に一致するキャラクターが見つかりませんでした。</p>
-            <button
-              onClick={() => {
-                setFilters({ element: 'all', weapon: 'all', rarity: 'all', region: 'all' });
-                playSound('click');
-              }}
-              className="mt-4 px-4 py-2 bg-amber-600 text-white rounded hover:bg-amber-700 transition-colors"
-            >
-              フィルターをリセット
-            </button>
-          </div>
-        ) : (
-          filteredCharacters.map((char) => (
-            <div
-              key={char.id}
-              onClick={() => handleCharacterSelect(char)}
-              className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-lg border border-amber-100 dark:border-amber-900 transition-all duration-300 transform hover:scale-105 cursor-pointer"
-            >
-              <div className="relative h-48">
-                <div className={`absolute inset-0 ${elementColors[char.element].bg} ${elementColors[char.element].darkBg} opacity-30`}></div>
-                <Image
-                  src={char.imageUrl}
-                  alt={char.name}
-                  fill
-                  className="object-cover object-top"
-                />
-                <div className="absolute top-0 right-0 m-2">
-                  <span className={`p-1 text-xs rounded ${elementColors[char.element].bg} ${elementColors[char.element].text} ${elementColors[char.element].darkBg} ${elementColors[char.element].darkText}`}>
-                    {char.element}
-                  </span>
+      {/* ティア一覧 */}
+      <div className="space-y-8 mb-8">
+        {currentTiers.map((tier) => {
+          const { attackers, supporters } = getRoleSplit(tier.characters);
+          return (
+            <div key={tier.rank} className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-amber-200/40 dark:border-amber-800/30">
+              {/* ティアヘッダー */}
+              <div className={`${tier.color} text-white p-4`}>
+                <div className="flex items-center">
+                  <div className="text-3xl font-bold mr-3">{tier.rank}</div>
+                  <div className="text-xl font-medium">{tier.name}</div>
                 </div>
-                <div className="absolute bottom-0 right-0 m-2 text-amber-500">
-                  {[...Array(char.rarity)].map((_, i) => (
-                    <i key={i} className="fas fa-star text-xs"></i>
-                  ))}
-                </div>
+                <p className="mt-1 text-white/90 text-sm">{tier.description}</p>
               </div>
               
+              {/* キャラクター一覧（2列レイアウト） */}
               <div className="p-4">
-                <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-1">{char.name}</h3>
-                <p className="text-sm text-amber-700 dark:text-amber-400 mb-2">{char.title}</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600 dark:text-gray-400 text-sm">{char.region}</span>
-                  <i className={`fas ${weaponIcons[char.weapon]} text-gray-600 dark:text-gray-400`}></i>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* アタッカー列 */}
+                  <div>
+                    <h3 className="font-bold text-amber-700 dark:text-amber-400 mb-3 flex items-center">
+                      <i className="fas fa-swords mr-2"></i>アタッカー
+                    </h3>
+                    <div className="flex flex-wrap gap-3">
+                      {attackers.length > 0 ? attackers.map((character) => (
+                        <div 
+                          key={character.id}
+                          className="relative bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-lg border border-amber-100 dark:border-amber-900/30 w-20 sm:w-24 transition-all duration-300 hover:-translate-y-1"
+                        >
+                          <div className="relative h-20 sm:h-24">
+                            <div className={`absolute inset-0 ${elementColors[character.element].bg} ${elementColors[character.element].darkBg} opacity-30`}></div>
+                            <Image
+                              src={character.imageUrl}
+                              alt={character.name}
+                              fill
+                              className="object-cover object-top"
+                            />
+                            <div className="absolute top-0 right-0 m-1">
+                              <span className={`flex items-center justify-center w-5 h-5 rounded-full ${elementColors[character.element].bg} ${elementColors[character.element].darkBg}`}>
+                                <span className={`text-xs ${elementColors[character.element].text} ${elementColors[character.element].darkText}`}>
+                                  {character.element.charAt(0).toUpperCase()}
+                                </span>
+                              </span>
+                            </div>
+                            <div className="absolute bottom-0 left-0 right-0 bg-black/60 py-1 px-2">
+                              <p className="text-white text-xs text-center font-medium truncate">{character.name}</p>
+                            </div>
+                          </div>
+                        </div>
+                      )) : (
+                        <p className="text-gray-500 dark:text-gray-400 text-sm italic">このティアにはアタッカーがいません</p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* サポーター列 */}
+                  <div>
+                    <h3 className="font-bold text-amber-700 dark:text-amber-400 mb-3 flex items-center">
+                      <i className="fas fa-hands-helping mr-2"></i>サポーター
+                    </h3>
+                    <div className="flex flex-wrap gap-3">
+                      {supporters.length > 0 ? supporters.map((character) => (
+                        <div 
+                          key={character.id}
+                          className="relative bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-lg border border-amber-100 dark:border-amber-900/30 w-20 sm:w-24 transition-all duration-300 hover:-translate-y-1"
+                        >
+                          <div className="relative h-20 sm:h-24">
+                            <div className={`absolute inset-0 ${elementColors[character.element].bg} ${elementColors[character.element].darkBg} opacity-30`}></div>
+                            <Image
+                              src={character.imageUrl}
+                              alt={character.name}
+                              fill
+                              className="object-cover object-top"
+                            />
+                            <div className="absolute top-0 right-0 m-1">
+                              <span className={`flex items-center justify-center w-5 h-5 rounded-full ${elementColors[character.element].bg} ${elementColors[character.element].darkBg}`}>
+                                <span className={`text-xs ${elementColors[character.element].text} ${elementColors[character.element].darkText}`}>
+                                  {character.element.charAt(0).toUpperCase()}
+                                </span>
+                              </span>
+                            </div>
+                            <div className="absolute bottom-0 left-0 right-0 bg-black/60 py-1 px-2">
+                              <p className="text-white text-xs text-center font-medium truncate">{character.name}</p>
+                            </div>
+                          </div>
+                        </div>
+                      )) : (
+                        <p className="text-gray-500 dark:text-gray-400 text-sm italic">このティアにはサポーターがいません</p>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          ))
-        )}
+          );
+        })}
+      </div>
+      
+      {/* ティア評価ポリシー */}
+      <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-amber-200/40 dark:border-amber-800/30 mb-8">
+        <h2 className="text-2xl font-bold mb-4 text-amber-700 dark:text-amber-400 flex items-center">
+          <i className="fas fa-balance-scale mr-2 text-amber-600 dark:text-amber-500"></i>
+          ティア評価ポリシー
+        </h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h3 className="text-lg font-semibold mb-3 text-amber-700 dark:text-amber-400">
+              評価基準
+            </h3>
+            <ul className="space-y-2 text-gray-700 dark:text-gray-300">
+              <li className="flex items-start">
+                <i className="fas fa-check-circle text-amber-600 dark:text-amber-500 mt-1 mr-2"></i>
+                <span>深境螺旋（アビス）での活躍度</span>
+              </li>
+              <li className="flex items-start">
+                <i className="fas fa-check-circle text-amber-600 dark:text-amber-500 mt-1 mr-2"></i>
+                <span>汎用性と特化性のバランス</span>
+              </li>
+              <li className="flex items-start">
+                <i className="fas fa-check-circle text-amber-600 dark:text-amber-500 mt-1 mr-2"></i>
+                <span>チーム編成における役割と貢献度</span>
+              </li>
+              <li className="flex items-start">
+                <i className="fas fa-check-circle text-amber-600 dark:text-amber-500 mt-1 mr-2"></i>
+                <span>凸数と武器による性能差</span>
+              </li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 className="text-lg font-semibold mb-3 text-amber-700 dark:text-amber-400">
+              注意事項
+            </h3>
+            <ul className="space-y-2 text-gray-700 dark:text-gray-300">
+              <li className="flex items-start">
+                <i className="fas fa-exclamation-circle text-amber-600 dark:text-amber-500 mt-1 mr-2"></i>
+                <span>このティアリストは一般的な目安であり、プレイスタイルや好みによって評価は異なります。</span>
+              </li>
+              <li className="flex items-start">
+                <i className="fas fa-exclamation-circle text-amber-600 dark:text-amber-500 mt-1 mr-2"></i>
+                <span>アップデートによってバランス調整が行われると評価が変わる場合があります。</span>
+              </li>
+              <li className="flex items-start">
+                <i className="fas fa-exclamation-circle text-amber-600 dark:text-amber-500 mt-1 mr-2"></i>
+                <span>下位ティアのキャラクターでも特定のコンテンツや状況では非常に強力な場合があります。</span>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
       
       {/* コメントセクション */}
-      <CommentSection pageId="characters" />
+      <CommentSection pageId="character-tier" />
     </main>
   );
 } 

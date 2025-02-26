@@ -109,15 +109,6 @@ const artifactSets: ArtifactSet[] = [
   }
 ];
 
-// 聖遺物部位の名前マッピング
-const pieceNames = {
-  flower: '生の花',
-  plume: '死の羽',
-  sands: '時の砂',
-  goblet: '空の杯',
-  circlet: '理の冠'
-};
-
 export default function ArtifactsPage() {
   const [selectedSet, setSelectedSet] = useState<ArtifactSet | null>(null);
   const [filter, setFilter] = useState<string>('all');

@@ -34,6 +34,7 @@ interface Character {
   region: string;
   description: string;
   imageUrl: string;
+  iconUrl: string;
 }
 
 // キャラクターデータ
@@ -47,7 +48,8 @@ const characters: Character[] = [
     rarity: 5,
     region: '稲妻',
     description: '稲妻を統治する雷神。永遠を追求し、「無想の一太刀」で敵を切り裂く。',
-    imageUrl: '/images/characters/raiden.png'
+    imageUrl: '/images/characters/raiden.png',
+    iconUrl: '/images/characters/raiden.png'
   },
   {
     id: 'kazuha',
@@ -58,7 +60,8 @@ const characters: Character[] = [
     rarity: 5,
     region: '稲妻',
     description: '稲妻出身の侍。詩的な心を持ち、風の力を操る剣士。',
-    imageUrl: '/images/characters/kazuha.png'
+    imageUrl: '/images/characters/kazuha.png',
+    iconUrl: '/images/characters/kazuha.png'
   },
   {
     id: 'nahida',
@@ -69,7 +72,8 @@ const characters: Character[] = [
     rarity: 5,
     region: 'スメール',
     description: 'スメールの草神。知恵の化身であり、夢の世界を自在に操る。',
-    imageUrl: '/images/characters/nahida.png'
+    imageUrl: '/images/characters/nahida.png',
+    iconUrl: '/images/characters/nahida.png'
   },
   {
     id: 'hutao',
@@ -80,7 +84,8 @@ const characters: Character[] = [
     rarity: 5,
     region: '璃月',
     description: '璃月の葬儀社「往生堂」の若き堂主。死と生の境界を行き来する力を持つ。',
-    imageUrl: '/images/characters/hutao.png'
+    imageUrl: '/images/characters/hutao.png',
+    iconUrl: '/images/characters/hutao.png'
   },
   {
     id: 'ayaka',
@@ -91,7 +96,8 @@ const characters: Character[] = [
     rarity: 5,
     region: '稲妻',
     description: '稲妻の名家「神里家」の長女。優美な剣術と氷の力で敵を翻弄する。',
-    imageUrl: '/images/characters/ayaka.png'
+    imageUrl: '/images/characters/ayaka.png',
+    iconUrl: '/images/characters/ayaka.png'
   }
 ];
 
@@ -285,7 +291,7 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
       style={{ opacity: isDragging ? 0.5 : 1 }}
     >
       <Image
-        src={character.imageUrl}
+        src={character.iconUrl}
         alt={character.name}
         fill
         className="object-cover"
@@ -398,6 +404,9 @@ const WeaponTierRow = React.memo(({ tier, weaponsInTier, onDrop }: WeaponTierRow
   );
 });
 
+// displayNameを追加
+WeaponTierRow.displayName = 'WeaponTierRow';
+
 // Tier行コンポーネント - メモ化してパフォーマンスを向上
 const TierRow = React.memo(({ tier, charactersInTier, onDrop }: TierRowProps) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -440,6 +449,9 @@ const TierRow = React.memo(({ tier, charactersInTier, onDrop }: TierRowProps) =>
     </div>
   );
 });
+
+// displayNameを追加
+TierRow.displayName = 'TierRow';
 
 // メインTiermakerページコンポーネント
 export default function TierMakerPage() {
@@ -502,15 +514,47 @@ export default function TierMakerPage() {
     console.log('State update - characterTiers:', characterTiers);
   }, [characterTiers]);
   
+  // Tierの初期化 - useCallbackでメモ化
+  const initializeTiers = React.useCallback(() => {
+    const initialTiers: Record<string, string[]> = {};
+    
+    // 各Tierに空の配列を初期化
+    selectedTemplate.tiers.forEach(tier => {
+      initialTiers[tier.id] = [];
+    });
+    
+    // 未割り当てキャラクターのTierを追加
+    initialTiers['unassigned'] = characters.map(char => char.id);
+    
+    console.log('Tiers初期化:', initialTiers);
+    setCharacterTiers(initialTiers);
+  }, [selectedTemplate]);
+  
   // テンプレート変更時にキャラクターの配置をリセット
   useEffect(() => {
     initializeTiers();
-  }, [selectedTemplate]);
+  }, [initializeTiers]);
+  
+  // 武器Tierの初期化 - useCallbackでメモ化
+  const initializeWeaponTiers = React.useCallback(() => {
+    const initialWeaponTiers: Record<string, string[]> = {};
+    
+    // 各Tierに空の配列を初期化
+    selectedWeaponTemplate.tiers.forEach(tier => {
+      initialWeaponTiers[tier.id] = [];
+    });
+    
+    // 未割り当て武器のTierを追加
+    initialWeaponTiers['weapon-unassigned'] = weapons.map(weapon => weapon.id);
+    
+    console.log('武器Tiers初期化:', initialWeaponTiers);
+    setWeaponTiers(initialWeaponTiers);
+  }, [selectedWeaponTemplate]);
   
   // 武器テンプレート変更時に武器の配置をリセット
   useEffect(() => {
     initializeWeaponTiers();
-  }, [selectedWeaponTemplate]);
+  }, [initializeWeaponTiers]);
   
   // カスタムテンプレートの初期化
   useEffect(() => {
@@ -527,38 +571,6 @@ export default function TierMakerPage() {
       setCustomWeaponTemplate(JSON.parse(JSON.stringify(selectedWeaponTemplate)));
     }
   }, [isWeaponEditMode, customWeaponTemplate, selectedWeaponTemplate]);
-  
-  // Tierの初期化
-  const initializeTiers = () => {
-    const initialTiers: Record<string, string[]> = {};
-    
-    // 各Tierに空の配列を初期化
-    selectedTemplate.tiers.forEach(tier => {
-      initialTiers[tier.id] = [];
-    });
-    
-    // 未割り当てキャラクターのTierを追加
-    initialTiers['unassigned'] = characters.map(char => char.id);
-    
-    console.log('Tiers初期化:', initialTiers);
-    setCharacterTiers(initialTiers);
-  };
-  
-  // 武器Tierの初期化
-  const initializeWeaponTiers = () => {
-    const initialWeaponTiers: Record<string, string[]> = {};
-    
-    // 各Tierに空の配列を初期化
-    selectedWeaponTemplate.tiers.forEach(tier => {
-      initialWeaponTiers[tier.id] = [];
-    });
-    
-    // 未割り当て武器のTierを追加
-    initialWeaponTiers['weapon-unassigned'] = weapons.map(weapon => weapon.id);
-    
-    console.log('武器Tiers初期化:', initialWeaponTiers);
-    setWeaponTiers(initialWeaponTiers);
-  };
   
   // テンプレート名の変更ハンドラ
   const handleTemplateNameChange = (newName: string) => {

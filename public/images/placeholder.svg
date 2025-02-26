@@ -1,0 +1,8 @@
+<svg width="300" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="300" height="200" fill="#f0f0f0" />
+  <rect x="40" y="40" width="220" height="120" rx="8" fill="#e0e0e0" stroke="#d0d0d0" stroke-width="2" />
+  <path d="M135,90 L165,90 L150,65 Z" fill="#b0b0b0" />
+  <circle cx="180" cy="75" r="10" fill="#b0b0b0" />
+  <path d="M110,85 L140,120 L80,120 Z" fill="#b0b0b0" />
+  <text x="150" y="150" font-family="Arial" font-size="14" text-anchor="middle" fill="#808080">画像準備中</text>
+</svg> 
