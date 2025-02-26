@@ -138,75 +138,16 @@ export default function CharacterGuidePage() {
     notFound();
   }
   
-  // このキャラクターの評価（サンプル）
-  // 実際のアプリでは、このデータはAPIやcharacterオブジェクトから取得する
+  // characterGuides からガイドデータを取得
+  const guide = characterGuides[characterId] || {};
+
+  // キャラクター評価（ガイドデータから取得または以下のデフォルト値を使用）
   const characterRating: CharacterRating = {
-    attacker: character.id === 'raiden-shogun' ? 4.5 : 3,
-    supporter: character.id === 'raiden-shogun' ? 5 : 4,
-    convenience: character.id === 'raiden-shogun' ? 4 : 3.5
+    attacker: character.role === 'attacker' ? 4 : 3,
+    supporter: character.role === 'supporter' ? 4 : 3,
+    convenience: 3.5
   };
   
-  // このキャラクターに適した聖遺物セット（サンプルデータ）
-  const artifactSets: ArtifactSet[] = [
-    {
-      id: 'emblem-of-severed-fate',
-      name: '絶縁の旗印',
-      pieces: [4],
-      bonus: ['元素チャージ効率+20%', '元素爆発のダメージが、元素チャージ効率の25%分アップする。'],
-      priority: 'best'
-    },
-    {
-      id: 'thundering-fury',
-      name: '雷のような怒り',
-      pieces: [2],
-      bonus: ['雷元素ダメージ+15%'],
-      priority: 'good'
-    },
-    {
-      id: 'noblesse-oblige',
-      name: '旧貴族のしつけ',
-      pieces: [2],
-      bonus: ['元素爆発のダメージ+20%'],
-      priority: 'alternative'
-    }
-  ];
-  
-  // このキャラクターに適した武器（サンプルデータ）
-  const weapons: Weapon[] = [
-    {
-      id: 'engulfing-lightning',
-      name: '草薙の稲光',
-      rarity: 5,
-      imageUrl: '/images/weapons/engulfing-lightning.png', // 画像パスを/images/weaponsに変更
-      description: '雷電将軍の専用武器。元素チャージ効率をさらに高め、元素爆発のダメージを大幅に向上させる。',
-      priority: 'best'
-    },
-    {
-      id: 'the-catch',
-      name: '「漁獲」',
-      rarity: 4,
-      imageUrl: '/images/weapons/the-catch.png', // 画像パスを/images/weaponsに変更
-      description: 'イベント報酬の★4武器。元素爆発のダメージと会心率を向上させる効果があり、無課金でも入手可能。',
-      priority: 'good'
-    }
-  ];
-  
-  // おすすめパーティー構成（サンプルデータ）
-  const recommendedTeams: Team[] = [
-    {
-      id: 'national',
-      name: '雷電ナショナル',
-      characters: ['raiden-shogun', 'xiangling', 'xingqiu', 'bennett'],
-      description: '雷電将軍の元素爆発の強化と、香菱・行秋・ベネットの強力な元素反応を組み合わせた超火力パーティー。'
-    },
-    {
-      id: 'hypercarry',
-      name: '雷電ハイパーキャリー',
-      characters: ['raiden-shogun', 'kazuha', 'bennett', 'sara'],
-      description: '雷電将軍の元素爆発のダメージを最大限に高めるためのサポートキャラクターを揃えたパーティー。'
-    }
-  ];
-
   // 評価点を星表示に変換する関数
   const renderRatingStars = (rating: number) => {
     // 5点満点での評価を星5つで表現
@@ -234,9 +175,6 @@ export default function CharacterGuidePage() {
       </div>
     );
   };
-
-  // characterGuides からガイドデータを取得
-  const guide = characterGuides[characterId] || {};
 
   return (
     <main className="max-w-6xl mx-auto relative">
@@ -374,81 +312,26 @@ export default function CharacterGuidePage() {
               </div>
             </div>
             
-            {/* 育成方針（上に移動） */}
-            <div className="mb-4">
-              <h2 className="text-lg font-semibold text-amber-700 dark:text-amber-400 mb-2">
-                おすすめ育成方針
-              </h2>
-              <p className="text-gray-700 dark:text-gray-300">
-                {character.id === 'raiden-shogun' && '雷電将軍は元素爆発を軸にしたバーストDPSとして育成するのがおすすめです。元素チャージ効率を高めることで、爆発のダメージと回転率を上げましょう。また、雷元素共鳴を活かしたパーティ編成が特に効果的です。'}
-                {character.id !== 'raiden-shogun' && 'このキャラクターの育成方針はまだ準備中です。'}
-              </p>
-            </div>
-            
-            {/* 天賦優先順位 */}
-            <div className="mb-4">
-              <h2 className="text-lg font-semibold text-amber-700 dark:text-amber-400 mb-2">
-                おすすめ天賦優先順位
-              </h2>
-              <div className="flex items-center gap-3 mb-1">
-                <span className="px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 rounded-full text-sm">
-                  元素爆発 ＞ 元素スキル ＞ 通常攻撃
-                </span>
+            {/* 育成方針 */}
+            {guide.usage && guide.usage.intro && (
+              <div className="mb-4">
+                <h2 className="text-lg font-semibold text-amber-700 dark:text-amber-400 mb-2">
+                  おすすめ育成方針
+                </h2>
+                <p className="text-gray-700 dark:text-gray-300">
+                  {guide.usage.intro}
+                </p>
               </div>
-            </div>
+            )}
             
-            {/* 追加した武器情報 */}
-            <div className="mb-4">
-              <h2 className="text-lg font-semibold text-amber-700 dark:text-amber-400 mb-2">
-                おすすめ武器
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {weapons.map((weapon, index) => (
-                  <span key={index} className={`px-3 py-1 rounded-full text-sm ${
-                    weapon.priority === 'best' 
-                      ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 font-medium'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
-                  }`}>
-                    {weapon.name} {Array(weapon.rarity).fill('★').join('')}
-                  </span>
-                ))}
-              </div>
-            </div>
-            
-            {/* 追加した聖遺物情報 */}
-            <div className="mb-4">
-              <h2 className="text-lg font-semibold text-amber-700 dark:text-amber-400 mb-2">
-                おすすめ聖遺物
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {artifactSets.map((set, index) => (
-                  <span key={index} className={`px-3 py-1 rounded-full text-sm ${
-                    set.priority === 'best' 
-                      ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 font-medium'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
-                  }`}>
-                    {set.name} {set.pieces[0]}セット
-                  </span>
-                ))}
-              </div>
-              <div className="mt-2 text-gray-700 dark:text-gray-300 text-sm">
-                <span className="font-medium">推奨メインステータス: </span>
-                <span>砂=元素チャージ効率%, 杯=雷元素ダメージ%, 冠=会心率/会心ダメージ</span>
-              </div>
-            </div>
-            
-            {/* 追加したパーティ情報 */}
+            {/* キャラクター解説（サンプル） */}
             <div>
               <h2 className="text-lg font-semibold text-amber-700 dark:text-amber-400 mb-2">
-                おすすめパーティ
+                キャラクター解説
               </h2>
-              <div className="flex flex-wrap gap-2">
-                {recommendedTeams.map((team, index) => (
-                  <span key={index} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 rounded-full text-sm">
-                    {team.name}
-                  </span>
-                ))}
-              </div>
+              <p className="text-gray-700 dark:text-gray-300">
+                {character.description}
+              </p>
             </div>
           </div>
         </div>
@@ -612,7 +495,7 @@ export default function CharacterGuidePage() {
           </div>
         </div>
       )}
-
+      
       {/* キャラクターの使い方セクション */}
       {guide.usage && (
         <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-amber-200/40 dark:border-amber-800/30 mb-8 p-6">
@@ -795,7 +678,7 @@ export default function CharacterGuidePage() {
           </div>
         </div>
       )}
-      
+
       {/* 命の星座セクション */}
       {character.constellations && guide.constellationRatings && (
         <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-amber-200/40 dark:border-amber-800/30 mb-8 p-6">
