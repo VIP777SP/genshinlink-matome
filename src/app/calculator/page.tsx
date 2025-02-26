@@ -244,8 +244,12 @@ export default function CalculatorPage() {
       calc.requirements.forEach(req => {
         if (combinedRequirements[req.materialId]) {
           combinedRequirements[req.materialId].amount += req.amount;
-          if (req.totalAmount && combinedRequirements[req.materialId].totalAmount) {
-            combinedRequirements[req.materialId].totalAmount += req.totalAmount;
+          if (req.totalAmount) {
+            // totalAmountが存在しない場合は初期化
+            if (!combinedRequirements[req.materialId].totalAmount) {
+              combinedRequirements[req.materialId].totalAmount = 0;
+            }
+            combinedRequirements[req.materialId].totalAmount! += req.totalAmount;
           }
         } else {
           combinedRequirements[req.materialId] = { ...req };
