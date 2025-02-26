@@ -21,6 +21,7 @@ interface Weapon {
   subStat: string;
   passive: string;
   imageUrl: string;
+  iconUrl: string;
 }
 
 // キャラクター型の定義
@@ -691,7 +692,8 @@ const weapons: Weapon[] = [
     baseAtk: 48,
     subStat: '会心ダメージ',
     passive: '霧切の極意：元素ダメージバフ最大12%/24%/28%(3層)、元素スキル使用後+12%',
-    imageUrl: '/images/weapons/mistsplitter.png'
+    imageUrl: '/images/weapons/mistsplitter.png',
+    iconUrl: '/images/weapons/mistsplitter-icon.png'
   },
   {
     id: 'homa',
@@ -701,7 +703,8 @@ const weapons: Weapon[] = [
     baseAtk: 46,
     subStat: '会心ダメージ',
     passive: '無攬の従容：HP上限20%アップ、HP上限の0.8%分攻撃力アップ、HP50%以下で1.8%',
-    imageUrl: '/images/weapons/homa.png'
+    imageUrl: '/images/weapons/homa.png',
+    iconUrl: '/images/weapons/homa-icon.png'
   },
   {
     id: 'thundering_pulse',
@@ -711,7 +714,8 @@ const weapons: Weapon[] = [
     baseAtk: 46,
     subStat: '会心ダメージ',
     passive: '飛雷の巴紋：通常攻撃ダメージ最大40%アップ(3層)、攻撃力20%アップ',
-    imageUrl: '/images/weapons/thundering_pulse.png'
+    imageUrl: '/images/weapons/thundering_pulse.png',
+    iconUrl: '/images/weapons/thundering_pulse-icon.png'
   },
   {
     id: 'wolf_gravestone',
@@ -721,7 +725,8 @@ const weapons: Weapon[] = [
     baseAtk: 46,
     subStat: '攻撃力%',
     passive: '狼の渇望：攻撃力20%アップ、HP30%以下の敵を攻撃すると、チーム全員の攻撃力40%アップ',
-    imageUrl: '/images/weapons/wolf_gravestone.png'
+    imageUrl: '/images/weapons/wolf_gravestone.png',
+    iconUrl: '/images/weapons/wolf_gravestone-icon.png'
   },
   {
     id: 'lost_prayer',
@@ -731,7 +736,175 @@ const weapons: Weapon[] = [
     baseAtk: 46,
     subStat: '会心率',
     passive: '無辺際の祝詞：移動速度10%アップ、戦闘中4秒毎に元素ダメージ8%アップ(最大4層)',
-    imageUrl: '/images/weapons/lost_prayer.png'
+    imageUrl: '/images/weapons/lost_prayer.png',
+    iconUrl: '/images/weapons/lost_prayer-icon.png'
+  },
+  // 5★武器の追加データ
+  {
+    id: 'engulfing_lightning',
+    name: '草薙の稲光',
+    type: 'polearm',
+    rarity: 5,
+    baseAtk: 46,
+    subStat: '元素チャージ効率',
+    passive: '非時の夢・常世竈食：元素チャージ効率に基づいて攻撃力アップ(最大80%)、元素爆発後エネルギー回復速度アップ',
+    imageUrl: '/images/weapons/engulfing-lightning.png',
+    iconUrl: '/images/weapons/engulfing_lightning-icon.png'
+  },
+  {
+    id: 'aqua_simulacra',
+    name: '若水',
+    type: 'bow',
+    rarity: 5,
+    baseAtk: 44,
+    subStat: '会心ダメージ',
+    passive: '潜形の浪：HPが20%アップ、周囲に敵がいる時、全ダメージ20%アップ',
+    imageUrl: '/images/weapons/aqua-simulacra.png',
+    iconUrl: '/images/weapons/aqua_simulacra-icon.png'
+  },
+  {
+    id: 'jade_cutter',
+    name: '磐岩結緑',
+    type: 'sword',
+    rarity: 5,
+    baseAtk: 44,
+    subStat: '会心率',
+    passive: '護国の無垢：HP上限20%アップ、HP上限の1.2%分、攻撃力アップ',
+    imageUrl: '/images/weapons/jade-cutter.png',
+    iconUrl: '/images/weapons/jade_cutter-icon.png'
+  },
+  {
+    id: 'skyward_harp',
+    name: '天空の翼',
+    type: 'bow',
+    rarity: 5,
+    baseAtk: 48,
+    subStat: '会心率',
+    passive: '回響長天の歌：会心ダメージ20%アップ、攻撃時60%の確率で物理ダメージを追加',
+    imageUrl: '/images/weapons/skyward-harp.png',
+    iconUrl: '/images/weapons/skyward_harp-icon.png'
+  },
+  {
+    id: 'redhorn_stonethresher',
+    name: '赤角石塵滅砕',
+    type: 'claymore',
+    rarity: 5,
+    baseAtk: 44,
+    subStat: '会心ダメージ',
+    passive: '古き役目の残光：防御力40%アップ、通常攻撃と重撃のダメージは防御力の40%分アップ',
+    imageUrl: '/images/weapons/redhorn-stonethresher.png',
+    iconUrl: '/images/weapons/redhorn_stonethresher-icon.png'
+  },
+  // 4★武器
+  {
+    id: 'widsith',
+    name: '流浪楽章',
+    type: 'catalyst',
+    rarity: 4,
+    baseAtk: 42,
+    subStat: '会心ダメージ',
+    passive: '登場の間奏：キャラ登場時、ランダムなテーマ曲を演奏、各種バフを付与(10秒)',
+    imageUrl: '/images/weapons/widsith.png',
+    iconUrl: '/images/weapons/widsith-icon.png'
+  },
+  {
+    id: 'rust',
+    name: '弓蔵',
+    type: 'bow',
+    rarity: 4,
+    baseAtk: 42,
+    subStat: '攻撃力%',
+    passive: '速射強弓：通常攻撃のダメージ40%アップ、重撃のダメージ10%ダウン',
+    imageUrl: '/images/weapons/rust.png',
+    iconUrl: '/images/weapons/rust-icon.png'
+  },
+  {
+    id: 'sacrificial_sword',
+    name: '祭礼の剣',
+    type: 'sword',
+    rarity: 4,
+    baseAtk: 41,
+    subStat: '元素チャージ効率',
+    passive: '気息of生死の間：元素スキルが敵にダメージを与えた時、40%の確率で元素スキルのCDがリセット',
+    imageUrl: '/images/weapons/sacrificial-sword.png',
+    iconUrl: '/images/weapons/sacrificial_sword-icon.png'
+  },
+  {
+    id: 'dragon_bane',
+    name: '匣中滅龍',
+    type: 'polearm',
+    rarity: 4,
+    baseAtk: 41,
+    subStat: '元素熟知',
+    passive: '破龍の断章：炎元素または水元素の影響を受けた敵に対するダメージ20%アップ',
+    imageUrl: '/images/weapons/dragon-bane.png',
+    iconUrl: '/images/weapons/dragon_bane-icon.png'
+  },
+  {
+    id: 'serpent_spine',
+    name: '螭龍の剣',
+    type: 'claymore',
+    rarity: 4,
+    baseAtk: 42,
+    subStat: '会心率',
+    passive: '波セレナーデ：戦闘中、4秒毎にダメージ6%アップ(最大5重複)、被ダメージでスタック減少',
+    imageUrl: '/images/weapons/serpent-spine.png',
+    iconUrl: '/images/weapons/serpent_spine-icon.png'
+  },
+  {
+    id: 'favonius_lance',
+    name: '西風長槍',
+    type: 'polearm',
+    rarity: 4,
+    baseAtk: 44,
+    subStat: '元素チャージ効率',
+    passive: '風呂循環：会心攻撃時、60%の確率で少量の元素粒子を生成(CD6秒)',
+    imageUrl: '/images/weapons/favonius-lance.png',
+    iconUrl: '/images/weapons/favonius_lance-icon.png'
+  },
+  {
+    id: 'favonius_sword',
+    name: '西風剣',
+    type: 'sword',
+    rarity: 4,
+    baseAtk: 41,
+    subStat: '元素チャージ効率',
+    passive: '風呂循環：会心攻撃時、60%の確率で少量の元素粒子を生成(CD6秒)',
+    imageUrl: '/images/weapons/favonius-sword.png',
+    iconUrl: '/images/weapons/favonius_sword-icon.png'
+  },
+  {
+    id: 'favonius_greatsword',
+    name: '西風大剣',
+    type: 'claymore',
+    rarity: 4,
+    baseAtk: 41,
+    subStat: '元素チャージ効率',
+    passive: '風呂循環：会心攻撃時、60%の確率で少量の元素粒子を生成(CD6秒)',
+    imageUrl: '/images/weapons/favonius-greatsword.png',
+    iconUrl: '/images/weapons/favonius_greatsword-icon.png'
+  },
+  {
+    id: 'favonius_warbow',
+    name: '西風猟弓',
+    type: 'bow',
+    rarity: 4,
+    baseAtk: 41,
+    subStat: '元素チャージ効率',
+    passive: '風呂循環：会心攻撃時、60%の確率で少量の元素粒子を生成(CD6秒)',
+    imageUrl: '/images/weapons/favonius-warbow.png',
+    iconUrl: '/images/weapons/favonius_warbow-icon.png'
+  },
+  {
+    id: 'favonius_codex',
+    name: '西風秘典',
+    type: 'catalyst',
+    rarity: 4,
+    baseAtk: 42,
+    subStat: '元素チャージ効率',
+    passive: '風呂循環：会心攻撃時、60%の確率で少量の元素粒子を生成(CD6秒)',
+    imageUrl: '/images/weapons/favonius-codex.png',
+    iconUrl: '/images/weapons/favonius_codex-icon.png'
   }
 ];
 
