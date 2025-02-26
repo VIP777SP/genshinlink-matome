@@ -3,6 +3,9 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import SearchBar from '@/components/SearchBar';
+import ThemeToggle from '@/components/ThemeToggle';
+import SoundSettings from '@/components/SoundSettings';
 
 // ナビゲーションアイテムのタイプ定義
 type NavItem = {
@@ -32,10 +35,12 @@ export default function Navigation() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
 
   // パスが変わったらモバイルメニューを閉じる
   useEffect(() => {
     setIsOpen(false);
+    setShowSearch(false);
   }, [pathname]);
 
   // スクロール検出
@@ -74,21 +79,37 @@ export default function Navigation() {
         >
           原神アルティメット攻略
         </Link>
-        <button 
-          onClick={() => {
-            setIsOpen(!isOpen);
-          }}
-          className="text-white p-2 rounded-lg hover:bg-amber-600/50 transition-colors"
-          aria-label={isOpen ? "メニューを閉じる" : "メニューを開く"}
-        >
-          <i className={`fas ${isOpen ? 'fa-times' : 'fa-bars'}`}></i>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowSearch(!showSearch)}
+            className="text-white p-2 rounded-lg hover:bg-amber-600/50 transition-colors"
+            aria-label="検索"
+          >
+            <i className="fas fa-search"></i>
+          </button>
+          <button 
+            onClick={() => {
+              setIsOpen(!isOpen);
+            }}
+            className="text-white p-2 rounded-lg hover:bg-amber-600/50 transition-colors"
+            aria-label={isOpen ? "メニューを閉じる" : "メニューを開く"}
+          >
+            <i className={`fas ${isOpen ? 'fa-times' : 'fa-bars'}`}></i>
+          </button>
+        </div>
       </div>
+
+      {/* モバイル用検索バー */}
+      {showSearch && (
+        <div className="md:hidden px-3 pb-3">
+          <SearchBar />
+        </div>
+      )}
 
       {/* デスクトップ＆モバイル展開時メニュー */}
       <div 
         className={`
-          md:flex md:flex-row md:justify-center md:flex-wrap
+          md:flex md:flex-row md:justify-between md:items-center md:px-4
           transition-all duration-300 ease-in-out
           ${isOpen 
             ? 'max-h-[500px] opacity-100 border-t border-amber-700/30' 
@@ -96,6 +117,7 @@ export default function Navigation() {
           }
         `}
       >
+        {/* ナビゲーションリンク */}
         <ul className="md:flex md:flex-row md:flex-wrap md:justify-center md:space-x-1 p-2 overflow-y-auto max-h-[calc(100vh-60px)] md:max-h-none">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
@@ -141,6 +163,17 @@ export default function Navigation() {
             );
           })}
         </ul>
+
+        {/* デスクトップ用検索バーとアクションボタン */}
+        <div className="hidden md:flex items-center space-x-3 py-2">
+          <div className="w-48 lg:w-64">
+            <SearchBar compact={true} />
+          </div>
+          <div className="flex space-x-2">
+            <SoundSettings />
+            <ThemeToggle />
+          </div>
+        </div>
       </div>
     </nav>
   );

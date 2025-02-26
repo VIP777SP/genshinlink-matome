@@ -12,6 +12,11 @@ type SearchResult = {
   category: string;
 };
 
+// 検索バープロパティの型定義
+interface SearchBarProps {
+  compact?: boolean; // コンパクトモード（ナビバー用）
+}
+
 // ダミーの検索データ
 // 実際のアプリケーションでは、これをAPIコールなどで取得するか
 // 各ページのデータを統合して検索できるようにします
@@ -28,7 +33,7 @@ const searchData: SearchResult[] = [
   // 各ページ内のリンクなども検索対象に含めることができます
 ];
 
-export default function SearchBar() {
+export default function SearchBar({ compact = false }: SearchBarProps) {
   const router = useRouter();
   const [query, setQuery] = useState<string>('');
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -115,21 +120,21 @@ export default function SearchBar() {
         <div className="relative">
           <input
             type="text"
-            placeholder="検索..."
+            placeholder={compact ? "検索" : "検索..."}
             value={query}
             onChange={(e) => handleSearch(e.target.value)}
-            className="w-full px-4 py-2 pl-10 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 text-gray-800 dark:text-gray-200"
+            className={`w-full ${compact ? 'px-3 py-1' : 'px-4 py-2'} pl-8 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 text-gray-800 dark:text-gray-200 ${compact ? 'text-sm' : ''}`}
             onFocus={() => query.trim() !== '' && setIsOpen(true)}
             ref={inputRef}
             onKeyDown={handleKeyDown}
           />
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">
+          <div className={`absolute ${compact ? 'left-2' : 'left-3'} top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400`}>
             <i className="fas fa-search"></i>
           </div>
           {query && (
             <button
               type="button"
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+              className={`absolute ${compact ? 'right-2' : 'right-3'} top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300`}
               onClick={() => {
                 setQuery('');
                 setResults([]);
@@ -162,7 +167,7 @@ export default function SearchBar() {
                     }`}
                   >
                     <div className="font-medium text-gray-800 dark:text-gray-200">{result.title}</div>
-                    {result.description && (
+                    {result.description && !compact && (
                       <div className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-1">{result.description}</div>
                     )}
                   </Link>
