@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="500" height="800" viewBox="0 0 500 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="500" height="800" fill="#F87B6E" fill-opacity="0.4"/>
+  
+  <!-- 背景のデザイン要素 -->
+  <rect x="50" y="50" width="400" height="700" rx="20" stroke="#C0412F" stroke-width="4" stroke-dasharray="15 10" fill="none"/>
+  <circle cx="250" cy="200" r="150" fill="#F87B6E" fill-opacity="0.6" stroke="#C0412F" stroke-width="3"/>
+  
+  <!-- キャラクターのシルエット表現 -->
+  <path d="M250 200C277.614 200 300 177.614 300 150C300 122.386 277.614 100 250 100C222.386 100 200 122.386 200 150C200 177.614 222.386 200 250 200Z" fill="#F87B6E" stroke="#C0412F" stroke-width="2"/>
+  <path d="M200 350C200 294.772 220.147 250 250 250C279.853 250 300 294.772 300 350C300 405.228 279.853 450 250 450C220.147 450 200 405.228 200 350Z" fill="#F87B6E" stroke="#C0412F" stroke-width="2"/>
+  <path d="M180 550C180 494.772 211.34 450 250 450C288.66 450 320 494.772 320 550C320 605.228 288.66 650 250 650C211.34 650 180 605.228 180 550Z" fill="#F87B6E" stroke="#C0412F" stroke-width="2"/>
+  
+  <!-- 元素シンボル表現 -->
+  <circle cx="250" cy="350" r="30" fill="white" fill-opacity="0.7" stroke="#C0412F" stroke-width="2"/>
+  <text x="250" y="355" text-anchor="middle" font-family="Arial" font-size="18" fill="#C0412F" font-weight="bold">pyro</text>
+  
+  <!-- テキスト情報 -->
+  <text x="250" y="710" text-anchor="middle" font-family="Arial" font-size="32" fill="#C0412F" font-weight="bold">宵宮</text>
+  <text x="250" y="750" text-anchor="middle" font-family="Arial" font-size="24" fill="#C0412F">プレースホルダー</text>
+  <text x="250" y="780" text-anchor="middle" font-family="Arial" font-size="16" fill="#C0412F" opacity="0.8">画像準備中</text>
+</svg>
