@@ -7,6 +7,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { MultiBackend, TouchTransition } from 'react-dnd-multi-backend';
 import React from 'react';
+import CustomDragLayer from './CustomDragLayer';
 
 // react-dnd用のマルチバックエンド設定
 const HTMLToTouch = {
@@ -2306,6 +2307,7 @@ export default function TierMakerPage() {
   
   return (
     <DndProvider backend={MultiBackend} options={HTMLToTouch}>
+      <CustomDragLayer characters={characters} weapons={weapons} />
       <div className="relative min-h-screen py-8 px-4 sm:px-6 lg:px-8">
         {/* 背景装飾パターン */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
