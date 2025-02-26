@@ -337,7 +337,77 @@ export default function CharacterGuidePage() {
         </div>
       </div>
       
-      {/* 武器セクション (先に表示) */}
+      {/* キャラクターの使い方セクション */}
+      {guide.usage && (
+        <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-amber-200/40 dark:border-amber-800/30 mb-8 p-6">
+          <h2 className="text-xl font-bold mb-6 text-amber-700 dark:text-amber-400 flex items-center">
+            <i className="fas fa-gamepad mr-2 text-amber-600 dark:text-amber-500"></i>
+            キャラクターの使い方
+          </h2>
+          
+          {guide.usage.intro && (
+            <p className="mb-6 text-gray-700 dark:text-gray-300">{guide.usage.intro}</p>
+          )}
+          
+          <div className="space-y-10">
+            {guide.usage.sections.map((section) => (
+              <div key={section.id} className="relative">
+                <div className="absolute -left-4 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-300 to-indigo-500 rounded-full"></div>
+                <h3 className="text-lg font-semibold mb-4 text-blue-700 dark:text-blue-400 flex items-center">
+                  <i className={`fas ${section.id.includes('skill') ? 'fa-magic' : section.id.includes('burst') ? 'fa-meteor' : 'fa-star'} mr-2`}></i>
+                  {section.title}
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800/30">
+                    <div className="relative aspect-video mb-3 overflow-hidden rounded-lg bg-black/10">
+                      <SafeImage
+                        src={section.imageUrl}
+                        alt={section.title}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <p className="text-gray-700 dark:text-gray-300" dangerouslySetInnerHTML={{ __html: section.description.replace(/([^>])\n/g, '$1<br/>') }}></p>
+                  </div>
+                  
+                  {section.additionalInfo && (
+                    <div className="bg-blue-50/50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200/40 dark:border-blue-800/20">
+                      <h4 className="font-medium text-blue-800 dark:text-blue-300 mb-2">
+                        追加情報
+                      </h4>
+                      <p className="text-gray-700 dark:text-gray-300">{section.additionalInfo}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {/* 戦闘サイクル解説 */}
+          {guide.usage.comboCycle && (
+            <div className="mt-8 p-4 bg-amber-50/50 dark:bg-amber-900/10 rounded-xl border border-amber-200/40 dark:border-amber-800/30">
+              <h3 className="text-lg font-semibold mb-3 text-amber-700 dark:text-amber-400 flex items-center">
+                <i className="fas fa-sync-alt mr-2"></i>
+                理想的な戦闘サイクル
+              </h3>
+              
+              <ol className="relative border-l-2 border-amber-500 dark:border-amber-700 ml-3 space-y-6 py-2">
+                {guide.usage.comboCycle.steps.map((step, index) => (
+                  <li key={index} className="ml-6">
+                    <div className="absolute -left-3 w-6 h-6 bg-amber-500 dark:bg-amber-700 rounded-full flex items-center justify-center text-white">{index + 1}</div>
+                    <p className="text-gray-700 dark:text-gray-300">
+                      <span className="font-medium">{step.title}</span>：{step.description}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
+        </div>
+      )}
+      
+      {/* 武器セクション */}
       {guide.weapons && (
         <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-amber-200/40 dark:border-amber-800/30 mb-8 p-6">
           <h2 className="text-xl font-bold mb-4 text-amber-700 dark:text-amber-400 flex items-center">
@@ -398,7 +468,7 @@ export default function CharacterGuidePage() {
         </div>
       )}
 
-      {/* 聖遺物セクション (後に表示) */}
+      {/* 聖遺物セクション */}
       {guide.artifacts && (
         <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-amber-200/40 dark:border-amber-800/30 mb-8 p-6">
           <h2 className="text-xl font-bold mb-4 text-amber-700 dark:text-amber-400 flex items-center">
@@ -495,76 +565,6 @@ export default function CharacterGuidePage() {
           </div>
         </div>
       )}
-      
-      {/* キャラクターの使い方セクション */}
-      {guide.usage && (
-        <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-amber-200/40 dark:border-amber-800/30 mb-8 p-6">
-          <h2 className="text-xl font-bold mb-6 text-amber-700 dark:text-amber-400 flex items-center">
-            <i className="fas fa-gamepad mr-2 text-amber-600 dark:text-amber-500"></i>
-            キャラクターの使い方
-          </h2>
-          
-          {guide.usage.intro && (
-            <p className="mb-6 text-gray-700 dark:text-gray-300">{guide.usage.intro}</p>
-          )}
-          
-          <div className="space-y-10">
-            {guide.usage.sections.map((section) => (
-              <div key={section.id} className="relative">
-                <div className="absolute -left-4 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-300 to-indigo-500 rounded-full"></div>
-                <h3 className="text-lg font-semibold mb-4 text-blue-700 dark:text-blue-400 flex items-center">
-                  <i className={`fas ${section.id.includes('skill') ? 'fa-magic' : section.id.includes('burst') ? 'fa-meteor' : 'fa-star'} mr-2`}></i>
-                  {section.title}
-                </h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800/30">
-                    <div className="relative aspect-video mb-3 overflow-hidden rounded-lg bg-black/10">
-                      <SafeImage
-                        src={section.imageUrl}
-                        alt={section.title}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <p className="text-gray-700 dark:text-gray-300" dangerouslySetInnerHTML={{ __html: section.description.replace(/([^>])\n/g, '$1<br/>') }}></p>
-                  </div>
-                  
-                  {section.additionalInfo && (
-                    <div className="bg-blue-50/50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200/40 dark:border-blue-800/20">
-                      <h4 className="font-medium text-blue-800 dark:text-blue-300 mb-2">
-                        追加情報
-                      </h4>
-                      <p className="text-gray-700 dark:text-gray-300">{section.additionalInfo}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-          
-          {/* 戦闘サイクル解説 */}
-          {guide.usage.comboCycle && (
-            <div className="mt-8 p-4 bg-amber-50/50 dark:bg-amber-900/10 rounded-xl border border-amber-200/40 dark:border-amber-800/30">
-              <h3 className="text-lg font-semibold mb-3 text-amber-700 dark:text-amber-400 flex items-center">
-                <i className="fas fa-sync-alt mr-2"></i>
-                理想的な戦闘サイクル
-              </h3>
-              
-              <ol className="relative border-l-2 border-amber-500 dark:border-amber-700 ml-3 space-y-6 py-2">
-                {guide.usage.comboCycle.steps.map((step, index) => (
-                  <li key={index} className="ml-6">
-                    <div className="absolute -left-3 w-6 h-6 bg-amber-500 dark:bg-amber-700 rounded-full flex items-center justify-center text-white">{index + 1}</div>
-                    <p className="text-gray-700 dark:text-gray-300">
-                      <span className="font-medium">{step.title}</span>：{step.description}
-                    </p>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Q&Aセクション */}
       {guide.qa && guide.qa.length > 0 && (
@@ -588,6 +588,83 @@ export default function CharacterGuidePage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+      
+      {/* 命の星座セクション */}
+      {character.constellations && guide.constellationRatings && (
+        <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-amber-200/40 dark:border-amber-800/30 mb-8 p-6">
+          <h2 className="text-xl font-bold mb-4 text-amber-700 dark:text-amber-400 flex items-center">
+            <i className="fas fa-star mr-2 text-amber-600 dark:text-amber-500"></i>
+            命の星座
+          </h2>
+          
+          <div className="space-y-4">
+            {character.constellations.map((constellation) => {
+              // コンステレーションのレーティングをガイドデータから取得
+              const rating = guide.constellationRatings?.[constellation.level] || 2; // デフォルトは2星
+              
+              // おすすめ度のラベル
+              const ratingLabel = rating >= 4 
+                ? <span className="ml-2 px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-xs rounded-full animate-pulse">超おすすめ！</span>
+                : rating >= 3
+                  ? <span className="ml-2 px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-xs rounded-full">おすすめ！</span>
+                  : null;
+              
+              return (
+                <div key={constellation.level} className="bg-amber-50/50 dark:bg-amber-900/10 rounded-lg overflow-hidden">
+                  <div className={`bg-amber-100/80 dark:bg-amber-800/30 px-4 py-3 flex items-center`}>
+                    <div className="w-8 h-8 bg-amber-400/90 dark:bg-amber-600/90 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                      {constellation.level}
+                    </div>
+                    <div className="flex-grow">
+                      <div className="flex items-center flex-wrap">
+                        <h3 className="font-semibold text-gray-800 dark:text-gray-200">
+                          {constellation.name}
+                        </h3>
+                        <div className="ml-3 flex items-center">
+                          {/* 凸おすすめ度（星表示） */}
+                          {[...Array(5)].map((_, i) => (
+                            <i key={i} className={`fas fa-star text-xs ${
+                              i < rating 
+                                ? 'text-amber-500' 
+                                : 'text-gray-300 dark:text-gray-600'
+                            } mr-0.5`}></i>
+                          ))}
+                        </div>
+                        {ratingLabel}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4">
+                    <p className="text-gray-700 dark:text-gray-300 mb-3">
+                      {constellation.description}
+                    </p>
+                    <div className="bg-amber-100/50 dark:bg-amber-900/20 p-3 rounded-lg">
+                      <p className="text-amber-800 dark:text-amber-300 font-medium">
+                        <i className="fas fa-check-circle mr-2"></i>
+                        {constellation.effect}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          
+          {/* 凸おすすめ度の説明 */}
+          <div className="mt-6 bg-gray-50/80 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700/30">
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
+              <i className="fas fa-info-circle mr-2 text-blue-500"></i>
+              凸おすすめ度について
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              凸おすすめ度は、キャラクターの性能向上における各凸の重要度を示しています。
+              星5つは「必須級」、星4つは「大幅強化」、星3つは「良い強化」、星2つは「小幅強化」、星1つは「効果小」を意味します。
+              課金の優先順位を決める際の参考にしてください。
+            </p>
           </div>
         </div>
       )}
@@ -675,83 +752,6 @@ export default function CharacterGuidePage() {
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* 命の星座セクション */}
-      {character.constellations && guide.constellationRatings && (
-        <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-amber-200/40 dark:border-amber-800/30 mb-8 p-6">
-          <h2 className="text-xl font-bold mb-4 text-amber-700 dark:text-amber-400 flex items-center">
-            <i className="fas fa-star mr-2 text-amber-600 dark:text-amber-500"></i>
-            命の星座
-          </h2>
-          
-          <div className="space-y-4">
-            {character.constellations.map((constellation) => {
-              // コンステレーションのレーティングをガイドデータから取得
-              const rating = guide.constellationRatings?.[constellation.level] || 2; // デフォルトは2星
-              
-              // おすすめ度のラベル
-              const ratingLabel = rating >= 4 
-                ? <span className="ml-2 px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-xs rounded-full animate-pulse">超おすすめ！</span>
-                : rating >= 3
-                  ? <span className="ml-2 px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-xs rounded-full">おすすめ！</span>
-                  : null;
-              
-              return (
-                <div key={constellation.level} className="bg-amber-50/50 dark:bg-amber-900/10 rounded-lg overflow-hidden">
-                  <div className={`bg-amber-100/80 dark:bg-amber-800/30 px-4 py-3 flex items-center`}>
-                    <div className="w-8 h-8 bg-amber-400/90 dark:bg-amber-600/90 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                      {constellation.level}
-                    </div>
-                    <div className="flex-grow">
-                      <div className="flex items-center flex-wrap">
-                        <h3 className="font-semibold text-gray-800 dark:text-gray-200">
-                          {constellation.name}
-                        </h3>
-                        <div className="ml-3 flex items-center">
-                          {/* 凸おすすめ度（星表示） */}
-                          {[...Array(5)].map((_, i) => (
-                            <i key={i} className={`fas fa-star text-xs ${
-                              i < rating 
-                                ? 'text-amber-500' 
-                                : 'text-gray-300 dark:text-gray-600'
-                            } mr-0.5`}></i>
-                          ))}
-                        </div>
-                        {ratingLabel}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="p-4">
-                    <p className="text-gray-700 dark:text-gray-300 mb-3">
-                      {constellation.description}
-                    </p>
-                    <div className="bg-amber-100/50 dark:bg-amber-900/20 p-3 rounded-lg">
-                      <p className="text-amber-800 dark:text-amber-300 font-medium">
-                        <i className="fas fa-check-circle mr-2"></i>
-                        {constellation.effect}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          
-          {/* 凸おすすめ度の説明 */}
-          <div className="mt-6 bg-gray-50/80 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700/30">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
-              <i className="fas fa-info-circle mr-2 text-blue-500"></i>
-              凸おすすめ度について
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              凸おすすめ度は、キャラクターの性能向上における各凸の重要度を示しています。
-              星5つは「必須級」、星4つは「大幅強化」、星3つは「良い強化」、星2つは「小幅強化」、星1つは「効果小」を意味します。
-              課金の優先順位を決める際の参考にしてください。
-            </p>
           </div>
         </div>
       )}
