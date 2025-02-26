@@ -5,16 +5,17 @@ import Image from 'next/image';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
-import { MultiBackend, TouchTransition, createTransition } from 'react-dnd-multi-backend';
+import { MultiBackend, TouchTransition } from 'react-dnd-multi-backend';
 import React from 'react';
 
-// react-dnd用のHTML5とTouch間の変換設定
+// react-dnd用のマルチバックエンド設定
 const HTMLToTouch = {
   backends: [
     {
       id: 'html5',
       backend: HTML5Backend,
-      transition: createTransition('mousemove', 30),
+      // 移行判定ロジックをカスタマイズ
+      transition: (event: MouseEvent) => event.type === 'mousemove',
     },
     {
       id: 'touch',
@@ -1417,7 +1418,7 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
   // ref と drag を接続
   drag(ref);
 
-  // tier-unassignedではない場合は削除ボタンを表示
+  // 未割り当てエリア以外に配置されている場合のみ削除ボタンを表示
   const showRemoveButton = currentTier !== 'unassigned';
 
   // 削除ボタンクリック時の処理
@@ -1484,7 +1485,7 @@ const WeaponCard = ({ weapon, onDrop, currentTier }: WeaponCardProps) => {
   // ref と drag を接続
   drag(ref);
 
-  // tier-unassignedではない場合は削除ボタンを表示
+  // 未割り当てエリア以外に配置されている場合のみ削除ボタンを表示
   const showRemoveButton = currentTier !== 'weapon-unassigned';
 
   // 削除ボタンクリック時の処理
