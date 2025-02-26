@@ -4,7 +4,27 @@ import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { TouchBackend } from 'react-dnd-touch-backend';
+import { MultiBackend, TouchTransition, createTransition } from 'react-dnd-multi-backend';
 import React from 'react';
+
+// react-dnd用のHTML5とTouch間の変換設定
+const HTMLToTouch = {
+  backends: [
+    {
+      id: 'html5',
+      backend: HTML5Backend,
+      transition: createTransition('mousemove', 30),
+    },
+    {
+      id: 'touch',
+      backend: TouchBackend,
+      options: { enableMouseEvents: true, delayTouchStart: 0 },
+      preview: true,
+      transition: TouchTransition,
+    },
+  ],
+};
 
 // 属性タイプの定義
 type ElementType = 'pyro' | 'hydro' | 'anemo' | 'electro' | 'dendro' | 'cryo' | 'geo';
@@ -1397,6 +1417,15 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
   // ref と drag を接続
   drag(ref);
 
+  // tier-unassignedではない場合は削除ボタンを表示
+  const showRemoveButton = currentTier !== 'unassigned';
+
+  // 削除ボタンクリック時の処理
+  const handleRemove = (e: React.MouseEvent) => {
+    e.stopPropagation(); // ドラッグイベントが発火しないよう阻止
+    onDrop(character.id, 'unassigned');
+  };
+
   return (
     <div
       ref={ref}
@@ -1418,6 +1447,17 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
       </div>
       {character.rarity === 5 && (
         <div className="absolute top-0 right-0 bg-amber-500 text-white text-xs px-1 rounded-bl">★5</div>
+      )}
+      {showRemoveButton && (
+        <button 
+          onClick={handleRemove}
+          className="absolute top-0 left-0 bg-red-500 text-white rounded-br p-0.5 opacity-70 hover:opacity-100"
+          title="Tierから削除"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+          </svg>
+        </button>
       )}
     </div>
   );
@@ -1444,6 +1484,15 @@ const WeaponCard = ({ weapon, onDrop, currentTier }: WeaponCardProps) => {
   // ref と drag を接続
   drag(ref);
 
+  // tier-unassignedではない場合は削除ボタンを表示
+  const showRemoveButton = currentTier !== 'weapon-unassigned';
+
+  // 削除ボタンクリック時の処理
+  const handleRemove = (e: React.MouseEvent) => {
+    e.stopPropagation(); // ドラッグイベントが発火しないよう阻止
+    onDrop(weapon.id, 'weapon-unassigned');
+  };
+
   return (
     <div
       ref={ref}
@@ -1455,7 +1504,7 @@ const WeaponCard = ({ weapon, onDrop, currentTier }: WeaponCardProps) => {
       style={{ opacity: isDragging ? 0.5 : 1 }}
     >
       <Image
-        src={weapon.imageUrl}
+        src={weapon.iconUrl}
         alt={weapon.name}
         fill
         className="object-cover"
@@ -1463,8 +1512,20 @@ const WeaponCard = ({ weapon, onDrop, currentTier }: WeaponCardProps) => {
       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-1">
         <p className="text-xs text-white truncate text-center">{weapon.name}</p>
       </div>
-      <div className="absolute top-0 right-0 bg-amber-500 text-white text-xs px-1 rounded-bl">★{weapon.rarity}</div>
-      <div className="absolute top-0 left-0 bg-blue-500/70 text-white text-xs px-1 rounded-br">{weapon.type}</div>
+      {weapon.rarity >= 4 && (
+        <div className="absolute top-0 right-0 bg-amber-500 text-white text-xs px-1 rounded-bl">★{weapon.rarity}</div>
+      )}
+      {showRemoveButton && (
+        <button 
+          onClick={handleRemove}
+          className="absolute top-0 left-0 bg-red-500 text-white rounded-br p-0.5 opacity-70 hover:opacity-100"
+          title="Tierから削除"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+          </svg>
+        </button>
+      )}
     </div>
   );
 };
@@ -2243,7 +2304,7 @@ export default function TierMakerPage() {
   };
   
   return (
-    <DndProvider backend={HTML5Backend}>
+    <DndProvider backend={MultiBackend} options={HTMLToTouch}>
       <div className="relative min-h-screen py-8 px-4 sm:px-6 lg:px-8">
         {/* 背景装飾パターン */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
