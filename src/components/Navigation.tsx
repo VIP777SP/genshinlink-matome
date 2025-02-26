@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import SearchBar from '@/components/SearchBar';
 import ThemeToggle from '@/components/ThemeToggle';
-import SoundSettings from '@/components/SoundSettings';
 
 // ナビゲーションアイテムのタイプ定義
 type NavItem = {
@@ -169,10 +168,7 @@ export default function Navigation() {
           <div className="w-48 lg:w-64">
             <SearchBar compact={true} />
           </div>
-          <div className="flex space-x-2">
-            <SoundSettings />
-            <ThemeToggle />
-          </div>
+          <ThemeToggle />
         </div>
       </div>
     </nav>

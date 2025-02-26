@@ -12,7 +12,7 @@ type ThemeContextType = {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('light');
+  const [theme, setTheme] = useState<Theme>('dark');
   const [mounted, setMounted] = useState(false);
 
   // 初期化時にローカルストレージから読み込み
@@ -25,8 +25,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       
       // ローカルストレージに保存されていれば、それを使用
-      // なければシステム設定を使用
-      const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+      // なければデフォルトでダークモード
+      const initialTheme = savedTheme || 'dark';
       setTheme(initialTheme);
       
       setMounted(true);
@@ -45,11 +45,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       } else {
         root.classList.remove('dark');
       }
-      
-      // 切り替え音を再生
-      const sound = new Audio('/sounds/theme-toggle.mp3');
-      sound.volume = 0.3;
-      sound.play().catch(e => console.log('Audio play failed:', e));
     }
   }, [theme, mounted]);
 

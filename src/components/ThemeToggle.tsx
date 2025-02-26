@@ -19,36 +19,36 @@ export default function ThemeToggle() {
       className={`
         relative rounded-full p-2
         transition-all duration-500 ease-in-out
-        ${theme === 'dark' ? 'bg-orange-700' : 'bg-amber-300'}
+        ${theme === 'dark' ? 'bg-blue-800' : 'bg-yellow-500'}
         ${isAnimating ? 'animate-pulse' : ''}
       `}
       aria-label={theme === 'dark' ? 'ライトモードに切り替え' : 'ダークモードに切り替え'}
     >
-      <div className="relative w-6 h-6">
-        {/* 太陽アイコン */}
+      <div className="relative w-6 h-6 flex items-center justify-center">
+        {/* 太陽アイコン - ライトモード時に表示 */}
         <div 
           className={`
-            absolute inset-0 
+            absolute inset-0 flex items-center justify-center
             transition-all duration-500 ease-in-out
             ${theme === 'dark' 
               ? 'opacity-0 rotate-90 scale-0' 
               : 'opacity-100 rotate-0 scale-100'}
           `}
         >
-          <i className="fas fa-sun text-amber-600"></i>
+          <i className="fas fa-sun text-yellow-100 text-xl"></i>
         </div>
         
-        {/* 月アイコン */}
+        {/* 月アイコン - ダークモード時に表示 */}
         <div 
           className={`
-            absolute inset-0 
+            absolute inset-0 flex items-center justify-center
             transition-all duration-500 ease-in-out
             ${theme === 'dark' 
               ? 'opacity-100 rotate-0 scale-100' 
               : 'opacity-0 -rotate-90 scale-0'}
           `}
         >
-          <i className="fas fa-moon text-amber-100"></i>
+          <i className="fas fa-moon text-blue-100 text-xl"></i>
         </div>
       </div>
     </button>
