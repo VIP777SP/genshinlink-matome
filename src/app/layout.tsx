@@ -9,7 +9,7 @@ import SoundSettings from "@/components/SoundSettings";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "原神お役立ちリンク集",
+  title: "原神アルティメット攻略",
   description: "原神に関するおすすめしたいお役立ちサイトや参考になるyoutuberなど、さまざまな情報をまとめたリンク集",
 };
 
@@ -53,7 +53,7 @@ export default function RootLayout({
                     <div className="relative z-10 p-3 sm:p-6">
                       <div className="flex flex-col sm:flex-row justify-between items-center mb-3 sm:mb-4 gap-2 sm:gap-3">
                         <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-center text-white drop-shadow-md">
-                          原神お役立ちリンク集
+                          原神アルティメット攻略
                         </h1>
                         <div className="flex space-x-2 sm:space-x-3">
                           <SoundSettings />
@@ -69,7 +69,7 @@ export default function RootLayout({
                   </main>
                   
                   <footer className="mt-6 sm:mt-12 text-center text-gray-700 dark:text-gray-400 p-3 sm:p-4 text-sm sm:text-base">
-                    <p className="text-xs sm:text-sm opacity-80">© 2024 原神お役立ちリンク集 - ゲーム内の画像・名称等の著作権はHoYoverse社に帰属します</p>
+                    <p className="text-xs sm:text-sm opacity-80">© 2024 原神アルティメット攻略 - ゲーム内の画像・名称等の著作権はHoYoverse社に帰属します</p>
                   </footer>
                 </div>
               </div>

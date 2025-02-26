@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useSound } from './SoundService';
 
 // ナビゲーションアイテムのタイプ定義
 type NavItem = {
@@ -18,7 +17,7 @@ const navItems: NavItem[] = [
   { href: '/recsite', label: 'お役立ちサイト', icon: 'fa-globe' },
   { href: '/reccommunity', label: 'コミュニティ', icon: 'fa-users' },
   { href: '/recyoutuber', label: 'YouTuber', icon: 'fa-youtube' },
-  { href: '/characters', label: 'キャラクター図鑑', icon: 'fa-user-astronaut' },
+  { href: '/column', label: 'コラム', icon: 'fa-newspaper' },
   { href: '/characters/tier', label: '最強キャラティア', icon: 'fa-trophy' },
   { href: '/calendar', label: '攻略カレンダー', icon: 'fa-calendar-alt' },
   { href: '/calculator', label: '素材計算機', icon: 'fa-calculator' },
@@ -33,7 +32,6 @@ export default function Navigation() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { playSound } = useSound();
 
   // パスが変わったらモバイルメニューを閉じる
   useEffect(() => {
@@ -74,12 +72,11 @@ export default function Navigation() {
           href="/" 
           className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-300 hover:brightness-110 transition-all"
         >
-          原神リンク集
+          原神アルティメット攻略
         </Link>
         <button 
           onClick={() => {
             setIsOpen(!isOpen);
-            playSound('click');
           }}
           className="text-white p-2 rounded-lg hover:bg-amber-600/50 transition-colors"
           aria-label={isOpen ? "メニューを閉じる" : "メニューを開く"}
@@ -116,13 +113,11 @@ export default function Navigation() {
                     text-sm md:text-base
                   `}
                   onClick={() => {
-                    playSound('click');
                     // モバイルの場合はクリック後にメニューを閉じる
                     if (window.innerWidth < 768) {
                       setIsOpen(false);
                     }
                   }}
-                  onMouseEnter={() => playSound('hover')}
                 >
                   {/* ホバーエフェクト */}
                   <span className={`

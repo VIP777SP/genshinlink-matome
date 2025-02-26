@@ -1,14 +1,14 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useSound } from './SoundService';
 
 // 検索結果の型定義
 type SearchResult = {
   title: string;
-  subtitle?: string;
-  href: string;
+  description?: string;
+  url: string;
   category: string;
 };
 
@@ -16,164 +16,164 @@ type SearchResult = {
 // 実際のアプリケーションでは、これをAPIコールなどで取得するか
 // 各ページのデータを統合して検索できるようにします
 const searchData: SearchResult[] = [
-  { title: 'おすすめ便利サイト', category: 'リンク集', href: '/recsite' },
-  { title: 'おすすめコミュニティ', category: 'リンク集', href: '/reccommunity' },
-  { title: 'おすすめYoutuber', category: 'リンク集', href: '/recyoutuber' },
-  { title: 'キャラ攻略', category: 'コンテンツ', href: '/characters' },
-  { title: '聖遺物攻略', category: 'コンテンツ', href: '/artifacts' },
-  { title: 'マップ情報', category: 'コンテンツ', href: '/maps' },
-  { title: 'イベント情報', category: 'コンテンツ', href: '/events' },
-  { title: 'パーティー編成', category: 'コンテンツ', href: '/teams' },
-  { title: 'ニュース', category: 'コンテンツ', href: '/news' },
+  { title: 'おすすめ便利サイト', category: 'リンク集', url: '/recsite' },
+  { title: 'おすすめコミュニティ', category: 'リンク集', url: '/reccommunity' },
+  { title: 'おすすめYoutuber', category: 'リンク集', url: '/recyoutuber' },
+  { title: 'キャラ攻略', category: 'コンテンツ', url: '/characters' },
+  { title: '聖遺物攻略', category: 'コンテンツ', url: '/artifacts' },
+  { title: 'マップ情報', category: 'コンテンツ', url: '/maps' },
+  { title: 'イベント情報', category: 'コンテンツ', url: '/events' },
+  { title: 'パーティー編成', category: 'コンテンツ', url: '/teams' },
+  { title: 'ニュース', category: 'コンテンツ', url: '/news' },
   // 各ページ内のリンクなども検索対象に含めることができます
 ];
 
 export default function SearchBar() {
-  const [query, setQuery] = useState('');
+  const router = useRouter();
+  const [query, setQuery] = useState<string>('');
   const [results, setResults] = useState<SearchResult[]>([]);
-  const [isOpen, setIsOpen] = useState(false);
-  const [isFocused, setIsFocused] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const { playSound } = useSound();
 
   // クリックイベントリスナーの追加
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setIsOpen(false);
-        setIsFocused(false);
-      }
-    };
-
-    // ESCキーで検索結果を閉じる
-    const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsOpen(false);
-        inputRef.current?.blur();
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleEscKey);
     
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscKey);
     };
   }, []);
 
-  // 検索ロジック
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setQuery(value);
-    playSound('typing');
+  // キーボード操作のハンドラ
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!isOpen) return;
+    
+    // 矢印キーで検索結果間を移動
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedIndex(prev => (prev < results.length - 1 ? prev + 1 : 0));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex(prev => (prev > 0 ? prev - 1 : results.length - 1));
+    } else if (e.key === 'Escape') {
+      setIsOpen(false);
+      inputRef.current?.blur();
+    }
+  };
 
+  // 検索実行の関数
+  const handleSearch = useCallback((value: string) => {
+    setQuery(value);
+    
     if (value.trim() === '') {
       setResults([]);
       setIsOpen(false);
       return;
     }
-
-    // 簡易検索ロジック（実際のアプリではもっと高度な検索を実装するとよいでしょう）
-    const filtered = searchData.filter(item => 
-      item.title.toLowerCase().includes(value.toLowerCase()) ||
-      item.category.toLowerCase().includes(value.toLowerCase())
-    );
     
-    setResults(filtered);
-    setIsOpen(true);
+    // 検索クエリに一致する結果をフィルタリング
+    const filteredResults = searchData.filter(item => {
+      // タイトルと説明を検索
+      const titleMatch = item.title.toLowerCase().includes(value.toLowerCase());
+      const descMatch = item.description?.toLowerCase().includes(value.toLowerCase()) || false;
+      
+      return titleMatch || descMatch;
+    }).slice(0, 10); // 最大10件表示
+    
+    setResults(filteredResults);
+    setIsOpen(filteredResults.length > 0);
+  }, []);
+  
+  // フォーム送信時のハンドラ
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (selectedIndex >= 0 && results[selectedIndex]) {
+      // 選択された結果のURLに遷移
+      router.push(results[selectedIndex].url);
+      setIsOpen(false);
+      setQuery('');
+    } else if (query.trim() !== '') {
+      // 検索ページに遷移
+      router.push(`/search?q=${encodeURIComponent(query)}`);
+      setIsOpen(false);
+      setQuery('');
+    }
   };
 
   return (
-    <div className="relative w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto my-2 sm:my-4" ref={searchRef}>
-      {/* 検索入力エリア */}
-      <div className={`
-        relative rounded-full
-        bg-black/20 backdrop-blur-sm
-        overflow-hidden
-        transition-all duration-300
-        border-2 ${isFocused ? 'border-amber-400 shadow-lg shadow-amber-600/20' : 'border-white/30 shadow-md shadow-black/10'}
-      `}>
-        <input
-          ref={inputRef}
-          type="text"
-          value={query}
-          onChange={handleSearch}
-          onFocus={() => {
-            setIsFocused(true);
-            if (query.trim() !== '') setIsOpen(true);
-          }}
-          onBlur={() => setIsFocused(false)}
-          placeholder="検索..."
-          className="w-full p-1.5 sm:p-2 pl-8 sm:pl-10 pr-4 rounded-full text-sm sm:text-base 
-                    bg-transparent text-white placeholder-white/70 focus:outline-none"
-          aria-label="サイト内検索"
-        />
-        <div className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-amber-300">
-          <i className="fas fa-search text-sm sm:text-base"></i>
+    <div className="relative" ref={searchRef}>
+      <form onSubmit={handleSubmit} className="relative">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="検索..."
+            value={query}
+            onChange={(e) => handleSearch(e.target.value)}
+            className="w-full px-4 py-2 pl-10 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 text-gray-800 dark:text-gray-200"
+            onFocus={() => query.trim() !== '' && setIsOpen(true)}
+            ref={inputRef}
+            onKeyDown={handleKeyDown}
+          />
+          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">
+            <i className="fas fa-search"></i>
+          </div>
+          {query && (
+            <button
+              type="button"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+              onClick={() => {
+                setQuery('');
+                setResults([]);
+                setIsOpen(false);
+                inputRef.current?.focus();
+              }}
+              aria-label="検索クリア"
+            >
+              <i className="fas fa-times"></i>
+            </button>
+          )}
         </div>
-        {query && (
-          <button
-            onClick={() => {
-              setQuery('');
-              setResults([]);
-              setIsOpen(false);
-              playSound('click');
-            }}
-            className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 text-white/70 hover:text-white"
-            aria-label="検索をクリア"
-          >
-            <i className="fas fa-times text-sm sm:text-base"></i>
-          </button>
-        )}
-      </div>
-
-      {/* 検索結果 */}
-      {isOpen && results.length > 0 && (
-        <div className="absolute z-50 mt-1 sm:mt-2 w-full bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-xl shadow-xl border border-amber-200 dark:border-amber-800/30 overflow-hidden transition-all duration-300 max-h-60 sm:max-h-80 overflow-y-auto">
-          <div className="p-2 sm:p-3">
-            <h3 className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-1 sm:mb-2 px-2">検索結果: {results.length}件</h3>
-            <ul className="space-y-1">
+      </form>
+      
+      {/* 検索結果ドロップダウン */}
+      {isOpen && (
+        <div className="absolute z-10 w-full mt-1 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 max-h-[60vh] overflow-y-auto">
+          {results.length > 0 ? (
+            <ul>
               {results.map((result, index) => (
                 <li key={index}>
                   <Link
-                    href={result.href}
-                    className="block p-2 rounded-lg transition-colors duration-200 flex items-center
-                              hover:bg-amber-100 dark:hover:bg-amber-800/30 group"
+                    href={result.url}
                     onClick={() => {
                       setIsOpen(false);
-                      playSound('click');
+                      setQuery('');
                     }}
+                    className={`block px-4 py-2 hover:bg-amber-100/70 dark:hover:bg-amber-800/30 ${
+                      index === selectedIndex ? 'bg-amber-100/90 dark:bg-amber-800/50' : ''
+                    }`}
                   >
-                    <span className="bg-gradient-to-r from-amber-500 to-amber-600 dark:from-amber-600 dark:to-amber-700 
-                                    text-white text-xs rounded-full w-5 h-5 sm:w-6 sm:h-6 
-                                    flex items-center justify-center mr-2 
-                                    shadow-md shadow-amber-500/20
-                                    group-hover:shadow-amber-500/40 transition-shadow">
-                      <i className="fas fa-link text-xs"></i>
-                    </span>
-                    <div>
-                      <div className="text-amber-700 dark:text-amber-300 font-medium text-sm sm:text-base group-hover:text-amber-800 dark:group-hover:text-amber-200 transition-colors">
-                        {result.title}
-                      </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">{result.category}</div>
-                    </div>
+                    <div className="font-medium text-gray-800 dark:text-gray-200">{result.title}</div>
+                    {result.description && (
+                      <div className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-1">{result.description}</div>
+                    )}
                   </Link>
                 </li>
               ))}
             </ul>
-          </div>
-        </div>
-      )}
-
-      {/* 検索結果がない場合 */}
-      {isOpen && query && results.length === 0 && (
-        <div className="absolute z-50 mt-1 sm:mt-2 w-full bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-xl shadow-xl border border-amber-200 dark:border-amber-800/30 p-3 sm:p-4 text-center">
-          <div className="text-gray-500 dark:text-gray-400">
-            <i className="fas fa-search fa-lg sm:fa-2x mb-1 sm:mb-2 text-amber-400/70"></i>
-            <p className="text-sm sm:text-base">「{query}」に一致する結果はありませんでした</p>
-          </div>
+          ) : (
+            <div className="px-4 py-3 text-gray-600 dark:text-gray-400">
+              <p>「{query}」の検索結果はありません</p>
+            </div>
+          )}
         </div>
       )}
     </div>
