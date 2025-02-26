@@ -264,4 +264,77 @@ export function calculateTalentMaterials(
   }
   
   return requirements;
+}
+
+// キャラクターのレベルと天賦を統合して計算する関数
+export function calculateCharacterAllMaterials(
+  characterId: string,
+  currentLevel: number,
+  targetLevel: number,
+  currentTalentLevels: [number, number, number], // [通常攻撃, 元素スキル, 元素爆発]
+  targetTalentLevels: [number, number, number],
+  inventory: Record<string, number> = {} // 既存の素材所持数
+): MaterialRequirement[] {
+  // レベルアップ素材を計算
+  const levelMaterials = calculateCharacterAscensionMaterials(
+    characterId,
+    currentLevel,
+    targetLevel
+  );
+  
+  // 天賦素材を計算（3つの天賦分）
+  const talentMaterials: MaterialRequirement[] = [];
+  for (let i = 0; i < 3; i++) {
+    if (targetTalentLevels[i] > currentTalentLevels[i]) {
+      const singleTalentMaterials = calculateTalentMaterials(
+        characterId,
+        currentTalentLevels[i],
+        targetTalentLevels[i]
+      );
+      // 天賦素材を統合リストに追加
+      singleTalentMaterials.forEach(material => {
+        const existingIndex = talentMaterials.findIndex(m => m.materialId === material.materialId);
+        if (existingIndex >= 0) {
+          talentMaterials[existingIndex].amount += material.amount;
+        } else {
+          talentMaterials.push({ ...material });
+        }
+      });
+    }
+  }
+  
+  // 全ての素材要件を統合
+  const allRequirements: MaterialRequirement[] = [];
+  
+  // レベルアップ素材を追加
+  levelMaterials.forEach(material => {
+    const existingIndex = allRequirements.findIndex(m => m.materialId === material.materialId);
+    if (existingIndex >= 0) {
+      allRequirements[existingIndex].amount += material.amount;
+    } else {
+      allRequirements.push({ ...material });
+    }
+  });
+  
+  // 天賦素材を追加
+  talentMaterials.forEach(material => {
+    const existingIndex = allRequirements.findIndex(m => m.materialId === material.materialId);
+    if (existingIndex >= 0) {
+      allRequirements[existingIndex].amount += material.amount;
+    } else {
+      allRequirements.push({ ...material });
+    }
+  });
+  
+  // 所持素材を差し引く
+  return allRequirements.map(material => {
+    const owned = inventory[material.materialId] || 0;
+    const needed = Math.max(0, material.amount - owned);
+    return {
+      materialId: material.materialId,
+      amount: needed,
+      totalAmount: material.amount, // 総必要数も保持
+      owned: owned // 所持数も保持
+    };
+  }).filter(material => material.amount > 0); // 所持数で満たされているものは除外
 } 

@@ -384,4 +384,6 @@ materials.forEach(material => {
 export interface MaterialRequirement {
   materialId: string;
   amount: number;
+  totalAmount?: number; // 所持数を差し引く前の総必要数（オプション）
+  owned?: number; // 所持数（オプション）
 } 

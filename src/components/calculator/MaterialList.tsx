@@ -8,9 +8,10 @@ import { materialsMap } from '@/data/materials';
 interface MaterialListProps {
   requirements: MaterialRequirement[];
   title?: string;
+  showDetails?: boolean; // 詳細情報（総必要数と所持数）を表示するかどうか
 }
 
-export default function MaterialList({ requirements, title }: MaterialListProps) {
+export default function MaterialList({ requirements, title, showDetails = false }: MaterialListProps) {
   // レアリティでソートして表示 (高レアリティが先)
   const sortedRequirements = [...requirements].sort((a, b) => {
     const materialA = materialsMap.get(a.materialId);
@@ -104,9 +105,27 @@ export default function MaterialList({ requirements, title }: MaterialListProps)
                   <p className={`text-sm font-medium ${colorClasses.text} ${colorClasses.darkText} truncate`}>
                     {material.name}
                   </p>
-                  <p className="text-lg font-bold mt-1">
-                    {requirement.amount.toLocaleString()}
-                  </p>
+                  
+                  {/* 詳細表示がONの場合 */}
+                  {showDetails && requirement.totalAmount !== undefined ? (
+                    <div className="mt-1">
+                      <p className="text-lg font-bold">
+                        {requirement.amount.toLocaleString()}
+                        <span className="text-xs ml-1 text-gray-500 dark:text-gray-400">
+                          / {requirement.totalAmount.toLocaleString()}
+                        </span>
+                      </p>
+                      {requirement.owned !== undefined && requirement.owned > 0 && (
+                        <p className="text-xs text-gray-600 dark:text-gray-400">
+                          所持: {requirement.owned.toLocaleString()}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-lg font-bold mt-1">
+                      {requirement.amount.toLocaleString()}
+                    </p>
+                  )}
                 </div>
                 
                 {/* レアリティ表示 */}

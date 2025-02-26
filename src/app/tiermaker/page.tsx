@@ -27,77 +27,657 @@ interface Weapon {
 interface Character {
   id: string;
   name: string;
-  title: string;
   element: ElementType;
   weapon: WeaponType;
   rarity: RarityType;
   region: string;
-  description: string;
-  imageUrl: string;
+  description?: string;
+  imageUrl?: string;
   iconUrl: string;
 }
 
 // キャラクターデータ
 const characters: Character[] = [
+  // 5つ星キャラクター
   {
-    id: 'raiden',
-    name: '雷電将軍',
-    title: '平璃鳴雷',
-    element: 'electro',
-    weapon: 'polearm',
-    rarity: 5,
-    region: '稲妻',
-    description: '稲妻を統治する雷神。永遠を追求し、「無想の一太刀」で敵を切り裂く。',
-    imageUrl: '/images/characters/raiden.png',
-    iconUrl: '/images/characters/raiden.png'
-  },
-  {
-    id: 'kazuha',
-    name: '楓原万葉',
-    title: '紅葉逐露',
-    element: 'anemo',
+    id: 'albedo',
+    name: 'アルベド',
+    element: 'geo',
     weapon: 'sword',
     rarity: 5,
-    region: '稲妻',
-    description: '稲妻出身の侍。詩的な心を持ち、風の力を操る剣士。',
-    imageUrl: '/images/characters/kazuha.png',
-    iconUrl: '/images/characters/kazuha.png'
+    region: 'モンド',
+    iconUrl: '/images/characters/albedo-icon.png'
   },
   {
-    id: 'nahida',
-    name: 'ナヒーダ',
-    title: '白草淨華',
+    id: 'alhaitham',
+    name: 'アルハイゼン',
     element: 'dendro',
-    weapon: 'catalyst',
+    weapon: 'sword',
     rarity: 5,
     region: 'スメール',
-    description: 'スメールの草神。知恵の化身であり、夢の世界を自在に操る。',
-    imageUrl: '/images/characters/nahida.png',
-    iconUrl: '/images/characters/nahida.png'
-  },
-  {
-    id: 'hutao',
-    name: '胡桃',
-    title: '往生堂七十七代目堂主',
-    element: 'pyro',
-    weapon: 'polearm',
-    rarity: 5,
-    region: '璃月',
-    description: '璃月の葬儀社「往生堂」の若き堂主。死と生の境界を行き来する力を持つ。',
-    imageUrl: '/images/characters/hutao.png',
-    iconUrl: '/images/characters/hutao.png'
+    iconUrl: '/images/characters/alhaitham-icon.png'
   },
   {
     id: 'ayaka',
     name: '神里綾華',
-    title: '白鷺氷華',
     element: 'cryo',
     weapon: 'sword',
     rarity: 5,
     region: '稲妻',
-    description: '稲妻の名家「神里家」の長女。優美な剣術と氷の力で敵を翻弄する。',
-    imageUrl: '/images/characters/ayaka.png',
-    iconUrl: '/images/characters/ayaka.png'
+    iconUrl: '/images/characters/ayaka-icon.png'
+  },
+  {
+    id: 'baizhu',
+    name: '白朮',
+    element: 'dendro',
+    weapon: 'catalyst',
+    rarity: 5,
+    region: '璃月',
+    iconUrl: '/images/characters/baizhu-icon.png'
+  },
+  {
+    id: 'hutao',
+    name: '胡桃',
+    element: 'pyro',
+    weapon: 'polearm',
+    rarity: 5,
+    region: '璃月',
+    iconUrl: '/images/characters/hutao-icon.png'
+  },
+  {
+    id: 'nahida',
+    name: 'ナヒーダ',
+    element: 'dendro',
+    weapon: 'catalyst',
+    rarity: 5,
+    region: 'スメール',
+    iconUrl: '/images/characters/nahida-icon.png'
+  },
+  {
+    id: 'raiden-shogun',
+    name: '雷電将軍',
+    element: 'electro',
+    weapon: 'polearm',
+    rarity: 5,
+    region: '稲妻',
+    iconUrl: '/images/characters/raiden-shogun-icon.png'
+  },
+  {
+    id: 'kazuha',
+    name: '楓原万葉',
+    element: 'anemo',
+    weapon: 'sword',
+    rarity: 5,
+    region: '稲妻',
+    iconUrl: '/images/characters/kazuha-icon.png'
+  },
+  {
+    id: 'zhongli',
+    name: '鍾離',
+    element: 'geo',
+    weapon: 'polearm',
+    rarity: 5,
+    region: '璃月',
+    iconUrl: '/images/characters/zhongli-icon.png'
+  },
+  // 4つ星キャラクター
+  {
+    id: 'beidou',
+    name: '北斗',
+    element: 'electro',
+    weapon: 'claymore',
+    rarity: 4,
+    region: '璃月',
+    iconUrl: '/images/characters/beidou-icon.png'
+  },
+  {
+    id: 'bennett',
+    name: 'ベネット',
+    element: 'pyro',
+    weapon: 'sword',
+    rarity: 4,
+    region: 'モンド',
+    iconUrl: '/images/characters/bennett-icon.png'
+  },
+  {
+    id: 'candace',
+    name: 'キャンディス',
+    element: 'hydro',
+    weapon: 'polearm',
+    rarity: 4,
+    region: 'スメール',
+    iconUrl: '/images/characters/candace-icon.png'
+  },
+  {
+    id: 'charlotte',
+    name: 'シャルロット',
+    element: 'cryo',
+    weapon: 'catalyst',
+    rarity: 4,
+    region: 'フォンテーヌ',
+    iconUrl: '/images/characters/charlotte-icon.png'
+  },
+  {
+    id: 'chevreuse',
+    name: 'シュヴルーズ',
+    element: 'pyro',
+    weapon: 'polearm',
+    rarity: 4,
+    region: 'フォンテーヌ',
+    iconUrl: '/images/characters/chevreuse-icon.png'
+  },
+  {
+    id: 'chiori',
+    name: '千織',
+    element: 'geo',
+    weapon: 'sword',
+    rarity: 5,
+    region: '稲妻',
+    iconUrl: '/images/characters/chiori-icon.png'
+  },
+  {
+    id: 'chongyun',
+    name: '重雲',
+    element: 'cryo',
+    weapon: 'claymore',
+    rarity: 4,
+    region: '璃月',
+    iconUrl: '/images/characters/chongyun-icon.png'
+  },
+  {
+    id: 'collei',
+    name: 'コレイ',
+    element: 'dendro',
+    weapon: 'bow',
+    rarity: 4,
+    region: 'スメール',
+    iconUrl: '/images/characters/collei-icon.png'
+  },
+  {
+    id: 'cyno',
+    name: 'セノ',
+    element: 'electro',
+    weapon: 'polearm',
+    rarity: 5,
+    region: 'スメール',
+    iconUrl: '/images/characters/cyno-icon.png'
+  },
+  {
+    id: 'dehya',
+    name: 'ディシア',
+    element: 'pyro',
+    weapon: 'claymore',
+    rarity: 5,
+    region: 'スメール',
+    iconUrl: '/images/characters/dehya-icon.png'
+  },
+  {
+    id: 'diluc',
+    name: 'ディルック',
+    element: 'pyro',
+    weapon: 'claymore',
+    rarity: 5,
+    region: 'モンド',
+    iconUrl: '/images/characters/diluc-icon.png'
+  },
+  {
+    id: 'diona',
+    name: 'ディオナ',
+    element: 'cryo',
+    weapon: 'bow',
+    rarity: 4,
+    region: 'モンド',
+    iconUrl: '/images/characters/diona-icon.png'
+  },
+  {
+    id: 'dori',
+    name: 'ドリー',
+    element: 'electro',
+    weapon: 'claymore',
+    rarity: 4,
+    region: 'スメール',
+    iconUrl: '/images/characters/dori-icon.png'
+  },
+  {
+    id: 'eula',
+    name: 'エウルア',
+    element: 'cryo',
+    weapon: 'claymore',
+    rarity: 5,
+    region: 'モンド',
+    iconUrl: '/images/characters/eula-icon.png'
+  },
+  {
+    id: 'faruzan',
+    name: 'ファルザン',
+    element: 'anemo',
+    weapon: 'bow',
+    rarity: 4,
+    region: 'スメール',
+    iconUrl: '/images/characters/faruzan-icon.png'
+  },
+  {
+    id: 'fischl',
+    name: 'フィッシュル',
+    element: 'electro',
+    weapon: 'bow',
+    rarity: 4,
+    region: 'モンド',
+    iconUrl: '/images/characters/fischl-icon.png'
+  },
+  {
+    id: 'freminet',
+    name: 'フレミネ',
+    element: 'cryo',
+    weapon: 'claymore',
+    rarity: 4,
+    region: 'フォンテーヌ',
+    iconUrl: '/images/characters/freminet-icon.png'
+  },
+  {
+    id: 'furina',
+    name: 'フリーナ',
+    element: 'hydro',
+    weapon: 'sword',
+    rarity: 5,
+    region: 'フォンテーヌ',
+    iconUrl: '/images/characters/furina-icon.png'
+  },
+  {
+    id: 'ganyu',
+    name: '甘雨',
+    element: 'cryo',
+    weapon: 'bow',
+    rarity: 5,
+    region: '璃月',
+    iconUrl: '/images/characters/ganyu-icon.png'
+  },
+  {
+    id: 'gorou',
+    name: 'ゴロー',
+    element: 'geo',
+    weapon: 'bow',
+    rarity: 4,
+    region: '稲妻',
+    iconUrl: '/images/characters/gorou-icon.png'
+  },
+  {
+    id: 'heizou',
+    name: '鹿野院平蔵',
+    element: 'anemo',
+    weapon: 'catalyst',
+    rarity: 4,
+    region: '稲妻',
+    iconUrl: '/images/characters/heizou-icon.png'
+  },
+  {
+    id: 'itto',
+    name: '荒瀧一斗',
+    element: 'geo',
+    weapon: 'claymore',
+    rarity: 5,
+    region: '稲妻',
+    iconUrl: '/images/characters/itto-icon.png'
+  },
+  {
+    id: 'jean',
+    name: 'ジン',
+    element: 'anemo',
+    weapon: 'sword',
+    rarity: 5,
+    region: 'モンド',
+    iconUrl: '/images/characters/jean-icon.png'
+  },
+  {
+    id: 'kaeya',
+    name: 'ガイア',
+    element: 'cryo',
+    weapon: 'sword',
+    rarity: 4,
+    region: 'モンド',
+    iconUrl: '/images/characters/kaeya-icon.png'
+  },
+  {
+    id: 'kaveh',
+    name: 'カーヴェ',
+    element: 'dendro',
+    weapon: 'claymore',
+    rarity: 4,
+    region: 'スメール',
+    iconUrl: '/images/characters/kaveh-icon.png'
+  },
+  {
+    id: 'keqing',
+    name: '刻晴',
+    element: 'electro',
+    weapon: 'sword',
+    rarity: 5,
+    region: '璃月',
+    iconUrl: '/images/characters/keqing-icon.png'
+  },
+  {
+    id: 'kirara',
+    name: 'キララ',
+    element: 'dendro',
+    weapon: 'sword',
+    rarity: 4,
+    region: '稲妻',
+    iconUrl: '/images/characters/kirara-icon.png'
+  },
+  {
+    id: 'klee',
+    name: 'クレー',
+    element: 'pyro',
+    weapon: 'catalyst',
+    rarity: 5,
+    region: 'モンド',
+    iconUrl: '/images/characters/klee-icon.png'
+  },
+  {
+    id: 'kokomi',
+    name: '珊瑚宮心海',
+    element: 'hydro',
+    weapon: 'catalyst',
+    rarity: 5,
+    region: '稲妻',
+    iconUrl: '/images/characters/kokomi-icon.png'
+  },
+  {
+    id: 'kuki-shinobu',
+    name: '久岐忍',
+    element: 'electro',
+    weapon: 'sword',
+    rarity: 4,
+    region: '稲妻',
+    iconUrl: '/images/characters/kuki-shinobu-icon.png'
+  },
+  {
+    id: 'layla',
+    name: 'レイラ',
+    element: 'cryo',
+    weapon: 'sword',
+    rarity: 4,
+    region: 'スメール',
+    iconUrl: '/images/characters/layla-icon.png'
+  },
+  {
+    id: 'lisa',
+    name: 'リサ',
+    element: 'electro',
+    weapon: 'catalyst',
+    rarity: 4,
+    region: 'モンド',
+    iconUrl: '/images/characters/lisa-icon.png'
+  },
+  {
+    id: 'lynette',
+    name: 'リネット',
+    element: 'anemo',
+    weapon: 'sword',
+    rarity: 4,
+    region: 'フォンテーヌ',
+    iconUrl: '/images/characters/lynette-icon.png'
+  },
+  {
+    id: 'lyney',
+    name: 'リネ',
+    element: 'pyro',
+    weapon: 'bow',
+    rarity: 5,
+    region: 'フォンテーヌ',
+    iconUrl: '/images/characters/lyney-icon.png'
+  },
+  {
+    id: 'mika',
+    name: 'ミカ',
+    element: 'cryo',
+    weapon: 'polearm',
+    rarity: 4,
+    region: 'モンド',
+    iconUrl: '/images/characters/mika-icon.png'
+  },
+  {
+    id: 'mona',
+    name: 'モナ',
+    element: 'hydro',
+    weapon: 'catalyst',
+    rarity: 5,
+    region: 'モンド',
+    iconUrl: '/images/characters/mona-icon.png'
+  },
+  {
+    id: 'neuvillette',
+    name: 'ヌヴィレット',
+    element: 'hydro',
+    weapon: 'catalyst',
+    rarity: 5,
+    region: 'フォンテーヌ',
+    iconUrl: '/images/characters/neuvillette-icon.png'
+  },
+  {
+    id: 'nilou',
+    name: 'ニィロウ',
+    element: 'hydro',
+    weapon: 'sword',
+    rarity: 5,
+    region: 'スメール',
+    iconUrl: '/images/characters/nilou-icon.png'
+  },
+  {
+    id: 'ningguang',
+    name: '凝光',
+    element: 'geo',
+    weapon: 'catalyst',
+    rarity: 4,
+    region: '璃月',
+    iconUrl: '/images/characters/ningguang-icon.png'
+  },
+  {
+    id: 'noelle',
+    name: 'ノエル',
+    element: 'geo',
+    weapon: 'claymore',
+    rarity: 4,
+    region: 'モンド',
+    iconUrl: '/images/characters/noelle-icon.png'
+  },
+  {
+    id: 'qiqi',
+    name: '七七',
+    element: 'cryo',
+    weapon: 'sword',
+    rarity: 5,
+    region: '璃月',
+    iconUrl: '/images/characters/qiqi-icon.png'
+  },
+  {
+    id: 'razor',
+    name: 'レザー',
+    element: 'electro',
+    weapon: 'claymore',
+    rarity: 4,
+    region: 'モンド',
+    iconUrl: '/images/characters/razor-icon.png'
+  },
+  {
+    id: 'rosaria',
+    name: 'ロサリア',
+    element: 'cryo',
+    weapon: 'polearm',
+    rarity: 4,
+    region: 'モンド',
+    iconUrl: '/images/characters/rosaria-icon.png'
+  },
+  {
+    id: 'sara',
+    name: '九条裟羅',
+    element: 'electro',
+    weapon: 'bow',
+    rarity: 4,
+    region: '稲妻',
+    iconUrl: '/images/characters/sara-icon.png'
+  },
+  {
+    id: 'sayu',
+    name: '早柚',
+    element: 'anemo',
+    weapon: 'claymore',
+    rarity: 4,
+    region: '稲妻',
+    iconUrl: '/images/characters/sayu-icon.png'
+  },
+  {
+    id: 'shenhe',
+    name: '申鶴',
+    element: 'cryo',
+    weapon: 'polearm',
+    rarity: 5,
+    region: '璃月',
+    iconUrl: '/images/characters/shenhe-icon.png'
+  },
+  {
+    id: 'sucrose',
+    name: 'スクロース',
+    element: 'anemo',
+    weapon: 'catalyst',
+    rarity: 4,
+    region: 'モンド',
+    iconUrl: '/images/characters/sucrose-icon.png'
+  },
+  {
+    id: 'tartaglia',
+    name: 'タルタリヤ',
+    element: 'hydro',
+    weapon: 'bow',
+    rarity: 5,
+    region: 'スネージナヤ',
+    iconUrl: '/images/characters/tartaglia-icon.png'
+  },
+  {
+    id: 'thoma',
+    name: 'トーマ',
+    element: 'pyro',
+    weapon: 'polearm',
+    rarity: 4,
+    region: '稲妻',
+    iconUrl: '/images/characters/thoma-icon.png'
+  },
+  {
+    id: 'tighnari',
+    name: 'ティナリ',
+    element: 'dendro',
+    weapon: 'bow',
+    rarity: 5,
+    region: 'スメール',
+    iconUrl: '/images/characters/tighnari-icon.png'
+  },
+  {
+    id: 'venti',
+    name: 'ウェンティ',
+    element: 'anemo',
+    weapon: 'bow',
+    rarity: 5,
+    region: 'モンド',
+    iconUrl: '/images/characters/venti-icon.png'
+  },
+  {
+    id: 'wanderer',
+    name: '放浪者',
+    element: 'anemo',
+    weapon: 'catalyst',
+    rarity: 5,
+    region: 'スメール',
+    iconUrl: '/images/characters/wanderer-icon.png'
+  },
+  {
+    id: 'xiangling',
+    name: '香菱',
+    element: 'pyro',
+    weapon: 'polearm',
+    rarity: 4,
+    region: '璃月',
+    iconUrl: '/images/characters/xiangling-icon.png'
+  },
+  {
+    id: 'xiao',
+    name: '魈',
+    element: 'anemo',
+    weapon: 'polearm',
+    rarity: 5,
+    region: '璃月',
+    iconUrl: '/images/characters/xiao-icon.png'
+  },
+  {
+    id: 'xingqiu',
+    name: '行秋',
+    element: 'hydro',
+    weapon: 'sword',
+    rarity: 4,
+    region: '璃月',
+    iconUrl: '/images/characters/xingqiu-icon.png'
+  },
+  {
+    id: 'xinyan',
+    name: '辛炎',
+    element: 'pyro',
+    weapon: 'claymore',
+    rarity: 4,
+    region: '璃月',
+    iconUrl: '/images/characters/xinyan-icon.png'
+  },
+  {
+    id: 'yae-miko',
+    name: '八重神子',
+    element: 'electro',
+    weapon: 'catalyst',
+    rarity: 5,
+    region: '稲妻',
+    iconUrl: '/images/characters/yae-miko-icon.png'
+  },
+  {
+    id: 'yanfei',
+    name: '煙緋',
+    element: 'pyro',
+    weapon: 'catalyst',
+    rarity: 4,
+    region: '璃月',
+    iconUrl: '/images/characters/yanfei-icon.png'
+  },
+  {
+    id: 'yaoyao',
+    name: '瑶瑶',
+    element: 'dendro',
+    weapon: 'polearm',
+    rarity: 4,
+    region: '璃月',
+    iconUrl: '/images/characters/yaoyao-icon.png'
+  },
+  {
+    id: 'yelan',
+    name: '夜蘭',
+    element: 'hydro',
+    weapon: 'bow',
+    rarity: 5,
+    region: '璃月',
+    iconUrl: '/images/characters/yelan-icon.png'
+  },
+  {
+    id: 'yoimiya',
+    name: '宵宮',
+    element: 'pyro',
+    weapon: 'bow',
+    rarity: 5,
+    region: '稲妻',
+    iconUrl: '/images/characters/yoimiya-icon.png'
+  },
+  {
+    id: 'yunjin',
+    name: '雲菫',
+    element: 'geo',
+    weapon: 'polearm',
+    rarity: 4,
+    region: '璃月',
+    iconUrl: '/images/characters/yunjin-icon.png'
   }
 ];
 

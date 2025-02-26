@@ -208,4 +208,26 @@ export function calculateWeaponAscensionMaterials(
   }
   
   return requirements;
+}
+
+// 武器のレベルアップに必要な素材を計算する関数（所持素材を差し引く機能付き）
+export function calculateWeaponAscensionMaterialsWithInventory(
+  weaponId: string, 
+  currentLevel: number, 
+  targetLevel: number,
+  inventory: Record<string, number> = {} // 既存の素材所持数
+): MaterialRequirement[] {
+  const basicRequirements = calculateWeaponAscensionMaterials(weaponId, currentLevel, targetLevel);
+  
+  // 所持素材を差し引く
+  return basicRequirements.map(material => {
+    const owned = inventory[material.materialId] || 0;
+    const needed = Math.max(0, material.amount - owned);
+    return {
+      materialId: material.materialId,
+      amount: needed,
+      totalAmount: material.amount, // 総必要数も保持
+      owned: owned // 所持数も保持
+    };
+  }).filter(material => material.amount > 0); // 所持数で満たされているものは除外
 } 
