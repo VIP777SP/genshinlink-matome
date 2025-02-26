@@ -16,7 +16,7 @@ interface Weapon {
   id: string;
   name: string;
   type: WeaponType;
-  rarity: RarityType;
+  rarity: 3 | 4 | 5;
   baseAtk: number;
   subStat: string;
   passive: string;
@@ -707,7 +707,7 @@ const weapons: Weapon[] = [
     iconUrl: '/images/weapons/homa-icon.png'
   },
   {
-    id: 'thundering_pulse',
+    id: 'thundering-pulse',
     name: '飛雷の鼓槌',
     type: 'bow',
     rarity: 5,
@@ -715,10 +715,10 @@ const weapons: Weapon[] = [
     subStat: '会心ダメージ',
     passive: '飛雷の巴紋：通常攻撃ダメージ最大40%アップ(3層)、攻撃力20%アップ',
     imageUrl: '/images/weapons/thundering_pulse.png',
-    iconUrl: '/images/weapons/thundering_pulse-icon.png'
+    iconUrl: '/images/weapons/thundering-pulse-icon.png'
   },
   {
-    id: 'wolf_gravestone',
+    id: 'wolf-gravestone',
     name: '狼の末路',
     type: 'claymore',
     rarity: 5,
@@ -726,10 +726,10 @@ const weapons: Weapon[] = [
     subStat: '攻撃力%',
     passive: '狼の渇望：攻撃力20%アップ、HP30%以下の敵を攻撃すると、チーム全員の攻撃力40%アップ',
     imageUrl: '/images/weapons/wolf_gravestone.png',
-    iconUrl: '/images/weapons/wolf_gravestone-icon.png'
+    iconUrl: '/images/weapons/wolf-gravestone-icon.png'
   },
   {
-    id: 'lost_prayer',
+    id: 'lost-prayer',
     name: '四風原典',
     type: 'catalyst',
     rarity: 5,
@@ -737,11 +737,11 @@ const weapons: Weapon[] = [
     subStat: '会心率',
     passive: '無辺際の祝詞：移動速度10%アップ、戦闘中4秒毎に元素ダメージ8%アップ(最大4層)',
     imageUrl: '/images/weapons/lost_prayer.png',
-    iconUrl: '/images/weapons/lost_prayer-icon.png'
+    iconUrl: '/images/weapons/lost-prayer-icon.png'
   },
   // 5★武器の追加データ
   {
-    id: 'engulfing_lightning',
+    id: 'engulfing-lightning',
     name: '草薙の稲光',
     type: 'polearm',
     rarity: 5,
@@ -749,10 +749,10 @@ const weapons: Weapon[] = [
     subStat: '元素チャージ効率',
     passive: '非時の夢・常世竈食：元素チャージ効率に基づいて攻撃力アップ(最大80%)、元素爆発後エネルギー回復速度アップ',
     imageUrl: '/images/weapons/engulfing-lightning.png',
-    iconUrl: '/images/weapons/engulfing_lightning-icon.png'
+    iconUrl: '/images/weapons/engulfing-lightning-icon.png'
   },
   {
-    id: 'aqua_simulacra',
+    id: 'aqua-simulacra',
     name: '若水',
     type: 'bow',
     rarity: 5,
@@ -760,10 +760,10 @@ const weapons: Weapon[] = [
     subStat: '会心ダメージ',
     passive: '潜形の浪：HPが20%アップ、周囲に敵がいる時、全ダメージ20%アップ',
     imageUrl: '/images/weapons/aqua-simulacra.png',
-    iconUrl: '/images/weapons/aqua_simulacra-icon.png'
+    iconUrl: '/images/weapons/aqua-simulacra-icon.png'
   },
   {
-    id: 'jade_cutter',
+    id: 'jade-cutter',
     name: '磐岩結緑',
     type: 'sword',
     rarity: 5,
@@ -771,10 +771,10 @@ const weapons: Weapon[] = [
     subStat: '会心率',
     passive: '護国の無垢：HP上限20%アップ、HP上限の1.2%分、攻撃力アップ',
     imageUrl: '/images/weapons/jade-cutter.png',
-    iconUrl: '/images/weapons/jade_cutter-icon.png'
+    iconUrl: '/images/weapons/jade-cutter-icon.png'
   },
   {
-    id: 'skyward_harp',
+    id: 'skyward-harp',
     name: '天空の翼',
     type: 'bow',
     rarity: 5,
@@ -782,10 +782,10 @@ const weapons: Weapon[] = [
     subStat: '会心率',
     passive: '回響長天の歌：会心ダメージ20%アップ、攻撃時60%の確率で物理ダメージを追加',
     imageUrl: '/images/weapons/skyward-harp.png',
-    iconUrl: '/images/weapons/skyward_harp-icon.png'
+    iconUrl: '/images/weapons/skyward-harp-icon.png'
   },
   {
-    id: 'redhorn_stonethresher',
+    id: 'redhorn-stonethresher',
     name: '赤角石塵滅砕',
     type: 'claymore',
     rarity: 5,
@@ -793,7 +793,117 @@ const weapons: Weapon[] = [
     subStat: '会心ダメージ',
     passive: '古き役目の残光：防御力40%アップ、通常攻撃と重撃のダメージは防御力の40%分アップ',
     imageUrl: '/images/weapons/redhorn-stonethresher.png',
-    iconUrl: '/images/weapons/redhorn_stonethresher-icon.png'
+    iconUrl: '/images/weapons/redhorn-stonethresher-icon.png'
+  },
+  {
+    id: 'skyward-blade',
+    name: '天空の刃',
+    type: 'sword',
+    rarity: 5,
+    baseAtk: 46,
+    subStat: '元素チャージ効率',
+    passive: '穿流・雲間の月：会心率4%アップ、元素爆発使用後、移動速度・攻撃速度・通常攻撃と重撃ダメージアップ',
+    imageUrl: '/images/weapons/skyward-blade.png',
+    iconUrl: '/images/weapons/skyward-blade-icon.png'
+  },
+  {
+    id: 'skyward-spine',
+    name: '天空の脊',
+    type: 'polearm',
+    rarity: 5,
+    baseAtk: 48,
+    subStat: '元素チャージ効率',
+    passive: '流月の針：会心率8%、通常攻撃速度12%アップ、通常攻撃と重撃が50%の確率で追加ダメージを与える',
+    imageUrl: '/images/weapons/skyward-spine.png',
+    iconUrl: '/images/weapons/skyward-spine-icon.png'
+  },
+  {
+    id: 'skyward-pride',
+    name: '天空の傲',
+    type: 'claymore',
+    rarity: 5,
+    baseAtk: 48,
+    subStat: '元素チャージ効率',
+    passive: '揺籃の雲：全ダメージ8%アップ、元素爆発使用後、通常攻撃と重撃が真空ブレードを放つ',
+    imageUrl: '/images/weapons/skyward-pride.png',
+    iconUrl: '/images/weapons/skyward-pride-icon.png'
+  },
+  {
+    id: 'skyward-atlas',
+    name: '天空の巻',
+    type: 'catalyst',
+    rarity: 5,
+    baseAtk: 48,
+    subStat: '攻撃力%',
+    passive: '浮遊の星雲：元素ダメージ12%アップ、通常攻撃時、50%の確率で追尾の雲をまとう',
+    imageUrl: '/images/weapons/skyward-atlas.png',
+    iconUrl: '/images/weapons/skyward-atlas-icon.png'
+  },
+  {
+    id: 'primordial-jade-winged-spear',
+    name: '和璞鳶',
+    type: 'polearm',
+    rarity: 5,
+    baseAtk: 48,
+    subStat: '会心率',
+    passive: '昭質の鷹羽：攻撃命中時、攻撃力と全ダメージがアップ(7段階まで)',
+    imageUrl: '/images/weapons/primordial-jade-winged-spear.png',
+    iconUrl: '/images/weapons/primordial-jade-winged-spear-icon.png'
+  },
+  {
+    id: 'amos-bow',
+    name: 'アモスの弓',
+    type: 'bow',
+    rarity: 5,
+    baseAtk: 46,
+    subStat: '攻撃力%',
+    passive: '強い弓：通常攻撃と重撃のダメージ12%アップ、矢が放たれてから0.1秒ごとにダメージ8%アップ(最大5回)',
+    imageUrl: '/images/weapons/amos-bow.png',
+    iconUrl: '/images/weapons/amos-bow-icon.png'
+  },
+  {
+    id: 'polar-star',
+    name: '冬極の白星',
+    type: 'bow',
+    rarity: 5,
+    baseAtk: 45,
+    subStat: '会心率',
+    passive: '極夜の寒星：元素スキルと元素爆発のダメージ12%アップ、様々な攻撃で攻撃力バフ獲得(最大4スタック)',
+    imageUrl: '/images/weapons/polar-star.png',
+    iconUrl: '/images/weapons/polar-star-icon.png'
+  },
+  {
+    id: 'memory-of-dust',
+    name: '塵世の錫杖',
+    type: 'catalyst',
+    rarity: 5,
+    baseAtk: 46,
+    subStat: '攻撃力%',
+    passive: '金璋添玉：シールド強化20%、攻撃命中時に攻撃力アップ(最大5重複)、シールド状態だと効果2倍',
+    imageUrl: '/images/weapons/memory-of-dust.png',
+    iconUrl: '/images/weapons/memory-of-dust-icon.png'
+  },
+  {
+    id: 'unforged',
+    name: '無工の剣',
+    type: 'claymore',
+    rarity: 5,
+    baseAtk: 46,
+    subStat: '攻撃力%',
+    passive: '金璋匣暮：シールド強化20%、攻撃命中時に攻撃力アップ(最大5重複)、シールド状態だと効果2倍',
+    imageUrl: '/images/weapons/unforged.png',
+    iconUrl: '/images/weapons/unforged-icon.png'
+  },
+  {
+    id: 'freedom-sworn',
+    name: '蒼古なる自由への誓い',
+    type: 'sword',
+    rarity: 5,
+    baseAtk: 44,
+    subStat: '元素熟知',
+    passive: '永続の森：元素ダメージ10%アップ、元素反応で印を獲得、2層で通常攻撃・重撃・追撃ダメージ16%と攻撃力20%アップ',
+    imageUrl: '/images/weapons/freedom-sworn.png',
+    iconUrl: '/images/weapons/freedom-sworn-icon.png'
   },
   // 4★武器
   {
@@ -819,7 +929,7 @@ const weapons: Weapon[] = [
     iconUrl: '/images/weapons/rust-icon.png'
   },
   {
-    id: 'sacrificial_sword',
+    id: 'sacrificial-sword',
     name: '祭礼の剣',
     type: 'sword',
     rarity: 4,
@@ -827,10 +937,10 @@ const weapons: Weapon[] = [
     subStat: '元素チャージ効率',
     passive: '気息of生死の間：元素スキルが敵にダメージを与えた時、40%の確率で元素スキルのCDがリセット',
     imageUrl: '/images/weapons/sacrificial-sword.png',
-    iconUrl: '/images/weapons/sacrificial_sword-icon.png'
+    iconUrl: '/images/weapons/sacrificial-sword-icon.png'
   },
   {
-    id: 'dragon_bane',
+    id: 'dragon-bane',
     name: '匣中滅龍',
     type: 'polearm',
     rarity: 4,
@@ -838,10 +948,10 @@ const weapons: Weapon[] = [
     subStat: '元素熟知',
     passive: '破龍の断章：炎元素または水元素の影響を受けた敵に対するダメージ20%アップ',
     imageUrl: '/images/weapons/dragon-bane.png',
-    iconUrl: '/images/weapons/dragon_bane-icon.png'
+    iconUrl: '/images/weapons/dragon-bane-icon.png'
   },
   {
-    id: 'serpent_spine',
+    id: 'serpent-spine',
     name: '螭龍の剣',
     type: 'claymore',
     rarity: 4,
@@ -849,10 +959,10 @@ const weapons: Weapon[] = [
     subStat: '会心率',
     passive: '波セレナーデ：戦闘中、4秒毎にダメージ6%アップ(最大5重複)、被ダメージでスタック減少',
     imageUrl: '/images/weapons/serpent-spine.png',
-    iconUrl: '/images/weapons/serpent_spine-icon.png'
+    iconUrl: '/images/weapons/serpent-spine-icon.png'
   },
   {
-    id: 'favonius_lance',
+    id: 'favonius-lance',
     name: '西風長槍',
     type: 'polearm',
     rarity: 4,
@@ -860,10 +970,10 @@ const weapons: Weapon[] = [
     subStat: '元素チャージ効率',
     passive: '風呂循環：会心攻撃時、60%の確率で少量の元素粒子を生成(CD6秒)',
     imageUrl: '/images/weapons/favonius-lance.png',
-    iconUrl: '/images/weapons/favonius_lance-icon.png'
+    iconUrl: '/images/weapons/favonius-lance-icon.png'
   },
   {
-    id: 'favonius_sword',
+    id: 'favonius-sword',
     name: '西風剣',
     type: 'sword',
     rarity: 4,
@@ -871,10 +981,10 @@ const weapons: Weapon[] = [
     subStat: '元素チャージ効率',
     passive: '風呂循環：会心攻撃時、60%の確率で少量の元素粒子を生成(CD6秒)',
     imageUrl: '/images/weapons/favonius-sword.png',
-    iconUrl: '/images/weapons/favonius_sword-icon.png'
+    iconUrl: '/images/weapons/favonius-sword-icon.png'
   },
   {
-    id: 'favonius_greatsword',
+    id: 'favonius-greatsword',
     name: '西風大剣',
     type: 'claymore',
     rarity: 4,
@@ -882,10 +992,10 @@ const weapons: Weapon[] = [
     subStat: '元素チャージ効率',
     passive: '風呂循環：会心攻撃時、60%の確率で少量の元素粒子を生成(CD6秒)',
     imageUrl: '/images/weapons/favonius-greatsword.png',
-    iconUrl: '/images/weapons/favonius_greatsword-icon.png'
+    iconUrl: '/images/weapons/favonius-greatsword-icon.png'
   },
   {
-    id: 'favonius_warbow',
+    id: 'favonius-warbow',
     name: '西風猟弓',
     type: 'bow',
     rarity: 4,
@@ -893,10 +1003,10 @@ const weapons: Weapon[] = [
     subStat: '元素チャージ効率',
     passive: '風呂循環：会心攻撃時、60%の確率で少量の元素粒子を生成(CD6秒)',
     imageUrl: '/images/weapons/favonius-warbow.png',
-    iconUrl: '/images/weapons/favonius_warbow-icon.png'
+    iconUrl: '/images/weapons/favonius-warbow-icon.png'
   },
   {
-    id: 'favonius_codex',
+    id: 'favonius-codex',
     name: '西風秘典',
     type: 'catalyst',
     rarity: 4,
@@ -904,7 +1014,261 @@ const weapons: Weapon[] = [
     subStat: '元素チャージ効率',
     passive: '風呂循環：会心攻撃時、60%の確率で少量の元素粒子を生成(CD6秒)',
     imageUrl: '/images/weapons/favonius-codex.png',
-    iconUrl: '/images/weapons/favonius_codex-icon.png'
+    iconUrl: '/images/weapons/favonius-codex-icon.png'
+  },
+  {
+    id: 'lions-roar',
+    name: '匣中龍吟',
+    type: 'sword',
+    rarity: 4,
+    baseAtk: 42,
+    subStat: '攻撃力%',
+    passive: '破雷の巻：炎元素または雷元素の影響を受けた敵に対するダメージ20%アップ',
+    imageUrl: '/images/weapons/lions-roar.png',
+    iconUrl: '/images/weapons/lions-roar-icon.png'
+  },
+  {
+    id: 'rainslasher',
+    name: '雨裁',
+    type: 'claymore',
+    rarity: 4,
+    baseAtk: 42,
+    subStat: '元素熟知',
+    passive: '止水の巻：水元素または雷元素の影響を受けた敵に対するダメージ20%アップ',
+    imageUrl: '/images/weapons/rainslasher.png',
+    iconUrl: '/images/weapons/rainslasher-icon.png'
+  },
+  {
+    id: 'stringless',
+    name: '絶弦',
+    type: 'bow',
+    rarity: 4,
+    baseAtk: 42,
+    subStat: '元素熟知',
+    passive: '無矢の歌：元素スキルと元素爆発のダメージ24%アップ',
+    imageUrl: '/images/weapons/stringless.png',
+    iconUrl: '/images/weapons/stringless-icon.png'
+  },
+  {
+    id: 'eye-of-perception',
+    name: '昭心',
+    type: 'catalyst',
+    rarity: 4,
+    baseAtk: 41,
+    subStat: '攻撃力%',
+    passive: '回転の渦：通常攻撃と重撃時、50%の確率で攻撃力の240%の追加ダメージを与える(CD12秒)',
+    imageUrl: '/images/weapons/eye-of-perception.png',
+    iconUrl: '/images/weapons/eye-of-perception-icon.png'
+  },
+  {
+    id: 'sacrificial-greatsword',
+    name: '祭礼の大剣',
+    type: 'claymore',
+    rarity: 4,
+    baseAtk: 44,
+    subStat: '元素チャージ効率',
+    passive: '気息of生死の間：元素スキルが敵にダメージを与えた時、40%の確率で元素スキルのCDがリセット',
+    imageUrl: '/images/weapons/sacrificial-greatsword.png',
+    iconUrl: '/images/weapons/sacrificial-greatsword-icon.png'
+  },
+  {
+    id: 'sacrificial-bow',
+    name: '祭礼の弓',
+    type: 'bow',
+    rarity: 4,
+    baseAtk: 44,
+    subStat: '元素チャージ効率',
+    passive: '気息of生死の間：元素スキルが敵にダメージを与えた時、40%の確率で元素スキルのCDがリセット',
+    imageUrl: '/images/weapons/sacrificial-bow.png',
+    iconUrl: '/images/weapons/sacrificial-bow-icon.png'
+  },
+  {
+    id: 'sacrificial-fragments',
+    name: '祭礼の断片',
+    type: 'catalyst',
+    rarity: 4,
+    baseAtk: 41,
+    subStat: '元素熟知',
+    passive: '気息of生死の間：元素スキルが敵にダメージを与えた時、40%の確率で元素スキルのCDがリセット',
+    imageUrl: '/images/weapons/sacrificial-fragments.png',
+    iconUrl: '/images/weapons/sacrificial-fragments-icon.png'
+  },
+  {
+    id: 'deathmatch',
+    name: '死闘の槍',
+    type: 'polearm',
+    rarity: 4,
+    baseAtk: 41,
+    subStat: '会心率',
+    passive: '命中の幕：周囲の敵が2体以上の場合、攻撃力16%と防御力16%アップ、1体以下の場合は攻撃力24%アップ',
+    imageUrl: '/images/weapons/deathmatch.png',
+    iconUrl: '/images/weapons/deathmatch-icon.png'
+  },
+  {
+    id: 'black-sword',
+    name: '黒剣',
+    type: 'sword',
+    rarity: 4,
+    baseAtk: 42,
+    subStat: '会心率',
+    passive: '正義：通常攻撃と重撃のダメージ20%アップ、会心攻撃時、HPの60%分回復(CD5秒)',
+    imageUrl: '/images/weapons/black-sword.png',
+    iconUrl: '/images/weapons/black-sword-icon.png'
+  },
+  {
+    id: 'royal-greatsword',
+    name: '旧貴族大剣',
+    type: 'claymore',
+    rarity: 4,
+    baseAtk: 44,
+    subStat: '攻撃力%',
+    passive: '集中：敵に会心でないダメージを与えると、会心率8%アップ(最大5重複)、会心発生時にスタックリセット',
+    imageUrl: '/images/weapons/royal-greatsword.png',
+    iconUrl: '/images/weapons/royal-greatsword-icon.png'
+  },
+  {
+    id: 'alley-hunter',
+    name: '暗巷の狩人',
+    type: 'bow',
+    rarity: 4,
+    baseAtk: 44,
+    subStat: '会心率',
+    passive: '街の狩猟者：フィールドにいる毎秒、与えるダメージ2%アップ(最大10重複)、ダメージを受けるとスタック1失う',
+    imageUrl: '/images/weapons/alley-hunter.png',
+    iconUrl: '/images/weapons/alley-hunter-icon.png'
+  },
+  {
+    id: 'blackcliff-amulet',
+    name: '黒岩緋玉',
+    type: 'catalyst',
+    rarity: 4,
+    baseAtk: 42,
+    subStat: '会心ダメージ',
+    passive: '乗勝：敵を倒した後、攻撃力12%アップ(最大3重複)、継続時間30秒、重複ごとに継続時間は独立計算',
+    imageUrl: '/images/weapons/blackcliff-amulet.png',
+    iconUrl: '/images/weapons/blackcliff-amulet-icon.png'
+  },
+  {
+    id: 'prototype-crescent',
+    name: '試作澹月',
+    type: 'bow',
+    rarity: 4,
+    baseAtk: 42,
+    subStat: '攻撃力%',
+    passive: '無欠の一射：弱点に狙い撃ちを命中させた後、移動速度と攻撃力10%アップ、継続時間10秒',
+    imageUrl: '/images/weapons/prototype-crescent.png',
+    iconUrl: '/images/weapons/prototype-crescent-icon.png'
+  },
+  // 3★武器
+  {
+    id: 'white-tassel',
+    name: '白纓槍',
+    type: 'polearm',
+    rarity: 3,
+    baseAtk: 39,
+    subStat: '会心率',
+    passive: '無垢なる弾き：通常攻撃のダメージ24%アップ',
+    imageUrl: '/images/weapons/white-tassel.png',
+    iconUrl: '/images/weapons/white-tassel-icon.png'
+  },
+  {
+    id: 'thrilling-tales-of-dragon-slayers',
+    name: '龍殺しの英傑譚',
+    type: 'catalyst',
+    rarity: 3,
+    baseAtk: 39,
+    subStat: 'HP%',
+    passive: '伝承：キャラクター交代時、次のキャラクターの攻撃力を48%アップ、継続時間10秒(CD20秒)',
+    imageUrl: '/images/weapons/thrilling-tales-of-dragon-slayers.png',
+    iconUrl: '/images/weapons/thrilling-tales-of-dragon-slayers-icon.png'
+  },
+  {
+    id: 'harbinger-of-dawn',
+    name: '黎明の神剣',
+    type: 'sword',
+    rarity: 3,
+    baseAtk: 39,
+    subStat: '会心ダメージ',
+    passive: '日暮：HP70%以上の時、会心率28%アップ',
+    imageUrl: '/images/weapons/harbinger-of-dawn.png',
+    iconUrl: '/images/weapons/harbinger-of-dawn-icon.png'
+  },
+  {
+    id: 'slingshot',
+    name: '弾弓',
+    type: 'bow',
+    rarity: 3,
+    baseAtk: 38,
+    subStat: '会心率',
+    passive: '弾丸装填：通常攻撃または狙い撃ちが0.3秒以内に命中した場合、ダメージ36%アップ、それ以上は10%ダウン',
+    imageUrl: '/images/weapons/slingshot.png',
+    iconUrl: '/images/weapons/slingshot-icon.png'
+  },
+  {
+    id: 'debate-club',
+    name: '理屈責め',
+    type: 'claymore',
+    rarity: 3,
+    baseAtk: 39,
+    subStat: '攻撃力%',
+    passive: '理屈破り：元素スキル使用後3秒間、通常・重撃時に攻撃力60%の追加ダメージを与える(CD3秒)',
+    imageUrl: '/images/weapons/debate-club.png',
+    iconUrl: '/images/weapons/debate-club-icon.png'
+  },
+  {
+    id: 'black-tassel',
+    name: '黒纓槍',
+    type: 'polearm',
+    rarity: 3,
+    baseAtk: 38,
+    subStat: 'HP%',
+    passive: '害虫駆除：スライムに与えるダメージ40%アップ',
+    imageUrl: '/images/weapons/black-tassel.png',
+    iconUrl: '/images/weapons/black-tassel-icon.png'
+  },
+  {
+    id: 'magic-guide',
+    name: '魔導緒論',
+    type: 'catalyst',
+    rarity: 3,
+    baseAtk: 38,
+    subStat: '元素熟知',
+    passive: '洞察：水元素または雷元素の影響を受けた敵に対するダメージ12%アップ',
+    imageUrl: '/images/weapons/magic-guide.png',
+    iconUrl: '/images/weapons/magic-guide-icon.png'
+  },
+  {
+    id: 'cool-steel',
+    name: '冷刃',
+    type: 'sword',
+    rarity: 3,
+    baseAtk: 39,
+    subStat: '攻撃力%',
+    passive: '止水：水元素または氷元素の影響を受けた敵に対するダメージ12%アップ',
+    imageUrl: '/images/weapons/cool-steel.png',
+    iconUrl: '/images/weapons/cool-steel-icon.png'
+  },
+  {
+    id: 'raven-bow',
+    name: '鴉羽の弓',
+    type: 'bow',
+    rarity: 3,
+    baseAtk: 40,
+    subStat: '元素熟知',
+    passive: '猟的の追跡：水元素または炎元素の影響を受けた敵に対するダメージ12%アップ',
+    imageUrl: '/images/weapons/raven-bow.png',
+    iconUrl: '/images/weapons/raven-bow-icon.png'
+  },
+  {
+    id: 'bloodtainted-greatsword',
+    name: '鉄影段平',
+    type: 'claymore',
+    rarity: 3,
+    baseAtk: 38,
+    subStat: '元素熟知',
+    passive: '踏血：炎元素または雷元素の影響を受けた敵に対するダメージ12%アップ',
+    imageUrl: '/images/weapons/bloodtainted-greatsword.png',
+    iconUrl: '/images/weapons/bloodtainted-greatsword-icon.png'
   }
 ];
 
