@@ -9,7 +9,7 @@ const cards = [
   {
     href: "/recsite",
     title: "これであなたも原神マスター！？",
-    subtitle: "【おすすめ便利サイト】",
+    subtitle: "【お役立ちサイト集】",
     element: "anemo", // 風元素
     gradientFrom: "from-teal-500",
     gradientTo: "to-emerald-600",
@@ -18,7 +18,7 @@ const cards = [
   {
     href: "/reccommunity",
     title: "原神ライフが充実する！",
-    subtitle: "【おすすめコミュニティ】",
+    subtitle: "【原神関連コミュニティ集】",
     element: "geo", // 岩元素
     gradientFrom: "from-amber-500",
     gradientTo: "to-yellow-600",
@@ -27,7 +27,7 @@ const cards = [
   {
     href: "/recyoutuber",
     title: "超タメになる！超面白い！！",
-    subtitle: "【おすすめYoutuber】",
+    subtitle: "【おすすめYoutuber集】",
     element: "pyro", // 火元素
     gradientFrom: "from-red-500",
     gradientTo: "to-orange-600",
@@ -100,11 +100,31 @@ const cards = [
 
 // 注目のキャラクター
 const featuredCharacters = [
-  { name: "雷電将軍", image: "/images/characters/raiden-shogun-icon.png", element: "electro" },
-  { name: "胡桃", image: "/images/characters/hutao-icon.png", element: "pyro" },
-  { name: "楓原万葉", image: "/images/characters/kazuha-icon.png", element: "anemo" },
-  { name: "夜蘭", image: "/images/characters/yelan-icon.png", element: "hydro" },
-  { name: "甘雨", image: "/images/characters/ganyu-icon.png", element: "cryo" }
+  { 
+    name: "雷電将軍", 
+    image: "/images/characters/raiden-shogun.png", // アイコンからフルイラストに変更
+    element: "electro" 
+  },
+  { 
+    name: "胡桃", 
+    image: "/images/characters/hutao.png", // アイコンからフルイラストに変更
+    element: "pyro" 
+  },
+  { 
+    name: "楓原万葉", 
+    image: "/images/characters/kazuha.png", // アイコンからフルイラストに変更
+    element: "anemo" 
+  },
+  { 
+    name: "夜蘭", 
+    image: "/images/characters/yelan.png", // アイコンからフルイラストに変更
+    element: "hydro" 
+  },
+  { 
+    name: "甘雨", 
+    image: "/images/characters/ganyu.png", // アイコンからフルイラストに変更
+    element: "cryo" 
+  }
 ];
 
 // 元素アイコンコンポーネント
@@ -225,7 +245,7 @@ export default function Home() {
           
           {/* 特集キャラクター */}
           <div className="md:w-1/2 flex justify-center relative">
-            <div className="relative w-64 h-64 sm:w-80 sm:h-80">
+            <div className="relative w-64 h-64 sm:w-96 sm:h-96">
               {featuredCharacters.map((character, index) => (
                 <div 
                   key={character.name}
@@ -234,18 +254,19 @@ export default function Home() {
                   }`}
                 >
                   <div className="relative">
-                    <div className="animate-float w-48 h-48 sm:w-64 sm:h-64 relative">
+                    <div className="animate-float w-64 h-64 sm:w-80 sm:h-80 relative">
                       <Image 
                         src={character.image}
                         alt={character.name}
-                        width={256}
-                        height={256}
-                        className="object-contain"
+                        width={400}
+                        height={400}
+                        className="object-contain drop-shadow-xl"
+                        priority={index === 0} // 最初の画像を優先的に読み込む
                       />
                     </div>
                     <div className={`
                       absolute -bottom-4 left-1/2 transform -translate-x-1/2
-                      px-6 py-2 rounded-full text-white font-bold text-lg
+                      px-6 py-2 rounded-full text-white font-bold text-lg shadow-md
                       ${character.element === 'pyro' ? 'bg-red-500' : 
                         character.element === 'hydro' ? 'bg-blue-500' :
                         character.element === 'anemo' ? 'bg-teal-500' :
