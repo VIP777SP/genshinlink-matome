@@ -21,12 +21,9 @@ const navItems: NavItem[] = [
   { href: '/recyoutuber', label: 'YouTuber', icon: 'fa-youtube' },
   { href: '/column', label: 'コラム', icon: 'fa-newspaper' },
   { href: '/characters/tier', label: '最強キャラティア', icon: 'fa-trophy' },
-  { href: '/calendar', label: '攻略カレンダー', icon: 'fa-calendar-alt' },
-  { href: '/calculator', label: '素材計算機', icon: 'fa-calculator' },
+  { href: '/tools', label: '便利ツール集', icon: 'fa-tools' },
   { href: '/artifacts', label: '聖遺物攻略', icon: 'fa-gem' },
-  { href: '/maps', label: 'マップ', icon: 'fa-map' },
   { href: '/teams', label: 'パーティー編成', icon: 'fa-users-cog' },
-  { href: '/tiermaker', label: 'Tierメーカー', icon: 'fa-list-ol' },
   { href: '/news', label: 'ニュース', icon: 'fa-newspaper' },
 ];
 
@@ -76,7 +73,7 @@ export default function Navigation() {
           href="/" 
           className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-300 hover:brightness-110 transition-all"
         >
-          原神アルティメット攻略
+          原神、起動！！
         </Link>
         <div className="flex items-center gap-2">
           <ThemeToggle />
