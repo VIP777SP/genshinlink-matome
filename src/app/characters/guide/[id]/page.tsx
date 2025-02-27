@@ -7,6 +7,7 @@ import { notFound } from 'next/navigation';
 import FavoriteButton from '@/components/FavoriteButton';
 import CommentSection from '@/components/CommentSection';
 import { getCharacterById, elementColors, weaponIcons, getCharacterIconUrl } from '@/utils/characters';
+import { getCharacterDetailsById } from '@/characters/details';
 import { useState, useEffect } from 'react';
 import { characterGuides } from '@/data/characterGuides';
 
@@ -130,8 +131,9 @@ export default function CharacterGuidePage() {
   const params = useParams();
   const characterId = params.id as string;
   
-  // キャラクター情報を取得
+  // キャラクター基本情報と詳細情報を取得
   const character = getCharacterById(characterId);
+  const characterDetails = getCharacterDetailsById(characterId);
   
   // キャラクターが見つからない場合は404ページを表示
   if (!character) {
@@ -275,9 +277,11 @@ export default function CharacterGuidePage() {
               </span>
               
               {/* 出身地域 */}
-              <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded-full text-sm">
-                {character.region}
-              </span>
+              {characterDetails?.region && (
+                <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded-full text-sm">
+                  {characterDetails.region}
+                </span>
+              )}
             </div>
             
             {/* キャラクター評価（新規追加） */}
@@ -330,7 +334,7 @@ export default function CharacterGuidePage() {
                 キャラクター解説
               </h2>
               <p className="text-gray-700 dark:text-gray-300">
-                {character.description}
+                {characterDetails?.description || '詳細情報はまだ登録されていません。'}
               </p>
             </div>
           </div>
@@ -593,7 +597,7 @@ export default function CharacterGuidePage() {
       )}
       
       {/* 命の星座セクション */}
-      {character.constellations && guide.constellationRatings && (
+      {characterDetails?.constellations && guide.constellationRatings && (
         <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-amber-200/40 dark:border-amber-800/30 mb-8 p-6">
           <h2 className="text-xl font-bold mb-4 text-amber-700 dark:text-amber-400 flex items-center">
             <i className="fas fa-star mr-2 text-amber-600 dark:text-amber-500"></i>
@@ -601,7 +605,7 @@ export default function CharacterGuidePage() {
           </h2>
           
           <div className="space-y-4">
-            {character.constellations.map((constellation) => {
+            {characterDetails.constellations.map((constellation) => {
               // コンステレーションのレーティングをガイドデータから取得
               const rating = guide.constellationRatings?.[constellation.level] || 2; // デフォルトは2星
               
