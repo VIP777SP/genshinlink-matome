@@ -12,7 +12,7 @@ type ThemeContextType = {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('dark');
+  const [theme, setTheme] = useState<Theme>('light');
   const [mounted, setMounted] = useState(false);
 
   // 初期化時にローカルストレージから読み込み
@@ -25,8 +25,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       
       // ローカルストレージに保存されていれば、それを使用
-      // なければデフォルトでダークモード
-      const initialTheme = savedTheme || 'dark';
+      // 保存されていなければデフォルトでライトモード
+      // ただし、最初の訪問でシステム設定がダークならシステム設定を尊重
+      const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
       setTheme(initialTheme);
       
       setMounted(true);

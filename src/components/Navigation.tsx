@@ -79,6 +79,7 @@ export default function Navigation() {
           原神アルティメット攻略
         </Link>
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <button
             onClick={() => setShowSearch(!showSearch)}
             className="text-white p-2 rounded-lg hover:bg-amber-600/50 transition-colors"
