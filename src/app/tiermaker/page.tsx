@@ -28,7 +28,11 @@ const HTMLToTouch = {
     {
       id: 'touch',
       backend: TouchBackend,
-      options: { enableMouseEvents: true, delayTouchStart: 0 },
+      options: { 
+        enableMouseEvents: true, 
+        delayTouchStart: 0,
+        enableHoverOutsideTarget: true,
+      },
       preview: true,
       transition: TouchTransition,
     },
@@ -1417,6 +1421,12 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
     collect: monitor => ({
       isDragging: !!monitor.isDragging(),
     }),
+    options: {
+      dropEffect: 'move',
+    },
+    end: (item, monitor) => {
+      console.log('Drag ended:', item);
+    },
   }));
   
   // ref と drag を接続
@@ -1484,6 +1494,12 @@ const WeaponCard = ({ weapon, onDrop, currentTier }: WeaponCardProps) => {
     collect: monitor => ({
       isDragging: !!monitor.isDragging(),
     }),
+    options: {
+      dropEffect: 'move',
+    },
+    end: (item, monitor) => {
+      console.log('Drag ended:', item);
+    },
   }));
   
   // ref と drag を接続
@@ -2309,8 +2325,10 @@ export default function TierMakerPage() {
   };
   
   return (
-    <DndProvider backend={MultiBackend} options={HTMLToTouch}>
-      <CustomDragLayer characters={characters} weapons={weapons} />
+    <DndProvider backend={MultiBackend} options={HTMLToTouch} debugMode={true}>
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <CustomDragLayer characters={characters} weapons={weapons} />
+      </div>
       <div className="relative min-h-screen py-8 px-4 sm:px-6 lg:px-8">
         {/* 背景装飾パターン */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
