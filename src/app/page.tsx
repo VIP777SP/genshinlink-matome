@@ -1,3 +1,5 @@
+'use client';
+
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -148,9 +150,6 @@ const FloatingElement = ({ children, delay = 0, scale = 1 }: { children: React.R
     </div>
   );
 };
-
-// クライアントコンポーネント
-'use client';
 
 export default function Home() {
   const [currentCharacterIndex, setCurrentCharacterIndex] = useState(0);
