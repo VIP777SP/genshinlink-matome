@@ -14,13 +14,28 @@ import { Tab } from '@headlessui/react';
 import { FiEdit3, FiSave, FiPlusCircle, FiTrash2, FiArrowUp, FiArrowDown, FiX } from 'react-icons/fi';
 import { TwitterShareButton, TwitterIcon } from 'react-share';
 
-// react-dnd用のシンプルなバックエンド設定 
-// マルチバックエンドは一時的に無効化し、シンプルな設定を使用
-
-// より単純な設定を使用するため、直接HTML5Backendを指定
-const backendOptions = {
-  enableMouseEvents: true,
-  delayTouchStart: 0
+// react-dnd用のバックエンド設定 
+// マルチバックエンドを最適化された設定で使用
+const HTML5toTouch = {
+  backends: [
+    {
+      id: 'html5',
+      backend: HTML5Backend,
+      transition: TouchTransition,
+      preview: true
+    },
+    {
+      id: 'touch',
+      backend: TouchBackend,
+      options: {
+        enableMouseEvents: true,
+        delayTouchStart: 0,
+        enableHoverOutsideTarget: true,
+        touchSlop: 5 // タッチの許容範囲を小さくして反応を良くする
+      },
+      preview: true
+    }
+  ]
 };
 
 // 属性タイプの定義
@@ -1401,19 +1416,23 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
   const ref = useRef<HTMLDivElement>(null);
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes.CHARACTER,
-    item: { id: character.id } as DragItem,
+    item: { id: character.id, type: 'character' } as DragItem,
     collect: monitor => ({
-      isDragging: !!monitor.isDragging(),
+      isDragging: monitor.isDragging(),
     }),
     options: {
       dropEffect: 'move',
     },
     end: (item, monitor) => {
-      console.log('Drag ended:', item);
+      const dropResult = monitor.getDropResult<{ id: string }>();
+      if (item && dropResult) {
+        console.log('キャラクタードロップ:', item, 'to', dropResult);
+        onDrop(item.id, dropResult.id);
+      }
     },
-  }));
+  }), [character.id, onDrop]);
   
-  // ref と drag を接続
+  // ドラッグ参照を設定
   drag(ref);
 
   // 未割り当てエリア以外に配置されている場合のみ削除ボタンを表示
@@ -1474,19 +1493,23 @@ const WeaponCard = ({ weapon, onDrop, currentTier }: WeaponCardProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes.WEAPON,
-    item: { id: weapon.id } as DragItem,
+    item: { id: weapon.id, type: 'weapon' } as DragItem,
     collect: monitor => ({
-      isDragging: !!monitor.isDragging(),
+      isDragging: monitor.isDragging(),
     }),
     options: {
       dropEffect: 'move',
     },
     end: (item, monitor) => {
-      console.log('Drag ended:', item);
+      const dropResult = monitor.getDropResult<{ id: string }>();
+      if (item && dropResult) {
+        console.log('武器ドロップ:', item, 'to', dropResult);
+        onDrop(item.id, dropResult.id);
+      }
     },
-  }));
+  }), [weapon.id, onDrop]);
   
-  // ref と drag を接続
+  // ドラッグ参照を設定
   drag(ref);
 
   // 未割り当てエリア以外に配置されている場合のみ削除ボタンを表示
@@ -2309,8 +2332,8 @@ export default function TierMakerPage() {
   };
   
   return (
-    <DndProvider backend={HTML5Backend} debugMode={true}>
-      <div style={{ position: 'relative', zIndex: 1 }}>
+    <DndProvider backend={MultiBackend} options={HTML5toTouch} debugMode={true}>
+      <div style={{ position: 'relative', zIndex: 9999 }}>
         <CustomDragLayer characters={characters} weapons={weapons} />
       </div>
       <div className="relative min-h-screen py-8 px-4 sm:px-6 lg:px-8">
