@@ -5,7 +5,8 @@ import Image from 'next/image';
 import { useSound } from '@/components/SoundService';
 import FavoriteButton from '@/components/FavoriteButton';
 import CommentSection from '@/components/CommentSection';
-import { TierDefinition, tiersC0, tiersC2R1, Character, RoleType, ElementType, WeaponType, RarityType } from '@/utils/characters';
+import { Character, RoleType, ElementType, WeaponType, RarityType } from '@/utils/characters';
+import { TierDefinition, tiersC0, tiersC2R1 } from '@/tierlist/tiers';
 
 // 元素カラーのマッピング
 const elementColors: Record<ElementType, { bg: string; text: string; darkBg: string; darkText: string }> = {
@@ -170,7 +171,7 @@ export default function CharacterTierPage() {
                           <div className="relative h-20 sm:h-24">
                             <div className={`absolute inset-0 ${elementColors[character.element].bg} ${elementColors[character.element].darkBg} opacity-30`}></div>
                             <Image
-                              src={character.imageUrl}
+                              src={character.fullImageUrl}
                               alt={character.name}
                               fill
                               className="object-cover object-top"
@@ -207,7 +208,7 @@ export default function CharacterTierPage() {
                           <div className="relative h-20 sm:h-24">
                             <div className={`absolute inset-0 ${elementColors[character.element].bg} ${elementColors[character.element].darkBg} opacity-30`}></div>
                             <Image
-                              src={character.imageUrl}
+                              src={character.fullImageUrl}
                               alt={character.name}
                               fill
                               className="object-cover object-top"

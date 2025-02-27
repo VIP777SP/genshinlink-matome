@@ -5,22 +5,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import FavoriteButton from '@/components/FavoriteButton';
 import CommentSection from '@/components/CommentSection';
-import { elementColors, characters, tiersC0, tiersC2R1, Character, RoleType } from '@/utils/characters';
+import { elementColors, characters, Character, RoleType } from '@/utils/characters';
+import { TierDefinition, TierRank, tiersC0, tiersC2R1 } from '@/tierlist/tiers';
 
 // 属性・武器・レアリティ・役割の型定義
 type ElementType = 'pyro' | 'hydro' | 'anemo' | 'electro' | 'dendro' | 'cryo' | 'geo';
 type WeaponType = 'sword' | 'claymore' | 'polearm' | 'bow' | 'catalyst';
 type RarityType = 4 | 5;
-
-// ティア定義
-type TierRank = 'SS' | 'S' | 'A' | 'B' | 'C';
-type TierDefinition = {
-  rank: TierRank;
-  name: string;
-  description: string;
-  color: string;
-  characters: Character[];
-};
 
 // 武器アイコンのマッピング
 const weaponIcons: Record<WeaponType, string> = {

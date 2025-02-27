@@ -46,29 +46,15 @@ export type Constellation = {
 export type Character = {
   id: string;
   name: string;
-  title: string;
   element: ElementType;
   weapon: WeaponType;
   rarity: RarityType;
-  region: string;
-  description: string;
-  imageUrl: string; // 後方互換性のため残す
   iconUrl: string; // アイコン用小さい画像
   fullImageUrl: string; // 詳細表示用大きい画像
   role: RoleType;
   stats?: CharacterStats; // Lv90ステータス (オプション)
   talents?: CharacterTalent[]; // 天賦情報 (オプション)
   constellations?: Constellation[]; // 命の星座 (オプション)
-};
-
-// ティア定義
-export type TierRank = 'SS' | 'S' | 'A' | 'B' | 'C';
-export type TierDefinition = {
-  rank: TierRank;
-  name: string;
-  description: string;
-  color: string;
-  characters: Character[];
 };
 
 // 元素カラーのマッピング
@@ -105,13 +91,9 @@ export const characters: Character[] = [
   {
     id: 'raiden-shogun',
     name: '雷電将軍',
-    title: '殲滅の稲妻',
     element: 'electro',
     weapon: 'polearm',
     rarity: 5,
-    region: '稲妻',
-    description: '稲妻の雷神であり、稲妻幕府の最高指導者。「永遠」を追い求め、「まぼろしの永遠」という方針を打ち出した。',
-    imageUrl: 'https://upload-static.hoyoverse.com/hk4e/upload/officialsites/202106/raiden_shogun.png',
     iconUrl: '/images/characters/raiden-shogun-icon.png',
     fullImageUrl: '/images/characters/raiden-shogun.png',
     role: 'supporter',
@@ -213,13 +195,9 @@ export const characters: Character[] = [
   {
     id: 'kazuha',
     name: '楓原万葉',
-    title: '紅葉のいろどり',
     element: 'anemo',
     weapon: 'sword',
     rarity: 5,
-    region: '稲妻',
-    description: '稲妻の浪人剣士。さすらいの詩人である。若くて、名声もないが、多くの物語と伝説を聞いてきた。',
-    imageUrl: 'https://upload-static.hoyoverse.com/hk4e/upload/officialsites/202106/kazuha.png',
     iconUrl: '/images/characters/kazuha-icon.png',
     fullImageUrl: '/images/characters/kazuha.png',
     role: 'supporter'
@@ -227,13 +205,9 @@ export const characters: Character[] = [
   {
     id: 'nahida',
     name: 'ナヒーダ',
-    title: '白草净华',
     element: 'dendro',
     weapon: 'catalyst',
     rarity: 5,
-    region: 'スメール',
-    description: 'スメール教令院の主神。知恵を司る草の神。純粋で、優しく、知恵に溢れている。',
-    imageUrl: 'https://upload-static.hoyoverse.com/hk4e/upload/officialsites/202210/nahida.png',
     iconUrl: '/images/characters/nahida-icon.png',
     fullImageUrl: '/images/characters/nahida.png',
     role: 'supporter'
@@ -241,13 +215,9 @@ export const characters: Character[] = [
   {
     id: 'bennett',
     name: 'ベネット',
-    title: '運命の試練',
     element: 'pyro',
     weapon: 'sword',
     rarity: 4,
-    region: 'モンド',
-    description: 'モンドの冒険者ギルドに所属する若き冒険者。いつも不運に見舞われているが、それでも前向きな性格を持っている。',
-    imageUrl: 'https://upload-static.hoyoverse.com/hk4e/upload/officialsites/202001/bennett.png',
     iconUrl: '/images/characters/bennett-icon.png',
     fullImageUrl: '/images/characters/bennett.png',
     role: 'supporter'
@@ -255,13 +225,9 @@ export const characters: Character[] = [
   {
     id: 'xingqiu',
     name: '行秋',
-    title: '少年春衫薄',
     element: 'hydro',
     weapon: 'sword',
     rarity: 4,
-    region: '璃月',
-    description: '璃月の有名な商家、飛雲商会の次男坊。本の虫で、武術にも優れた才能を持つ。',
-    imageUrl: 'https://upload-static.hoyoverse.com/hk4e/upload/officialsites/202001/xingqiu.png',
     iconUrl: '/images/characters/xingqiu-icon.png',
     fullImageUrl: '/images/characters/xingqiu.png',
     role: 'supporter'
@@ -269,13 +235,9 @@ export const characters: Character[] = [
   {
     id: 'zhongli',
     name: '鍾離',
-    title: '通じ合う岩',
     element: 'geo',
     weapon: 'polearm',
     rarity: 5,
-    region: '璃月',
-    description: '往生堂の客人。博識で、長い年月を生きてきたかのような風格がある。',
-    imageUrl: 'https://upload-static.hoyoverse.com/hk4e/upload/officialsites/202011/zhongli.png',
     iconUrl: '/images/characters/zhongli-icon.png',
     fullImageUrl: '/images/characters/zhongli.png',
     role: 'supporter'
@@ -283,13 +245,9 @@ export const characters: Character[] = [
   {
     id: 'ganyu',
     name: '甘雨',
-    title: '循いし理',
     element: 'cryo',
     weapon: 'bow',
     rarity: 5,
-    region: '璃月',
-    description: '璃月七星の秘書。半人半仙獣の血を引く。几帳面で真面目な性格。',
-    imageUrl: 'https://upload-static.hoyoverse.com/hk4e/upload/officialsites/202101/ganyu.png',
     iconUrl: '/images/characters/ganyu-icon.png',
     fullImageUrl: '/images/characters/ganyu.png',
     role: 'attacker',
@@ -389,13 +347,9 @@ export const characters: Character[] = [
   {
     id: 'xiangling',
     name: '香菱',
-    title: '万民百味',
     element: 'pyro',
     weapon: 'polearm',
     rarity: 4,
-    region: '璃月',
-    description: '璃月の料理人。料理に情熱を注ぎ、新しい食材や調理法を常に探求している。',
-    imageUrl: 'https://upload-static.hoyoverse.com/hk4e/upload/officialsites/202001/xiangling.png',
     iconUrl: '/images/characters/xiangling-icon.png',
     fullImageUrl: '/images/characters/xiangling.png',
     role: 'attacker'
@@ -403,13 +357,9 @@ export const characters: Character[] = [
   {
     id: 'hutao',
     name: '胡桃',
-    title: '往生堂七十七代目堂主',
     element: 'pyro',
     weapon: 'polearm',
     rarity: 5,
-    region: '璃月',
-    description: '璃月の葬儀社「往生堂」の若き堂主。死と生の境界を行き来する力を持つ。',
-    imageUrl: 'https://upload-static.hoyoverse.com/hk4e/upload/officialsites/202103/hutao.png',
     iconUrl: '/images/characters/hutao-icon.png',
     fullImageUrl: '/images/characters/hutao.png',
     role: 'attacker'
@@ -417,13 +367,9 @@ export const characters: Character[] = [
   {
     id: 'ayaka',
     name: '神里綾華',
-    title: '白鷺氷華',
     element: 'cryo',
     weapon: 'sword',
     rarity: 5,
-    region: '稲妻',
-    description: '稲妻の名家「神里家」の長女。優美な剣術と氷の力で敵を翻弄する。',
-    imageUrl: 'https://upload-static.hoyoverse.com/hk4e/upload/officialsites/202107/ayaka.png',
     iconUrl: '/images/characters/ayaka-icon.png',
     fullImageUrl: '/images/characters/ayaka.png',
     role: 'attacker'
@@ -433,110 +379,4 @@ export const characters: Character[] = [
 // IDからキャラクターを取得する便利関数
 export function getCharacterById(id: string): Character | undefined {
   return characters.find(character => character.id === id);
-}
-
-// C0星4武器前提のティア表
-export const tiersC0: TierDefinition[] = [
-  {
-    rank: 'SS',
-    name: '最強ランク',
-    description: 'C0・星4武器でも圧倒的な性能を発揮するキャラクター。初心者から上級者まで広く活躍できる。',
-    color: 'bg-red-600',
-    characters: [
-      characters.find(c => c.id === 'bennett')!,
-      characters.find(c => c.id === 'xingqiu')!,
-      characters.find(c => c.id === 'xiangling')!,
-    ]
-  },
-  {
-    rank: 'S',
-    name: '超強力ランク',
-    description: 'C0・星4武器でも非常に強力で、ほとんどのコンテンツで活躍できるキャラクター。',
-    color: 'bg-orange-500',
-    characters: [
-      characters.find(c => c.id === 'kazuha')!,
-      characters.find(c => c.id === 'nahida')!,
-      characters.find(c => c.id === 'zhongli')!,
-      characters.find(c => c.id === 'ayaka')!,
-    ]
-  },
-  {
-    rank: 'A',
-    name: '強力ランク',
-    description: 'C0・星4武器でも十分な性能を発揮し、適切なパーティ編成で真価を発揮するキャラクター。',
-    color: 'bg-amber-500',
-    characters: [
-      characters.find(c => c.id === 'ganyu')!,
-      characters.find(c => c.id === 'hutao')!,
-      characters.find(c => c.id === 'raiden-shogun')!,
-    ]
-  },
-  {
-    rank: 'B',
-    name: '平均ランク',
-    description: 'C0・星4武器では特定の状況でのみ活躍できるキャラクター。凸数や武器によって性能が向上する。',
-    color: 'bg-green-600',
-    characters: []
-  },
-  {
-    rank: 'C',
-    name: '改善待ちランク',
-    description: 'C0・星4武器では力を発揮しづらく、凸数や専用武器が必要なキャラクター。',
-    color: 'bg-blue-600',
-    characters: []
-  },
-];
-
-// C2R1前提のティア表
-export const tiersC2R1: TierDefinition[] = [
-  {
-    rank: 'SS',
-    name: '最強ランク',
-    description: 'C2・専用武器R1で圧倒的性能を持ち、メタを支配するキャラクター。どんなパーティでも主力として活躍できる。',
-    color: 'bg-red-600',
-    characters: [
-      characters.find(c => c.id === 'raiden-shogun')!,
-      characters.find(c => c.id === 'nahida')!,
-      characters.find(c => c.id === 'hutao')!,
-    ]
-  },
-  {
-    rank: 'S',
-    name: '超強力ランク',
-    description: 'C2・専用武器R1で非常に強力な性能を発揮し、ほとんどのコンテンツで活躍できるキャラクター。',
-    color: 'bg-orange-500',
-    characters: [
-      characters.find(c => c.id === 'ayaka')!,
-      characters.find(c => c.id === 'ganyu')!,
-      characters.find(c => c.id === 'kazuha')!,
-    ]
-  },
-  {
-    rank: 'A',
-    name: '強力ランク',
-    description: 'C2・専用武器R1で十分な性能を発揮し、特定の役割で優れた活躍をするキャラクター。',
-    color: 'bg-amber-500',
-    characters: [
-      characters.find(c => c.id === 'zhongli')!,
-      characters.find(c => c.id === 'xiangling')!,
-    ]
-  },
-  {
-    rank: 'B',
-    name: '平均ランク',
-    description: 'C2・専用武器R1でも一般的な性能を持ち、特定のパーティ編成や状況で活躍できるキャラクター。',
-    color: 'bg-green-600',
-    characters: [
-      characters.find(c => c.id === 'xingqiu')!,
-    ]
-  },
-  {
-    rank: 'C',
-    name: '改善待ちランク',
-    description: 'C2・専用武器R1でもより上位の凸数か高精錬が必要なキャラクター。',
-    color: 'bg-blue-600',
-    characters: [
-      characters.find(c => c.id === 'bennett')!,
-    ]
-  },
-]; 
+} 
