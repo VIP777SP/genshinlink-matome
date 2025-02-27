@@ -29,9 +29,9 @@ const HTML5toTouch = {
       backend: TouchBackend,
       options: {
         enableMouseEvents: true,
-        delayTouchStart: 0,
+        delayTouchStart: 50, // 少し遅延を設定して誤検出を防ぐ
         enableHoverOutsideTarget: true,
-        touchSlop: 5 // タッチの許容範囲を小さくして反応を良くする
+        touchSlop: 20 // タッチの許容範囲を増やして操作しやすくする
       },
       preview: true
     }
@@ -1416,23 +1416,20 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
   const ref = useRef<HTMLDivElement>(null);
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes.CHARACTER,
-    item: { id: character.id, type: 'character' } as DragItem,
+    item: { id: character.id } as DragItem,
     collect: monitor => ({
-      isDragging: monitor.isDragging(),
+      isDragging: !!monitor.isDragging(),
     }),
     options: {
       dropEffect: 'move',
     },
     end: (item, monitor) => {
-      const dropResult = monitor.getDropResult<{ id: string }>();
-      if (item && dropResult) {
-        console.log('キャラクタードロップ:', item, 'to', dropResult);
-        onDrop(item.id, dropResult.id);
-      }
+      console.log('Drag ended:', item);
+      // onDropは呼び出さない - 既にドロップ処理で行われている
     },
-  }), [character.id, onDrop]);
+  }));
   
-  // ドラッグ参照を設定
+  // ref と drag を接続
   drag(ref);
 
   // 未割り当てエリア以外に配置されている場合のみ削除ボタンを表示
@@ -1493,23 +1490,20 @@ const WeaponCard = ({ weapon, onDrop, currentTier }: WeaponCardProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes.WEAPON,
-    item: { id: weapon.id, type: 'weapon' } as DragItem,
+    item: { id: weapon.id } as DragItem,
     collect: monitor => ({
-      isDragging: monitor.isDragging(),
+      isDragging: !!monitor.isDragging(),
     }),
     options: {
       dropEffect: 'move',
     },
     end: (item, monitor) => {
-      const dropResult = monitor.getDropResult<{ id: string }>();
-      if (item && dropResult) {
-        console.log('武器ドロップ:', item, 'to', dropResult);
-        onDrop(item.id, dropResult.id);
-      }
+      console.log('Drag ended:', item);
+      // onDropは呼び出さない - 既にドロップ処理で行われている
     },
-  }), [weapon.id, onDrop]);
+  }));
   
-  // ドラッグ参照を設定
+  // ref と drag を接続
   drag(ref);
 
   // 未割り当てエリア以外に配置されている場合のみ削除ボタンを表示
@@ -1574,7 +1568,10 @@ const WeaponTierRow = React.memo(({ tier, weaponsInTier, onDrop }: WeaponTierRow
   const ref = useRef<HTMLDivElement>(null);
   const [{ isOver }, drop] = useDrop(() => ({
     accept: ItemTypes.WEAPON,
-    drop: (item: DragItem) => onDrop(item.id, tier.id),
+    drop: (item: DragItem) => {
+      console.log('Dropped weapon:', item, 'to tier:', tier.id);
+      return { id: tier.id };
+    },
     collect: monitor => ({
       isOver: !!monitor.isOver(),
     }),
@@ -1618,7 +1615,10 @@ const TierRow = React.memo(({ tier, charactersInTier, onDrop }: TierRowProps) =>
   const ref = useRef<HTMLDivElement>(null);
   const [{ isOver }, drop] = useDrop(() => ({
     accept: ItemTypes.CHARACTER,
-    drop: (item: DragItem) => onDrop(item.id, tier.id),
+    drop: (item: DragItem) => {
+      console.log('Dropped character:', item, 'to tier:', tier.id);
+      return { id: tier.id };
+    },
     collect: monitor => ({
       isOver: !!monitor.isOver(),
     }),

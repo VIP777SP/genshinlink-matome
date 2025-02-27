@@ -63,22 +63,25 @@ const CustomDragLayer: React.FC<CustomDragLayerProps> = ({ characters, weapons }
   };
 
   const itemStyles: React.CSSProperties = {
+    transform: `translate(${x}px, ${y}px)`,
+    WebkitTransform: `translate(${x}px, ${y}px)`,
     position: 'absolute',
-    left: x,
-    top: y,
-    transform: 'translate(-50%, -50%)',
-    WebkitTransform: 'translate(-50%, -50%)',
+    left: 0,
+    top: 0
   };
 
   return (
     <div style={layerStyles}>
       <div style={itemStyles}>
-        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 border-amber-200 shadow-md bg-white">
+        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-4 border-amber-400 shadow-lg bg-white/90 backdrop-blur-sm">
           <img 
             src={imageUrl} 
             alt={name} 
             className="w-full h-full object-cover"
-            onError={() => console.error('Failed to load image:', imageUrl)} 
+            onError={(e) => {
+              console.error('Failed to load image:', imageUrl);
+              (e.target as HTMLImageElement).src = '/images/placeholder.png';
+            }} 
           />
         </div>
       </div>
