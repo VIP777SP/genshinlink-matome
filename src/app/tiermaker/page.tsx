@@ -8,6 +8,11 @@ import { TouchBackend } from 'react-dnd-touch-backend';
 import { MultiBackend, TouchTransition } from 'react-dnd-multi-backend';
 import React from 'react';
 import CustomDragLayer from './CustomDragLayer';
+import { Character, Weapon, ItemTypes, DragItem, ElementType, WeaponType, RarityType } from './types';
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { Tab } from '@headlessui/react';
+import { FiEdit3, FiSave, FiPlusCircle, FiTrash2, FiArrowUp, FiArrowDown, FiX } from 'react-icons/fi';
+import { TwitterShareButton, TwitterIcon } from 'react-share';
 
 // react-dnd用のマルチバックエンド設定
 const HTMLToTouch = {
@@ -16,7 +21,9 @@ const HTMLToTouch = {
       id: 'html5',
       backend: HTML5Backend,
       // 移行判定ロジックをカスタマイズ
-      transition: (event: MouseEvent) => event.type === 'mousemove',
+      transition: {
+        check: (event: MouseEvent) => event.type === 'mousemove',
+      },
     },
     {
       id: 'touch',
@@ -29,35 +36,34 @@ const HTMLToTouch = {
 };
 
 // 属性タイプの定義
-type ElementType = 'pyro' | 'hydro' | 'anemo' | 'electro' | 'dendro' | 'cryo' | 'geo';
-type WeaponType = 'sword' | 'claymore' | 'polearm' | 'bow' | 'catalyst';
-type RarityType = 4 | 5;
+// これらの型定義は削除して、types.tsからインポートしたものを使用
+// ... existing code ...
 
 // 武器データの型定義
-interface Weapon {
-  id: string;
-  name: string;
-  type: WeaponType;
-  rarity: 3 | 4 | 5;
-  baseAtk: number;
-  subStat: string;
-  passive: string;
-  imageUrl: string;
-  iconUrl: string;
-}
+// interface Weapon {
+//   id: string;
+//   name: string;
+//   type: WeaponType;
+//   rarity: 3 | 4 | 5;
+//   baseAtk: number;
+//   subStat: string;
+//   passive: string;
+//   imageUrl: string;
+//   iconUrl: string;
+// }
 
 // キャラクター型の定義
-interface Character {
-  id: string;
-  name: string;
-  element: ElementType;
-  weapon: WeaponType;
-  rarity: RarityType;
-  region: string;
-  description?: string;
-  imageUrl?: string;
-  iconUrl: string;
-}
+// interface Character {
+//   id: string;
+//   name: string;
+//   element: ElementType;
+//   weapon: WeaponType;
+//   rarity: RarityType;
+//   region: string;
+//   description?: string;
+//   imageUrl?: string;
+//   iconUrl: string;
+// }
 
 // キャラクターデータ
 const characters: Character[] = [
@@ -1378,15 +1384,12 @@ const weaponTemplates: TierTemplate[] = [
 ];
 
 // ドラッグアイテムタイプの定義
-const ItemTypes = {
-  CHARACTER: 'character',
-  WEAPON: 'weapon'
-};
+// ここでItemTypesの定義を削除
 
 // ドラッグアイテムの型定義
-interface DragItem {
-  id: string;
-}
+// interface DragItem {
+//   id: string;
+// }
 
 // コンポーネントProps型定義
 interface CharacterCardProps {
