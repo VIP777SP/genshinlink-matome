@@ -14,1274 +14,40 @@ import { Tab } from '@headlessui/react';
 import { FiEdit3, FiSave, FiPlusCircle, FiTrash2, FiArrowUp, FiArrowDown, FiX } from 'react-icons/fi';
 import { TwitterShareButton, TwitterIcon } from 'react-share';
 
-// react-dnd用のシンプルなバックエンド設定
-// マルチバックエンドは複雑さを生むため、最もシンプルな設定に戻す
-// HTML5Backendのみを使用し、タッチ操作も自動的に処理されるようにする
+// 外部データのインポート
+import { characters as sourceCharacters } from '@/utils/characters';
+import { weapons as sourceWeapons } from '@/data/weapons';
 
-// 属性タイプの定義
-// これらの型定義は削除して、types.tsからインポートしたものを使用
-// ... existing code ...
+// react-dnd用のタッチに最適化したバックエンド設定
+const touchBackendOptions = {
+  enableMouseEvents: true, // マウスイベントも有効化
+  delayTouchStart: 0, // タッチスタート遅延なし（長押し不要）
+  enableKeyboardEvents: true, // キーボードイベントも有効化
+  touchSlop: 1, // ほとんど動かなくても反応するように設定
+  ignoreContextMenu: true, // コンテキストメニューを無視
+  enableTouchEvents: true, // タッチイベントを有効化
+  delay: 0 // すべての遅延を0に
+};
 
-// 武器データの型定義
-// interface Weapon {
-//   id: string;
-//   name: string;
-//   type: WeaponType;
-//   rarity: 3 | 4 | 5;
-//   baseAtk: number;
-//   subStat: string;
-//   passive: string;
-//   imageUrl: string;
-//   iconUrl: string;
-// }
+// Tiermaker用に必要な情報だけを取り出したキャラクターリスト
+const tierMakerCharacters: Character[] = sourceCharacters.map(character => ({
+  id: character.id,
+  name: character.name,
+  element: character.element,
+  weapon: character.weapon,
+  rarity: character.rarity,
+  iconUrl: character.iconUrl
+}));
 
-// キャラクター型の定義
-// interface Character {
-//   id: string;
-//   name: string;
-//   element: ElementType;
-//   weapon: WeaponType;
-//   rarity: RarityType;
-//   region: string;
-//   description?: string;
-//   imageUrl?: string;
-//   iconUrl: string;
-// }
-
-// キャラクターデータ
-const characters: Character[] = [
-  // 5つ星キャラクター
-  {
-    id: 'albedo',
-    name: 'アルベド',
-    element: 'geo',
-    weapon: 'sword',
-    rarity: 5,
-    region: 'モンド',
-    iconUrl: '/images/characters/albedo-icon.png'
-  },
-  {
-    id: 'alhaitham',
-    name: 'アルハイゼン',
-    element: 'dendro',
-    weapon: 'sword',
-    rarity: 5,
-    region: 'スメール',
-    iconUrl: '/images/characters/alhaitham-icon.png'
-  },
-  {
-    id: 'ayaka',
-    name: '神里綾華',
-    element: 'cryo',
-    weapon: 'sword',
-    rarity: 5,
-    region: '稲妻',
-    iconUrl: '/images/characters/ayaka-icon.png'
-  },
-  {
-    id: 'baizhu',
-    name: '白朮',
-    element: 'dendro',
-    weapon: 'catalyst',
-    rarity: 5,
-    region: '璃月',
-    iconUrl: '/images/characters/baizhu-icon.png'
-  },
-  {
-    id: 'hutao',
-    name: '胡桃',
-    element: 'pyro',
-    weapon: 'polearm',
-    rarity: 5,
-    region: '璃月',
-    iconUrl: '/images/characters/hutao-icon.png'
-  },
-  {
-    id: 'nahida',
-    name: 'ナヒーダ',
-    element: 'dendro',
-    weapon: 'catalyst',
-    rarity: 5,
-    region: 'スメール',
-    iconUrl: '/images/characters/nahida-icon.png'
-  },
-  {
-    id: 'raiden-shogun',
-    name: '雷電将軍',
-    element: 'electro',
-    weapon: 'polearm',
-    rarity: 5,
-    region: '稲妻',
-    iconUrl: '/images/characters/raiden-shogun-icon.png'
-  },
-  {
-    id: 'kazuha',
-    name: '楓原万葉',
-    element: 'anemo',
-    weapon: 'sword',
-    rarity: 5,
-    region: '稲妻',
-    iconUrl: '/images/characters/kazuha-icon.png'
-  },
-  {
-    id: 'zhongli',
-    name: '鍾離',
-    element: 'geo',
-    weapon: 'polearm',
-    rarity: 5,
-    region: '璃月',
-    iconUrl: '/images/characters/zhongli-icon.png'
-  },
-  // 4つ星キャラクター
-  {
-    id: 'beidou',
-    name: '北斗',
-    element: 'electro',
-    weapon: 'claymore',
-    rarity: 4,
-    region: '璃月',
-    iconUrl: '/images/characters/beidou-icon.png'
-  },
-  {
-    id: 'bennett',
-    name: 'ベネット',
-    element: 'pyro',
-    weapon: 'sword',
-    rarity: 4,
-    region: 'モンド',
-    iconUrl: '/images/characters/bennett-icon.png'
-  },
-  {
-    id: 'candace',
-    name: 'キャンディス',
-    element: 'hydro',
-    weapon: 'polearm',
-    rarity: 4,
-    region: 'スメール',
-    iconUrl: '/images/characters/candace-icon.png'
-  },
-  {
-    id: 'charlotte',
-    name: 'シャルロット',
-    element: 'cryo',
-    weapon: 'catalyst',
-    rarity: 4,
-    region: 'フォンテーヌ',
-    iconUrl: '/images/characters/charlotte-icon.png'
-  },
-  {
-    id: 'chevreuse',
-    name: 'シュヴルーズ',
-    element: 'pyro',
-    weapon: 'polearm',
-    rarity: 4,
-    region: 'フォンテーヌ',
-    iconUrl: '/images/characters/chevreuse-icon.png'
-  },
-  {
-    id: 'chiori',
-    name: '千織',
-    element: 'geo',
-    weapon: 'sword',
-    rarity: 5,
-    region: '稲妻',
-    iconUrl: '/images/characters/chiori-icon.png'
-  },
-  {
-    id: 'chongyun',
-    name: '重雲',
-    element: 'cryo',
-    weapon: 'claymore',
-    rarity: 4,
-    region: '璃月',
-    iconUrl: '/images/characters/chongyun-icon.png'
-  },
-  {
-    id: 'collei',
-    name: 'コレイ',
-    element: 'dendro',
-    weapon: 'bow',
-    rarity: 4,
-    region: 'スメール',
-    iconUrl: '/images/characters/collei-icon.png'
-  },
-  {
-    id: 'cyno',
-    name: 'セノ',
-    element: 'electro',
-    weapon: 'polearm',
-    rarity: 5,
-    region: 'スメール',
-    iconUrl: '/images/characters/cyno-icon.png'
-  },
-  {
-    id: 'dehya',
-    name: 'デヒヤ',
-    element: 'pyro',
-    weapon: 'claymore',
-    rarity: 5,
-    region: 'スメール',
-    iconUrl: '/images/characters/dehya-icon.png'
-  },
-  {
-    id: 'diluc',
-    name: 'ディルック',
-    element: 'pyro',
-    weapon: 'claymore',
-    rarity: 5,
-    region: 'モンド',
-    iconUrl: '/images/characters/diluc-icon.png'
-  },
-  {
-    id: 'diona',
-    name: 'ディオナ',
-    element: 'cryo',
-    weapon: 'bow',
-    rarity: 4,
-    region: 'モンド',
-    iconUrl: '/images/characters/diona-icon.png'
-  },
-  {
-    id: 'dori',
-    name: 'ドリー',
-    element: 'electro',
-    weapon: 'claymore',
-    rarity: 4,
-    region: 'スメール',
-    iconUrl: '/images/characters/dori-icon.png'
-  },
-  {
-    id: 'eula',
-    name: 'エウルア',
-    element: 'cryo',
-    weapon: 'claymore',
-    rarity: 5,
-    region: 'モンド',
-    iconUrl: '/images/characters/eula-icon.png'
-  },
-  {
-    id: 'faruzan',
-    name: 'ファルザン',
-    element: 'anemo',
-    weapon: 'bow',
-    rarity: 4,
-    region: 'スメール',
-    iconUrl: '/images/characters/faruzan-icon.png'
-  },
-  {
-    id: 'fischl',
-    name: 'フィッシュル',
-    element: 'electro',
-    weapon: 'bow',
-    rarity: 4,
-    region: 'モンド',
-    iconUrl: '/images/characters/fischl-icon.png'
-  },
-  {
-    id: 'freminet',
-    name: 'フレミネ',
-    element: 'cryo',
-    weapon: 'claymore',
-    rarity: 4,
-    region: 'フォンテーヌ',
-    iconUrl: '/images/characters/freminet-icon.png'
-  },
-  {
-    id: 'furina',
-    name: 'フリーナ',
-    element: 'hydro',
-    weapon: 'sword',
-    rarity: 5,
-    region: 'フォンテーヌ',
-    iconUrl: '/images/characters/furina-icon.png'
-  },
-  {
-    id: 'ganyu',
-    name: '甘雨',
-    element: 'cryo',
-    weapon: 'bow',
-    rarity: 5,
-    region: '璃月',
-    iconUrl: '/images/characters/ganyu-icon.png'
-  },
-  {
-    id: 'gorou',
-    name: 'ゴロー',
-    element: 'geo',
-    weapon: 'bow',
-    rarity: 4,
-    region: '稲妻',
-    iconUrl: '/images/characters/gorou-icon.png'
-  },
-  {
-    id: 'heizou',
-    name: '鹿野院平蔵',
-    element: 'anemo',
-    weapon: 'catalyst',
-    rarity: 4,
-    region: '稲妻',
-    iconUrl: '/images/characters/heizou-icon.png'
-  },
-  {
-    id: 'itto',
-    name: '荒瀧一斗',
-    element: 'geo',
-    weapon: 'claymore',
-    rarity: 5,
-    region: '稲妻',
-    iconUrl: '/images/characters/itto-icon.png'
-  },
-  {
-    id: 'jean',
-    name: 'ジン',
-    element: 'anemo',
-    weapon: 'sword',
-    rarity: 5,
-    region: 'モンド',
-    iconUrl: '/images/characters/jean-icon.png'
-  },
-  {
-    id: 'kaeya',
-    name: 'ガイア',
-    element: 'cryo',
-    weapon: 'sword',
-    rarity: 4,
-    region: 'モンド',
-    iconUrl: '/images/characters/kaeya-icon.png'
-  },
-  {
-    id: 'kaveh',
-    name: 'カーヴェ',
-    element: 'dendro',
-    weapon: 'claymore',
-    rarity: 4,
-    region: 'スメール',
-    iconUrl: '/images/characters/kaveh-icon.png'
-  },
-  {
-    id: 'keqing',
-    name: '刻晴',
-    element: 'electro',
-    weapon: 'sword',
-    rarity: 5,
-    region: '璃月',
-    iconUrl: '/images/characters/keqing-icon.png'
-  },
-  {
-    id: 'kirara',
-    name: 'キララ',
-    element: 'dendro',
-    weapon: 'sword',
-    rarity: 4,
-    region: '稲妻',
-    iconUrl: '/images/characters/kirara-icon.png'
-  },
-  {
-    id: 'klee',
-    name: 'クレー',
-    element: 'pyro',
-    weapon: 'catalyst',
-    rarity: 5,
-    region: 'モンド',
-    iconUrl: '/images/characters/klee-icon.png'
-  },
-  {
-    id: 'kokomi',
-    name: '珊瑚宮心海',
-    element: 'hydro',
-    weapon: 'catalyst',
-    rarity: 5,
-    region: '稲妻',
-    iconUrl: '/images/characters/kokomi-icon.png'
-  },
-  {
-    id: 'kuki-shinobu',
-    name: '久岐忍',
-    element: 'electro',
-    weapon: 'sword',
-    rarity: 4,
-    region: '稲妻',
-    iconUrl: '/images/characters/kuki-shinobu-icon.png'
-  },
-  {
-    id: 'layla',
-    name: 'レイラ',
-    element: 'cryo',
-    weapon: 'sword',
-    rarity: 4,
-    region: 'スメール',
-    iconUrl: '/images/characters/layla-icon.png'
-  },
-  {
-    id: 'lisa',
-    name: 'リサ',
-    element: 'electro',
-    weapon: 'catalyst',
-    rarity: 4,
-    region: 'モンド',
-    iconUrl: '/images/characters/lisa-icon.png'
-  },
-  {
-    id: 'lynette',
-    name: 'リネット',
-    element: 'anemo',
-    weapon: 'sword',
-    rarity: 4,
-    region: 'フォンテーヌ',
-    iconUrl: '/images/characters/lynette-icon.png'
-  },
-  {
-    id: 'lyney',
-    name: 'リネ',
-    element: 'pyro',
-    weapon: 'bow',
-    rarity: 5,
-    region: 'フォンテーヌ',
-    iconUrl: '/images/characters/lyney-icon.png'
-  },
-  {
-    id: 'mika',
-    name: 'ミカ',
-    element: 'cryo',
-    weapon: 'polearm',
-    rarity: 4,
-    region: 'モンド',
-    iconUrl: '/images/characters/mika-icon.png'
-  },
-  {
-    id: 'mona',
-    name: 'モナ',
-    element: 'hydro',
-    weapon: 'catalyst',
-    rarity: 5,
-    region: 'モンド',
-    iconUrl: '/images/characters/mona-icon.png'
-  },
-  {
-    id: 'neuvillette',
-    name: 'ヌヴィレット',
-    element: 'hydro',
-    weapon: 'catalyst',
-    rarity: 5,
-    region: 'フォンテーヌ',
-    iconUrl: '/images/characters/neuvillette-icon.png'
-  },
-  {
-    id: 'nilou',
-    name: 'ニィロウ',
-    element: 'hydro',
-    weapon: 'sword',
-    rarity: 5,
-    region: 'スメール',
-    iconUrl: '/images/characters/nilou-icon.png'
-  },
-  {
-    id: 'ningguang',
-    name: '凝光',
-    element: 'geo',
-    weapon: 'catalyst',
-    rarity: 4,
-    region: '璃月',
-    iconUrl: '/images/characters/ningguang-icon.png'
-  },
-  {
-    id: 'noelle',
-    name: 'ノエル',
-    element: 'geo',
-    weapon: 'claymore',
-    rarity: 4,
-    region: 'モンド',
-    iconUrl: '/images/characters/noelle-icon.png'
-  },
-  {
-    id: 'qiqi',
-    name: '七七',
-    element: 'cryo',
-    weapon: 'sword',
-    rarity: 5,
-    region: '璃月',
-    iconUrl: '/images/characters/qiqi-icon.png'
-  },
-  {
-    id: 'razor',
-    name: 'レザー',
-    element: 'electro',
-    weapon: 'claymore',
-    rarity: 4,
-    region: 'モンド',
-    iconUrl: '/images/characters/razor-icon.png'
-  },
-  {
-    id: 'rosaria',
-    name: 'ロサリア',
-    element: 'cryo',
-    weapon: 'polearm',
-    rarity: 4,
-    region: 'モンド',
-    iconUrl: '/images/characters/rosaria-icon.png'
-  },
-  {
-    id: 'sara',
-    name: '九条裟羅',
-    element: 'electro',
-    weapon: 'bow',
-    rarity: 4,
-    region: '稲妻',
-    iconUrl: '/images/characters/sara-icon.png'
-  },
-  {
-    id: 'sayu',
-    name: '早柚',
-    element: 'anemo',
-    weapon: 'claymore',
-    rarity: 4,
-    region: '稲妻',
-    iconUrl: '/images/characters/sayu-icon.png'
-  },
-  {
-    id: 'shenhe',
-    name: '申鶴',
-    element: 'cryo',
-    weapon: 'polearm',
-    rarity: 5,
-    region: '璃月',
-    iconUrl: '/images/characters/shenhe-icon.png'
-  },
-  {
-    id: 'sucrose',
-    name: 'スクロース',
-    element: 'anemo',
-    weapon: 'catalyst',
-    rarity: 4,
-    region: 'モンド',
-    iconUrl: '/images/characters/sucrose-icon.png'
-  },
-  {
-    id: 'tartaglia',
-    name: 'タルタリヤ',
-    element: 'hydro',
-    weapon: 'bow',
-    rarity: 5,
-    region: 'スネージナヤ',
-    iconUrl: '/images/characters/tartaglia-icon.png'
-  },
-  {
-    id: 'thoma',
-    name: 'トーマ',
-    element: 'pyro',
-    weapon: 'polearm',
-    rarity: 4,
-    region: '稲妻',
-    iconUrl: '/images/characters/thoma-icon.png'
-  },
-  {
-    id: 'tighnari',
-    name: 'ティナリ',
-    element: 'dendro',
-    weapon: 'bow',
-    rarity: 5,
-    region: 'スメール',
-    iconUrl: '/images/characters/tighnari-icon.png'
-  },
-  {
-    id: 'venti',
-    name: 'ウェンティ',
-    element: 'anemo',
-    weapon: 'bow',
-    rarity: 5,
-    region: 'モンド',
-    iconUrl: '/images/characters/venti-icon.png'
-  },
-  {
-    id: 'wanderer',
-    name: '放浪者',
-    element: 'anemo',
-    weapon: 'catalyst',
-    rarity: 5,
-    region: 'スメール',
-    iconUrl: '/images/characters/wanderer-icon.png'
-  },
-  {
-    id: 'xiangling',
-    name: '香菱',
-    element: 'pyro',
-    weapon: 'polearm',
-    rarity: 4,
-    region: '璃月',
-    iconUrl: '/images/characters/xiangling-icon.png'
-  },
-  {
-    id: 'xiao',
-    name: '魈',
-    element: 'anemo',
-    weapon: 'polearm',
-    rarity: 5,
-    region: '璃月',
-    iconUrl: '/images/characters/xiao-icon.png'
-  },
-  {
-    id: 'xingqiu',
-    name: '行秋',
-    element: 'hydro',
-    weapon: 'sword',
-    rarity: 4,
-    region: '璃月',
-    iconUrl: '/images/characters/xingqiu-icon.png'
-  },
-  {
-    id: 'xinyan',
-    name: '辛炎',
-    element: 'pyro',
-    weapon: 'claymore',
-    rarity: 4,
-    region: '璃月',
-    iconUrl: '/images/characters/xinyan-icon.png'
-  },
-  {
-    id: 'yae-miko',
-    name: '八重神子',
-    element: 'electro',
-    weapon: 'catalyst',
-    rarity: 5,
-    region: '稲妻',
-    iconUrl: '/images/characters/yae-miko-icon.png'
-  },
-  {
-    id: 'yanfei',
-    name: '煙緋',
-    element: 'pyro',
-    weapon: 'catalyst',
-    rarity: 4,
-    region: '璃月',
-    iconUrl: '/images/characters/yanfei-icon.png'
-  },
-  {
-    id: 'yaoyao',
-    name: '瑶瑶',
-    element: 'dendro',
-    weapon: 'polearm',
-    rarity: 4,
-    region: '璃月',
-    iconUrl: '/images/characters/yaoyao-icon.png'
-  },
-  {
-    id: 'yelan',
-    name: '夜蘭',
-    element: 'hydro',
-    weapon: 'bow',
-    rarity: 5,
-    region: '璃月',
-    iconUrl: '/images/characters/yelan-icon.png'
-  },
-  {
-    id: 'yoimiya',
-    name: '宵宮',
-    element: 'pyro',
-    weapon: 'bow',
-    rarity: 5,
-    region: '稲妻',
-    iconUrl: '/images/characters/yoimiya-icon.png'
-  },
-  {
-    id: 'yunjin',
-    name: '雲菫',
-    element: 'geo',
-    weapon: 'polearm',
-    rarity: 4,
-    region: '璃月',
-    iconUrl: '/images/characters/yunjin-icon.png'
-  }
-];
-
-// 武器データ
-const weapons: Weapon[] = [
-  {
-    id: 'mistsplitter',
-    name: '霧切の廻光',
-    type: 'sword',
-    rarity: 5,
-    baseAtk: 48,
-    subStat: '会心ダメージ',
-    passive: '霧切の極意：元素ダメージバフ最大12%/24%/28%(3層)、元素スキル使用後+12%',
-    imageUrl: '/images/weapons/mistsplitter.png',
-    iconUrl: '/images/weapons/mistsplitter-icon.png'
-  },
-  {
-    id: 'homa',
-    name: '護摩の杖',
-    type: 'polearm',
-    rarity: 5,
-    baseAtk: 46,
-    subStat: '会心ダメージ',
-    passive: '無攬の従容：HP上限20%アップ、HP上限の0.8%分攻撃力アップ、HP50%以下で1.8%',
-    imageUrl: '/images/weapons/homa.png',
-    iconUrl: '/images/weapons/homa-icon.png'
-  },
-  {
-    id: 'thundering-pulse',
-    name: '飛雷の鼓槌',
-    type: 'bow',
-    rarity: 5,
-    baseAtk: 46,
-    subStat: '会心ダメージ',
-    passive: '飛雷の巴紋：通常攻撃ダメージ最大40%アップ(3層)、攻撃力20%アップ',
-    imageUrl: '/images/weapons/thundering_pulse.png',
-    iconUrl: '/images/weapons/thundering-pulse-icon.png'
-  },
-  {
-    id: 'wolf-gravestone',
-    name: '狼の末路',
-    type: 'claymore',
-    rarity: 5,
-    baseAtk: 46,
-    subStat: '攻撃力%',
-    passive: '狼の渇望：攻撃力20%アップ、HP30%以下の敵を攻撃すると、チーム全員の攻撃力40%アップ',
-    imageUrl: '/images/weapons/wolf_gravestone.png',
-    iconUrl: '/images/weapons/wolf-gravestone-icon.png'
-  },
-  {
-    id: 'lost-prayer',
-    name: '四風原典',
-    type: 'catalyst',
-    rarity: 5,
-    baseAtk: 46,
-    subStat: '会心率',
-    passive: '無辺際の祝詞：移動速度10%アップ、戦闘中4秒毎に元素ダメージ8%アップ(最大4層)',
-    imageUrl: '/images/weapons/lost_prayer.png',
-    iconUrl: '/images/weapons/lost-prayer-icon.png'
-  },
-  // 5★武器の追加データ
-  {
-    id: 'engulfing-lightning',
-    name: '草薙の稲光',
-    type: 'polearm',
-    rarity: 5,
-    baseAtk: 46,
-    subStat: '元素チャージ効率',
-    passive: '非時の夢・常世竈食：元素チャージ効率に基づいて攻撃力アップ(最大80%)、元素爆発後エネルギー回復速度アップ',
-    imageUrl: '/images/weapons/engulfing-lightning.png',
-    iconUrl: '/images/weapons/engulfing-lightning-icon.png'
-  },
-  {
-    id: 'aqua-simulacra',
-    name: '若水',
-    type: 'bow',
-    rarity: 5,
-    baseAtk: 44,
-    subStat: '会心ダメージ',
-    passive: '潜形の浪：HPが20%アップ、周囲に敵がいる時、全ダメージ20%アップ',
-    imageUrl: '/images/weapons/aqua-simulacra.png',
-    iconUrl: '/images/weapons/aqua-simulacra-icon.png'
-  },
-  {
-    id: 'jade-cutter',
-    name: '磐岩結緑',
-    type: 'sword',
-    rarity: 5,
-    baseAtk: 44,
-    subStat: '会心率',
-    passive: '護国の無垢：HP上限20%アップ、HP上限の1.2%分、攻撃力アップ',
-    imageUrl: '/images/weapons/jade-cutter.png',
-    iconUrl: '/images/weapons/jade-cutter-icon.png'
-  },
-  {
-    id: 'skyward-harp',
-    name: '天空の翼',
-    type: 'bow',
-    rarity: 5,
-    baseAtk: 48,
-    subStat: '会心率',
-    passive: '回響長天の歌：会心ダメージ20%アップ、攻撃時60%の確率で物理ダメージを追加',
-    imageUrl: '/images/weapons/skyward-harp.png',
-    iconUrl: '/images/weapons/skyward-harp-icon.png'
-  },
-  {
-    id: 'redhorn-stonethresher',
-    name: '赤角石塵滅砕',
-    type: 'claymore',
-    rarity: 5,
-    baseAtk: 44,
-    subStat: '会心ダメージ',
-    passive: '古き役目の残光：防御力40%アップ、通常攻撃と重撃のダメージは防御力の40%分アップ',
-    imageUrl: '/images/weapons/redhorn-stonethresher.png',
-    iconUrl: '/images/weapons/redhorn-stonethresher-icon.png'
-  },
-  {
-    id: 'skyward-blade',
-    name: '天空の刃',
-    type: 'sword',
-    rarity: 5,
-    baseAtk: 46,
-    subStat: '元素チャージ効率',
-    passive: '穿流・雲間の月：会心率4%アップ、元素爆発使用後、移動速度・攻撃速度・通常攻撃と重撃ダメージアップ',
-    imageUrl: '/images/weapons/skyward-blade.png',
-    iconUrl: '/images/weapons/skyward-blade-icon.png'
-  },
-  {
-    id: 'skyward-spine',
-    name: '天空の脊',
-    type: 'polearm',
-    rarity: 5,
-    baseAtk: 48,
-    subStat: '元素チャージ効率',
-    passive: '流月の針：会心率8%、通常攻撃速度12%アップ、通常攻撃と重撃が50%の確率で追加ダメージを与える',
-    imageUrl: '/images/weapons/skyward-spine.png',
-    iconUrl: '/images/weapons/skyward-spine-icon.png'
-  },
-  {
-    id: 'skyward-pride',
-    name: '天空の傲',
-    type: 'claymore',
-    rarity: 5,
-    baseAtk: 48,
-    subStat: '元素チャージ効率',
-    passive: '揺籃の雲：全ダメージ8%アップ、元素爆発使用後、通常攻撃と重撃が真空ブレードを放つ',
-    imageUrl: '/images/weapons/skyward-pride.png',
-    iconUrl: '/images/weapons/skyward-pride-icon.png'
-  },
-  {
-    id: 'skyward-atlas',
-    name: '天空の巻',
-    type: 'catalyst',
-    rarity: 5,
-    baseAtk: 48,
-    subStat: '攻撃力%',
-    passive: '浮遊の星雲：元素ダメージ12%アップ、通常攻撃時、50%の確率で追尾の雲をまとう',
-    imageUrl: '/images/weapons/skyward-atlas.png',
-    iconUrl: '/images/weapons/skyward-atlas-icon.png'
-  },
-  {
-    id: 'primordial-jade-winged-spear',
-    name: '和璞鳶',
-    type: 'polearm',
-    rarity: 5,
-    baseAtk: 48,
-    subStat: '会心率',
-    passive: '昭質の鷹羽：攻撃命中時、攻撃力と全ダメージがアップ(7段階まで)',
-    imageUrl: '/images/weapons/primordial-jade-winged-spear.png',
-    iconUrl: '/images/weapons/primordial-jade-winged-spear-icon.png'
-  },
-  {
-    id: 'amos-bow',
-    name: 'アモスの弓',
-    type: 'bow',
-    rarity: 5,
-    baseAtk: 46,
-    subStat: '攻撃力%',
-    passive: '強い弓：通常攻撃と重撃のダメージ12%アップ、矢が放たれてから0.1秒ごとにダメージ8%アップ(最大5回)',
-    imageUrl: '/images/weapons/amos-bow.png',
-    iconUrl: '/images/weapons/amos-bow-icon.png'
-  },
-  {
-    id: 'polar-star',
-    name: '冬極の白星',
-    type: 'bow',
-    rarity: 5,
-    baseAtk: 45,
-    subStat: '会心率',
-    passive: '極夜の寒星：元素スキルと元素爆発のダメージ12%アップ、様々な攻撃で攻撃力バフ獲得(最大4スタック)',
-    imageUrl: '/images/weapons/polar-star.png',
-    iconUrl: '/images/weapons/polar-star-icon.png'
-  },
-  {
-    id: 'memory-of-dust',
-    name: '塵世の錫杖',
-    type: 'catalyst',
-    rarity: 5,
-    baseAtk: 46,
-    subStat: '攻撃力%',
-    passive: '金璋添玉：シールド強化20%、攻撃命中時に攻撃力アップ(最大5重複)、シールド状態だと効果2倍',
-    imageUrl: '/images/weapons/memory-of-dust.png',
-    iconUrl: '/images/weapons/memory-of-dust-icon.png'
-  },
-  {
-    id: 'unforged',
-    name: '無工の剣',
-    type: 'claymore',
-    rarity: 5,
-    baseAtk: 46,
-    subStat: '攻撃力%',
-    passive: '金璋匣暮：シールド強化20%、攻撃命中時に攻撃力アップ(最大5重複)、シールド状態だと効果2倍',
-    imageUrl: '/images/weapons/unforged.png',
-    iconUrl: '/images/weapons/unforged-icon.png'
-  },
-  {
-    id: 'freedom-sworn',
-    name: '蒼古なる自由への誓い',
-    type: 'sword',
-    rarity: 5,
-    baseAtk: 44,
-    subStat: '元素熟知',
-    passive: '永続の森：元素ダメージ10%アップ、元素反応で印を獲得、2層で通常攻撃・重撃・追撃ダメージ16%と攻撃力20%アップ',
-    imageUrl: '/images/weapons/freedom-sworn.png',
-    iconUrl: '/images/weapons/freedom-sworn-icon.png'
-  },
-  // 4★武器
-  {
-    id: 'widsith',
-    name: '流浪楽章',
-    type: 'catalyst',
-    rarity: 4,
-    baseAtk: 42,
-    subStat: '会心ダメージ',
-    passive: '登場の間奏：キャラ登場時、ランダムなテーマ曲を演奏、各種バフを付与(10秒)',
-    imageUrl: '/images/weapons/widsith.png',
-    iconUrl: '/images/weapons/widsith-icon.png'
-  },
-  {
-    id: 'rust',
-    name: '弓蔵',
-    type: 'bow',
-    rarity: 4,
-    baseAtk: 42,
-    subStat: '攻撃力%',
-    passive: '速射強弓：通常攻撃のダメージ40%アップ、重撃のダメージ10%ダウン',
-    imageUrl: '/images/weapons/rust.png',
-    iconUrl: '/images/weapons/rust-icon.png'
-  },
-  {
-    id: 'sacrificial-sword',
-    name: '祭礼の剣',
-    type: 'sword',
-    rarity: 4,
-    baseAtk: 41,
-    subStat: '元素チャージ効率',
-    passive: '気息of生死の間：元素スキルが敵にダメージを与えた時、40%の確率で元素スキルのCDがリセット',
-    imageUrl: '/images/weapons/sacrificial-sword.png',
-    iconUrl: '/images/weapons/sacrificial-sword-icon.png'
-  },
-  {
-    id: 'dragon-bane',
-    name: '匣中滅龍',
-    type: 'polearm',
-    rarity: 4,
-    baseAtk: 41,
-    subStat: '元素熟知',
-    passive: '破龍の断章：炎元素または水元素の影響を受けた敵に対するダメージ20%アップ',
-    imageUrl: '/images/weapons/dragon-bane.png',
-    iconUrl: '/images/weapons/dragon-bane-icon.png'
-  },
-  {
-    id: 'serpent-spine',
-    name: '螭龍の剣',
-    type: 'claymore',
-    rarity: 4,
-    baseAtk: 42,
-    subStat: '会心率',
-    passive: '波セレナーデ：戦闘中、4秒毎にダメージ6%アップ(最大5重複)、被ダメージでスタック減少',
-    imageUrl: '/images/weapons/serpent-spine.png',
-    iconUrl: '/images/weapons/serpent-spine-icon.png'
-  },
-  {
-    id: 'favonius-lance',
-    name: '西風長槍',
-    type: 'polearm',
-    rarity: 4,
-    baseAtk: 44,
-    subStat: '元素チャージ効率',
-    passive: '風呂循環：会心攻撃時、60%の確率で少量の元素粒子を生成(CD6秒)',
-    imageUrl: '/images/weapons/favonius-lance.png',
-    iconUrl: '/images/weapons/favonius-lance-icon.png'
-  },
-  {
-    id: 'favonius-sword',
-    name: '西風剣',
-    type: 'sword',
-    rarity: 4,
-    baseAtk: 41,
-    subStat: '元素チャージ効率',
-    passive: '風呂循環：会心攻撃時、60%の確率で少量の元素粒子を生成(CD6秒)',
-    imageUrl: '/images/weapons/favonius-sword.png',
-    iconUrl: '/images/weapons/favonius-sword-icon.png'
-  },
-  {
-    id: 'favonius-greatsword',
-    name: '西風大剣',
-    type: 'claymore',
-    rarity: 4,
-    baseAtk: 41,
-    subStat: '元素チャージ効率',
-    passive: '風呂循環：会心攻撃時、60%の確率で少量の元素粒子を生成(CD6秒)',
-    imageUrl: '/images/weapons/favonius-greatsword.png',
-    iconUrl: '/images/weapons/favonius-greatsword-icon.png'
-  },
-  {
-    id: 'favonius-warbow',
-    name: '西風猟弓',
-    type: 'bow',
-    rarity: 4,
-    baseAtk: 41,
-    subStat: '元素チャージ効率',
-    passive: '風呂循環：会心攻撃時、60%の確率で少量の元素粒子を生成(CD6秒)',
-    imageUrl: '/images/weapons/favonius-warbow.png',
-    iconUrl: '/images/weapons/favonius-warbow-icon.png'
-  },
-  {
-    id: 'favonius-codex',
-    name: '西風秘典',
-    type: 'catalyst',
-    rarity: 4,
-    baseAtk: 42,
-    subStat: '元素チャージ効率',
-    passive: '風呂循環：会心攻撃時、60%の確率で少量の元素粒子を生成(CD6秒)',
-    imageUrl: '/images/weapons/favonius-codex.png',
-    iconUrl: '/images/weapons/favonius-codex-icon.png'
-  },
-  {
-    id: 'lions-roar',
-    name: '匣中龍吟',
-    type: 'sword',
-    rarity: 4,
-    baseAtk: 42,
-    subStat: '攻撃力%',
-    passive: '破雷の巻：炎元素または雷元素の影響を受けた敵に対するダメージ20%アップ',
-    imageUrl: '/images/weapons/lions-roar.png',
-    iconUrl: '/images/weapons/lions-roar-icon.png'
-  },
-  {
-    id: 'rainslasher',
-    name: '雨裁',
-    type: 'claymore',
-    rarity: 4,
-    baseAtk: 42,
-    subStat: '元素熟知',
-    passive: '止水の巻：水元素または雷元素の影響を受けた敵に対するダメージ20%アップ',
-    imageUrl: '/images/weapons/rainslasher.png',
-    iconUrl: '/images/weapons/rainslasher-icon.png'
-  },
-  {
-    id: 'stringless',
-    name: '絶弦',
-    type: 'bow',
-    rarity: 4,
-    baseAtk: 42,
-    subStat: '元素熟知',
-    passive: '無矢の歌：元素スキルと元素爆発のダメージ24%アップ',
-    imageUrl: '/images/weapons/stringless.png',
-    iconUrl: '/images/weapons/stringless-icon.png'
-  },
-  {
-    id: 'eye-of-perception',
-    name: '昭心',
-    type: 'catalyst',
-    rarity: 4,
-    baseAtk: 41,
-    subStat: '攻撃力%',
-    passive: '回転の渦：通常攻撃と重撃時、50%の確率で攻撃力の240%の追加ダメージを与える(CD12秒)',
-    imageUrl: '/images/weapons/eye-of-perception.png',
-    iconUrl: '/images/weapons/eye-of-perception-icon.png'
-  },
-  {
-    id: 'sacrificial-greatsword',
-    name: '祭礼の大剣',
-    type: 'claymore',
-    rarity: 4,
-    baseAtk: 44,
-    subStat: '元素チャージ効率',
-    passive: '気息of生死の間：元素スキルが敵にダメージを与えた時、40%の確率で元素スキルのCDがリセット',
-    imageUrl: '/images/weapons/sacrificial-greatsword.png',
-    iconUrl: '/images/weapons/sacrificial-greatsword-icon.png'
-  },
-  {
-    id: 'sacrificial-bow',
-    name: '祭礼の弓',
-    type: 'bow',
-    rarity: 4,
-    baseAtk: 44,
-    subStat: '元素チャージ効率',
-    passive: '気息of生死の間：元素スキルが敵にダメージを与えた時、40%の確率で元素スキルのCDがリセット',
-    imageUrl: '/images/weapons/sacrificial-bow.png',
-    iconUrl: '/images/weapons/sacrificial-bow-icon.png'
-  },
-  {
-    id: 'sacrificial-fragments',
-    name: '祭礼の断片',
-    type: 'catalyst',
-    rarity: 4,
-    baseAtk: 41,
-    subStat: '元素熟知',
-    passive: '気息of生死の間：元素スキルが敵にダメージを与えた時、40%の確率で元素スキルのCDがリセット',
-    imageUrl: '/images/weapons/sacrificial-fragments.png',
-    iconUrl: '/images/weapons/sacrificial-fragments-icon.png'
-  },
-  {
-    id: 'deathmatch',
-    name: '死闘の槍',
-    type: 'polearm',
-    rarity: 4,
-    baseAtk: 41,
-    subStat: '会心率',
-    passive: '命中の幕：周囲の敵が2体以上の場合、攻撃力16%と防御力16%アップ、1体以下の場合は攻撃力24%アップ',
-    imageUrl: '/images/weapons/deathmatch.png',
-    iconUrl: '/images/weapons/deathmatch-icon.png'
-  },
-  {
-    id: 'black-sword',
-    name: '黒剣',
-    type: 'sword',
-    rarity: 4,
-    baseAtk: 42,
-    subStat: '会心率',
-    passive: '正義：通常攻撃と重撃のダメージ20%アップ、会心攻撃時、HPの60%分回復(CD5秒)',
-    imageUrl: '/images/weapons/black-sword.png',
-    iconUrl: '/images/weapons/black-sword-icon.png'
-  },
-  {
-    id: 'royal-greatsword',
-    name: '旧貴族大剣',
-    type: 'claymore',
-    rarity: 4,
-    baseAtk: 44,
-    subStat: '攻撃力%',
-    passive: '集中：敵に会心でないダメージを与えると、会心率8%アップ(最大5重複)、会心発生時にスタックリセット',
-    imageUrl: '/images/weapons/royal-greatsword.png',
-    iconUrl: '/images/weapons/royal-greatsword-icon.png'
-  },
-  {
-    id: 'alley-hunter',
-    name: '暗巷の狩人',
-    type: 'bow',
-    rarity: 4,
-    baseAtk: 44,
-    subStat: '会心率',
-    passive: '街の狩猟者：フィールドにいる毎秒、与えるダメージ2%アップ(最大10重複)、ダメージを受けるとスタック1失う',
-    imageUrl: '/images/weapons/alley-hunter.png',
-    iconUrl: '/images/weapons/alley-hunter-icon.png'
-  },
-  {
-    id: 'blackcliff-amulet',
-    name: '黒岩緋玉',
-    type: 'catalyst',
-    rarity: 4,
-    baseAtk: 42,
-    subStat: '会心ダメージ',
-    passive: '乗勝：敵を倒した後、攻撃力12%アップ(最大3重複)、継続時間30秒、重複ごとに継続時間は独立計算',
-    imageUrl: '/images/weapons/blackcliff-amulet.png',
-    iconUrl: '/images/weapons/blackcliff-amulet-icon.png'
-  },
-  {
-    id: 'prototype-crescent',
-    name: '試作澹月',
-    type: 'bow',
-    rarity: 4,
-    baseAtk: 42,
-    subStat: '攻撃力%',
-    passive: '無欠の一射：弱点に狙い撃ちを命中させた後、移動速度と攻撃力10%アップ、継続時間10秒',
-    imageUrl: '/images/weapons/prototype-crescent.png',
-    iconUrl: '/images/weapons/prototype-crescent-icon.png'
-  },
-  // 3★武器
-  {
-    id: 'white-tassel',
-    name: '白纓槍',
-    type: 'polearm',
-    rarity: 3,
-    baseAtk: 39,
-    subStat: '会心率',
-    passive: '無垢なる弾き：通常攻撃のダメージ24%アップ',
-    imageUrl: '/images/weapons/white-tassel.png',
-    iconUrl: '/images/weapons/white-tassel-icon.png'
-  },
-  {
-    id: 'thrilling-tales-of-dragon-slayers',
-    name: '龍殺しの英傑譚',
-    type: 'catalyst',
-    rarity: 3,
-    baseAtk: 39,
-    subStat: 'HP%',
-    passive: '伝承：キャラクター交代時、次のキャラクターの攻撃力を48%アップ、継続時間10秒(CD20秒)',
-    imageUrl: '/images/weapons/thrilling-tales-of-dragon-slayers.png',
-    iconUrl: '/images/weapons/thrilling-tales-of-dragon-slayers-icon.png'
-  },
-  {
-    id: 'harbinger-of-dawn',
-    name: '黎明の神剣',
-    type: 'sword',
-    rarity: 3,
-    baseAtk: 39,
-    subStat: '会心ダメージ',
-    passive: '日暮：HP70%以上の時、会心率28%アップ',
-    imageUrl: '/images/weapons/harbinger-of-dawn.png',
-    iconUrl: '/images/weapons/harbinger-of-dawn-icon.png'
-  },
-  {
-    id: 'slingshot',
-    name: '弾弓',
-    type: 'bow',
-    rarity: 3,
-    baseAtk: 38,
-    subStat: '会心率',
-    passive: '弾丸装填：通常攻撃または狙い撃ちが0.3秒以内に命中した場合、ダメージ36%アップ、それ以上は10%ダウン',
-    imageUrl: '/images/weapons/slingshot.png',
-    iconUrl: '/images/weapons/slingshot-icon.png'
-  },
-  {
-    id: 'debate-club',
-    name: '理屈責め',
-    type: 'claymore',
-    rarity: 3,
-    baseAtk: 39,
-    subStat: '攻撃力%',
-    passive: '理屈破り：元素スキル使用後3秒間、通常・重撃時に攻撃力60%の追加ダメージを与える(CD3秒)',
-    imageUrl: '/images/weapons/debate-club.png',
-    iconUrl: '/images/weapons/debate-club-icon.png'
-  },
-  {
-    id: 'black-tassel',
-    name: '黒纓槍',
-    type: 'polearm',
-    rarity: 3,
-    baseAtk: 38,
-    subStat: 'HP%',
-    passive: '害虫駆除：スライムに与えるダメージ40%アップ',
-    imageUrl: '/images/weapons/black-tassel.png',
-    iconUrl: '/images/weapons/black-tassel-icon.png'
-  },
-  {
-    id: 'magic-guide',
-    name: '魔導緒論',
-    type: 'catalyst',
-    rarity: 3,
-    baseAtk: 38,
-    subStat: '元素熟知',
-    passive: '洞察：水元素または雷元素の影響を受けた敵に対するダメージ12%アップ',
-    imageUrl: '/images/weapons/magic-guide.png',
-    iconUrl: '/images/weapons/magic-guide-icon.png'
-  },
-  {
-    id: 'cool-steel',
-    name: '冷刃',
-    type: 'sword',
-    rarity: 3,
-    baseAtk: 39,
-    subStat: '攻撃力%',
-    passive: '止水：水元素または氷元素の影響を受けた敵に対するダメージ12%アップ',
-    imageUrl: '/images/weapons/cool-steel.png',
-    iconUrl: '/images/weapons/cool-steel-icon.png'
-  },
-  {
-    id: 'raven-bow',
-    name: '鴉羽の弓',
-    type: 'bow',
-    rarity: 3,
-    baseAtk: 40,
-    subStat: '元素熟知',
-    passive: '猟的の追跡：水元素または炎元素の影響を受けた敵に対するダメージ12%アップ',
-    imageUrl: '/images/weapons/raven-bow.png',
-    iconUrl: '/images/weapons/raven-bow-icon.png'
-  },
-  {
-    id: 'bloodtainted-greatsword',
-    name: '鉄影段平',
-    type: 'claymore',
-    rarity: 3,
-    baseAtk: 38,
-    subStat: '元素熟知',
-    passive: '踏血：炎元素または雷元素の影響を受けた敵に対するダメージ12%アップ',
-    imageUrl: '/images/weapons/bloodtainted-greatsword.png',
-    iconUrl: '/images/weapons/bloodtainted-greatsword-icon.png'
-  }
-];
+// Tiermaker用に必要な情報だけを取り出した武器リスト
+const tierMakerWeapons: Weapon[] = sourceWeapons.map(weapon => ({
+  id: weapon.id,
+  name: weapon.name,
+  type: weapon.type,
+  rarity: weapon.rarity,
+  iconUrl: weapon.imageUrl.replace('.png', '-icon.png'), // 武器アイコンのパス生成
+  imageUrl: weapon.imageUrl
+}));
 
 // テンプレート型の定義
 interface TierTemplate {
@@ -1396,16 +162,21 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
   const ref = useRef<HTMLDivElement>(null);
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes.CHARACTER,
-    item: { id: character.id } as DragItem,
+    item: { id: character.id, type: 'character' } as DragItem,
     collect: monitor => ({
       isDragging: !!monitor.isDragging(),
     }),
     options: {
-      dropEffect: 'move',
+      dropEffect: 'move', 
+      touchStartThreshold: 1 // ほとんど動かさなくてもドラッグ開始
+    },
+    previewOptions: {
+      captureDraggingState: true,
+      anchorX: 0.5,
+      anchorY: 0.5,
     },
     end: (item, monitor) => {
-      console.log('Drag ended:', item);
-      // onDropは呼び出さない - 既にドロップ処理で行われている
+      console.log('Character drag ended');
     },
   }));
   
@@ -1430,6 +201,7 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
                   ${isDragging ? 'opacity-50' : 'opacity-100'}
                   hover:scale-105 hover:shadow-lg hover:z-10`}
       style={{ opacity: isDragging ? 0.5 : 1 }}
+      onTouchStart={() => console.log('Touch start on character:', character.id)}
     >
       <Image
         src={character.iconUrl}
@@ -1470,16 +242,21 @@ const WeaponCard = ({ weapon, onDrop, currentTier }: WeaponCardProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes.WEAPON,
-    item: { id: weapon.id } as DragItem,
+    item: { id: weapon.id, type: 'weapon' } as DragItem,
     collect: monitor => ({
       isDragging: !!monitor.isDragging(),
     }),
     options: {
       dropEffect: 'move',
+      touchStartThreshold: 1 // ほとんど動かさなくてもドラッグ開始
+    },
+    previewOptions: {
+      captureDraggingState: true,
+      anchorX: 0.5,
+      anchorY: 0.5,
     },
     end: (item, monitor) => {
-      console.log('Drag ended:', item);
-      // onDropは呼び出さない - 既にドロップ処理で行われている
+      console.log('Weapon drag ended');
     },
   }));
   
@@ -1504,6 +281,7 @@ const WeaponCard = ({ weapon, onDrop, currentTier }: WeaponCardProps) => {
                   ${isDragging ? 'opacity-50' : 'opacity-100'}
                   hover:scale-105 hover:shadow-lg hover:z-10`}
       style={{ opacity: isDragging ? 0.5 : 1 }}
+      onTouchStart={() => console.log('Touch start on weapon:', weapon.id)}
     >
       <Image
         src={weapon.iconUrl}
@@ -1646,7 +424,7 @@ export default function TierMakerPage() {
   // キャラクターTiermaker用の状態
   const [selectedTemplate, setSelectedTemplate] = useState<TierTemplate>(templates[0]);
   const [characterTiers, setCharacterTiers] = useState<Record<string, string[]>>({
-    unassigned: characters.map(char => char.id)
+    unassigned: tierMakerCharacters.map(char => char.id)
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [elementFilter, setElementFilter] = useState<ElementType | 'all'>('all');
@@ -1654,7 +432,7 @@ export default function TierMakerPage() {
   // 武器Tiermaker用の状態
   const [selectedWeaponTemplate, setSelectedWeaponTemplate] = useState<TierTemplate>(weaponTemplates[0]);
   const [weaponTiers, setWeaponTiers] = useState<Record<string, string[]>>({
-    'weapon-unassigned': weapons.map(weapon => weapon.id)
+    'weapon-unassigned': tierMakerWeapons.map(weapon => weapon.id)
   });
   const [weaponSearchQuery, setWeaponSearchQuery] = useState('');
   const [weaponTypeFilter, setWeaponTypeFilter] = useState<WeaponType | 'all'>('all');
@@ -1712,7 +490,7 @@ export default function TierMakerPage() {
     });
     
     // 未割り当てキャラクターのTierを追加
-    initialTiers['unassigned'] = characters.map(char => char.id);
+    initialTiers['unassigned'] = tierMakerCharacters.map(char => char.id);
     
     console.log('Tiers初期化:', initialTiers);
     setCharacterTiers(initialTiers);
@@ -1733,7 +511,7 @@ export default function TierMakerPage() {
     });
     
     // 未割り当て武器のTierを追加
-    initialWeaponTiers['weapon-unassigned'] = weapons.map(weapon => weapon.id);
+    initialWeaponTiers['weapon-unassigned'] = tierMakerWeapons.map(weapon => weapon.id);
     
     console.log('武器Tiers初期化:', initialWeaponTiers);
     setWeaponTiers(initialWeaponTiers);
@@ -2010,7 +788,7 @@ export default function TierMakerPage() {
     
     const result = characterTiers[tierId]
       .map(id => {
-        const char = characters.find(c => c.id === id);
+        const char = tierMakerCharacters.find(c => c.id === id);
         if (!char) {
           console.warn(`ID ${id} に一致するキャラクターが見つかりません`);
         }
@@ -2023,7 +801,7 @@ export default function TierMakerPage() {
   };
   
   // キャラクター検索フィルター
-  const filteredCharacters = characters.filter(char => {
+  const filteredCharacters = tierMakerCharacters.filter(char => {
     const matchesSearch = char.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesElement = elementFilter === 'all' || char.element === elementFilter;
     return matchesSearch && matchesElement;
@@ -2280,7 +1058,7 @@ export default function TierMakerPage() {
     
     const result = weaponTiers[tierId]
       .map(id => {
-        const weapon = weapons.find(w => w.id === id);
+        const weapon = tierMakerWeapons.find(w => w.id === id);
         if (!weapon) {
           console.warn(`ID ${id} に一致する武器が見つかりません`);
         }
@@ -2292,7 +1070,7 @@ export default function TierMakerPage() {
   };
   
   // 武器検索フィルター
-  const filteredWeapons = weapons.filter(weapon => {
+  const filteredWeapons = tierMakerWeapons.filter(weapon => {
     const matchesSearch = weapon.name.toLowerCase().includes(weaponSearchQuery.toLowerCase());
     const matchesType = weaponTypeFilter === 'all' || weapon.type === weaponTypeFilter;
     return matchesSearch && matchesType;
@@ -2314,9 +1092,9 @@ export default function TierMakerPage() {
   };
   
   return (
-    <DndProvider backend={HTML5Backend}>
+    <DndProvider backend={TouchBackend} options={touchBackendOptions}>
       <div style={{ position: 'relative', zIndex: 9999 }}>
-        <CustomDragLayer characters={characters} weapons={weapons} />
+        <CustomDragLayer characters={tierMakerCharacters} weapons={tierMakerWeapons} />
       </div>
       <div className="relative min-h-screen py-8 px-4 sm:px-6 lg:px-8">
         {/* 背景装飾パターン */}
