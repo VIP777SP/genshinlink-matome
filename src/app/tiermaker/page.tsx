@@ -14,29 +14,9 @@ import { Tab } from '@headlessui/react';
 import { FiEdit3, FiSave, FiPlusCircle, FiTrash2, FiArrowUp, FiArrowDown, FiX } from 'react-icons/fi';
 import { TwitterShareButton, TwitterIcon } from 'react-share';
 
-// react-dnd用のバックエンド設定 
-// マルチバックエンドを最適化された設定で使用
-const HTML5toTouch = {
-  backends: [
-    {
-      id: 'html5',
-      backend: HTML5Backend,
-      transition: TouchTransition,
-      preview: true
-    },
-    {
-      id: 'touch',
-      backend: TouchBackend,
-      options: {
-        enableMouseEvents: true,
-        delayTouchStart: 50, // 少し遅延を設定して誤検出を防ぐ
-        enableHoverOutsideTarget: true,
-        touchSlop: 20 // タッチの許容範囲を増やして操作しやすくする
-      },
-      preview: true
-    }
-  ]
-};
+// react-dnd用のシンプルなバックエンド設定
+// マルチバックエンドは複雑さを生むため、最もシンプルな設定に戻す
+// HTML5Backendのみを使用し、タッチ操作も自動的に処理されるようにする
 
 // 属性タイプの定義
 // これらの型定義は削除して、types.tsからインポートしたものを使用
@@ -1570,6 +1550,7 @@ const WeaponTierRow = React.memo(({ tier, weaponsInTier, onDrop }: WeaponTierRow
     accept: ItemTypes.WEAPON,
     drop: (item: DragItem) => {
       console.log('Dropped weapon:', item, 'to tier:', tier.id);
+      onDrop(item.id, tier.id);
       return { id: tier.id };
     },
     collect: monitor => ({
@@ -1617,6 +1598,7 @@ const TierRow = React.memo(({ tier, charactersInTier, onDrop }: TierRowProps) =>
     accept: ItemTypes.CHARACTER,
     drop: (item: DragItem) => {
       console.log('Dropped character:', item, 'to tier:', tier.id);
+      onDrop(item.id, tier.id);
       return { id: tier.id };
     },
     collect: monitor => ({
@@ -2332,7 +2314,7 @@ export default function TierMakerPage() {
   };
   
   return (
-    <DndProvider backend={MultiBackend} options={HTML5toTouch} debugMode={true}>
+    <DndProvider backend={HTML5Backend}>
       <div style={{ position: 'relative', zIndex: 9999 }}>
         <CustomDragLayer characters={characters} weapons={weapons} />
       </div>
