@@ -14,29 +14,13 @@ import { Tab } from '@headlessui/react';
 import { FiEdit3, FiSave, FiPlusCircle, FiTrash2, FiArrowUp, FiArrowDown, FiX } from 'react-icons/fi';
 import { TwitterShareButton, TwitterIcon } from 'react-share';
 
-// react-dnd用のマルチバックエンド設定
-const HTMLToTouch = {
-  backends: [
-    {
-      id: 'html5',
-      backend: HTML5Backend,
-      // 移行判定ロジックをカスタマイズ
-      transition: {
-        check: (event: MouseEvent) => event.type === 'mousemove',
-      },
-    },
-    {
-      id: 'touch',
-      backend: TouchBackend,
-      options: { 
-        enableMouseEvents: true, 
-        delayTouchStart: 0,
-        enableHoverOutsideTarget: true,
-      },
-      preview: true,
-      transition: TouchTransition,
-    },
-  ],
+// react-dnd用のシンプルなバックエンド設定 
+// マルチバックエンドは一時的に無効化し、シンプルな設定を使用
+
+// より単純な設定を使用するため、直接HTML5Backendを指定
+const backendOptions = {
+  enableMouseEvents: true,
+  delayTouchStart: 0
 };
 
 // 属性タイプの定義
@@ -237,7 +221,7 @@ const characters: Character[] = [
   },
   {
     id: 'dehya',
-    name: 'ディシア',
+    name: 'デヒヤ',
     element: 'pyro',
     weapon: 'claymore',
     rarity: 5,
@@ -2325,7 +2309,7 @@ export default function TierMakerPage() {
   };
   
   return (
-    <DndProvider backend={MultiBackend} options={HTMLToTouch} debugMode={true}>
+    <DndProvider backend={HTML5Backend} debugMode={true}>
       <div style={{ position: 'relative', zIndex: 1 }}>
         <CustomDragLayer characters={characters} weapons={weapons} />
       </div>
