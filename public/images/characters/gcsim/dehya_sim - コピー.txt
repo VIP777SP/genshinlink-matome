@@ -1,0 +1,42 @@
+dehya char lvl=90/90 cons=1 talent=10,10,10;
+dehya add weapon="beacon" refine=1 lvl=90/90;
+dehya add set="emblem" count=4;
+dehya add stats hp=4780 atk=311 er=0.518 pyro%=0.466 cd=0.622;
+dehya add stats cr=0.4 cd=0.8 em=80 er=999;
+
+furina char lvl=90/90 cons=2 talent=10,10,10;
+furina add weapon="key" refine=1 lvl=90/90;
+furina add set="totm" count=4;
+furina add stats hp=4780 atk=311 er=0.518 hp%=0.466 hp%=0.466;
+furina add stats hp%=0.7 er=999;
+
+kazuha char lvl=90/90 cons=2 talent=10,10,10;
+kazuha add weapon="xiphos" refine=5 lvl=90/90;
+kazuha add set="vv" count=4;
+kazuha add stats hp=4780 atk=311 em=187 em=187 em=187;
+kazuha add stats em=200 er=999;
+
+bennett char lvl=90/90 cons=6 talent=10,10,10;
+bennett add weapon="mist" refine=1 lvl=90/90;
+bennett add set="ins" count=4;
+bennett add stats hp=3571 atk=232 er=0.518 hp%=0.348 heal=0.268;
+bennett add stats er=999;
+
+options swap_delay=12 iteration=100 workers=30;
+target lvl=100 resist=0.1 radius=2 pos=0,2.4 hp=5000000; 
+energy every interval=480,720 amount=1;
+
+active furina;
+while 1{
+    if .furina.skill.ready{
+        furina skill;
+    }
+    furina burst;
+    kazuha burst;
+    bennett burst,skill,attack;
+    kazuha skill,high_plunge;
+    if .dehya.skill.ready{
+        dehya skill,skill;
+    }
+    dehya burst,skill:10;
+}
