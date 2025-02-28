@@ -293,7 +293,7 @@ const WeaponCard = ({ weapon, onDrop, currentTier }: WeaponCardProps) => {
         <p className="text-xs text-white truncate text-center">{weapon.name}</p>
       </div>
       {weapon.rarity >= 4 && (
-        <div className="absolute top-0 right-0 bg-amber-500 text-white text-xs px-1 rounded-bl">★{weapon.rarity}</div>
+      <div className="absolute top-0 right-0 bg-amber-500 text-white text-xs px-1 rounded-bl">★{weapon.rarity}</div>
       )}
       {showRemoveButton && (
         <button 

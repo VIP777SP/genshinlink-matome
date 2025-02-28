@@ -6,7 +6,7 @@ import { useSound } from '@/components/SoundService';
 import FavoriteButton from '@/components/FavoriteButton';
 import CommentSection from '@/components/CommentSection';
 import { Character, RoleType, ElementType, WeaponType, RarityType } from '@/utils/characters';
-import { TierDefinition, tiersC0, tiersC2R1 } from '@/tierlist/tiers';
+import { TierDefinition, tiersC0, tiersC2R1 } from '@/app/tierlist/tiers';
 
 // 元素カラーのマッピング
 const elementColors: Record<ElementType, { bg: string; text: string; darkBg: string; darkText: string }> = {

@@ -24,45 +24,7 @@ type Article = {
 };
 
 // お役立ちサイト、コミュニティ、YouTuber情報
-const externalResources: Article[] = [
-  // お役立ちサイト
-  {
-    id: 'hoyolab',
-    title: 'HoYoLAB',
-    description: '公式コミュニティサイト。イベント情報やゲーム内ツールが充実。デイリーチェックインで原石がもらえます。',
-    category: 'お役立ちサイト',
-    thumbnail: '/images/sites/hoyolab.jpg',
-    url: 'https://www.hoyolab.com/',
-    date: '2024-02-27',
-    featured: true
-  },
-  // ... 他のお役立ちサイト
-  
-  // コミュニティ
-  {
-    id: 'reddit-genshin',
-    title: 'Reddit Genshin Impact',
-    description: '世界最大の原神コミュニティ。最新情報や攻略情報、ファンアートなど、様々な情報が共有されています。',
-    category: 'コミュニティ',
-    thumbnail: '/images/community/reddit.jpg',
-    url: 'https://www.reddit.com/r/Genshin_Impact/',
-    date: '2024-02-27'
-  },
-  // ... 他のコミュニティ
-  
-  // YouTuber
-  {
-    id: 'sekapoko',
-    title: 'Sekapoko',
-    description: '詳細なキャラクター解説と深層螺旋攻略で定評のある海外YouTuber。ビルド解説が特に参考になります。',
-    category: 'YouTuber',
-    thumbnail: '/images/youtubers/sekapoko.jpg',
-    url: 'https://www.youtube.com/@Sekapoko',
-    date: '2024-02-27',
-    featured: true
-  },
-  // ... 他のYouTuber
-];
+const externalResources: Article[] = [];
 
 // コラム記事
 const articles: Article[] = [
@@ -74,10 +36,61 @@ const articles: Article[] = [
     thumbnail: '/images/articles/beginners-guide.jpg',
     url: '/column/beginners-guide-2024',
     date: '2024-02-27',
-    featured: true,
     views: 12500
   },
-  // ... 他のコラム記事
+  {
+    id: 'spiral-abyss-guide',
+    title: '【4.5版】深境螺旋完全攻略ガイド',
+    description: '深境螺旋の各階の敵構成とおすすめパーティー、攻略のコツを詳しく解説します。',
+    category: '攻略情報',
+    thumbnail: '/images/articles/spiral-abyss.jpg',
+    url: '/column/spiral-abyss-guide',
+    date: '2024-02-27',
+    views: 15800
+  },
+  {
+    id: 'elemental-reactions',
+    title: '元素反応完全ガイド',
+    description: '全ての元素反応の仕組みとダメージ計算式、効果的な活用方法を解説します。',
+    category: '攻略情報',
+    thumbnail: '/images/articles/elemental-reactions.jpg',
+    url: '/column/elemental-reactions',
+    date: '2024-02-25',
+    views: 13200
+  },
+  {
+    id: 'team-compositions',
+    title: '最強パーティー編成ガイド',
+    description: '元素共鳴や相性を考慮した効果的なパーティー編成のコツと、環境別のおすすめ編成をご紹介します。',
+    category: '攻略情報',
+    thumbnail: '/images/articles/team-compositions.jpg',
+    url: '/teams',
+    date: '2024-02-28',
+    featured: true,
+    views: 14200
+  },
+  {
+    id: 'recommended-youtubers',
+    title: '【2024年版】原神攻略におすすめのYouTuber',
+    description: 'キャラクター解説や深境螺旋攻略など、参考になる動画を投稿している優良YouTuberをご紹介します。',
+    category: 'YouTuber',
+    thumbnail: '/images/articles/youtubers.jpg',
+    url: '/recyoutuber',
+    date: '2024-02-27',
+    featured: true,
+    views: 8500
+  },
+  {
+    id: 'recommended-communities',
+    title: '【2024年版】原神コミュニティガイド',
+    description: '最新情報の入手や他プレイヤーとの交流に役立つ、おすすめのコミュニティサイトをご紹介します。',
+    category: 'コミュニティ',
+    thumbnail: '/images/articles/communities.jpg',
+    url: '/reccommunity',
+    date: '2024-02-27',
+    featured: true,
+    views: 7800
+  }
 ];
 
 // カテゴリー別の色設定

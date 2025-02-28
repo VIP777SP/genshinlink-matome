@@ -6,7 +6,7 @@ import Link from 'next/link';
 import FavoriteButton from '@/components/FavoriteButton';
 import CommentSection from '@/components/CommentSection';
 import { elementColors, characters, Character, RoleType } from '@/utils/characters';
-import { TierDefinition, TierRank, tiersC0, tiersC2R1 } from '@/tierlist/tiers';
+import { TierDefinition, TierRank, tiersC0, tiersC2R1 } from '@/app/tierlist/tiers';
 
 // 属性・武器・レアリティ・役割の型定義
 type ElementType = 'pyro' | 'hydro' | 'anemo' | 'electro' | 'dendro' | 'cryo' | 'geo';

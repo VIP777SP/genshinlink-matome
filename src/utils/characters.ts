@@ -88,6 +88,16 @@ export const characters: Character[] = [
     role: 'supporter'
   },
   {
+    id: 'diluc',
+    name: 'ディルック',
+    element: 'pyro',
+    weapon: 'claymore',
+    rarity: 5,
+    iconUrl: '/images/characters/diluc-icon.png',
+    fullImageUrl: '/images/characters/diluc.png',
+    role: 'attacker'
+  },
+  {
     id: 'xingqiu',
     name: '行秋',
     element: 'hydro',
@@ -147,6 +157,516 @@ export const characters: Character[] = [
     fullImageUrl: '/images/characters/ayaka.png',
     role: 'attacker'
   },
+  {
+    id: 'arlecchino',
+    name: 'アルレッキーノ ',
+    element: 'pyro',
+    weapon: 'polearm',
+    rarity: 5,
+    iconUrl: '/images/characters/arlecchino-icon.png',
+    fullImageUrl: '/images/characters/arlecchino.png',
+    role: 'attacker'
+  },
+  {
+    id: 'mavuika',
+    name: 'マーヴィカ',
+    element: 'pyro',
+    weapon: 'claymore',
+    rarity: 5,  
+    iconUrl: '/images/characters/mavuika-icon.png',
+    fullImageUrl: '/images/characters/mavuika.png',
+    role: 'attacker'
+  },
+  {
+    id: 'yelan',
+    name: '夜蘭',
+    element: 'hydro',
+    weapon: 'bow',
+    rarity: 5,
+    iconUrl: '/images/characters/yelan-icon.png',
+    fullImageUrl: '/images/characters/yelan.png',
+    role: 'supporter'
+  },
+  {
+    id: 'furina',
+    name: 'フリーナ',
+    element: 'hydro',
+    weapon: 'sword',
+    rarity: 5,
+    iconUrl: '/images/characters/furina-icon.png',
+    fullImageUrl: '/images/characters/furina.png',
+    role: 'supporter'
+  },
+  {
+    id: 'neuvillette',
+    name: 'ヌヴィレット',
+    element: 'hydro',
+    weapon: 'catalyst',
+    rarity: 5,
+    iconUrl: '/images/characters/neuvillette-icon.png',
+    fullImageUrl: '/images/characters/neuvillette.png',
+    role: 'attacker'
+  },
+  {
+    id: 'yoimiya',
+    name: '宵宮',
+    element: 'pyro',
+    weapon: 'bow',
+    rarity: 5,
+    iconUrl: '/images/characters/yoimiya-icon.png',
+    fullImageUrl: '/images/characters/yoimiya.png',
+    role: 'attacker'
+  },
+  {
+    id: 'kokomi',
+    name: '珊瑚宮心海',
+    element: 'hydro',
+    weapon: 'catalyst',
+    rarity: 5,
+    iconUrl: '/images/characters/kokomi-icon.png',
+    fullImageUrl: '/images/characters/kokomi.png',
+    role: 'supporter'
+  },
+  {
+    id: 'alhaitham',
+    name: 'アルハイゼン',
+    element: 'dendro',
+    weapon: 'sword',
+    rarity: 5,
+    iconUrl: '/images/characters/alhaitham-icon.png',
+    fullImageUrl: '/images/characters/alhaitham.png',
+    role: 'attacker'
+  },
+  {
+    id: 'yaemiko',
+    name: '八重神子',
+    element: 'electro',
+    weapon: 'catalyst',
+    rarity: 5,
+    iconUrl: '/images/characters/yaemiko-icon.png',
+    fullImageUrl: '/images/characters/yaemiko.png',
+    role: 'attacker'
+  },
+  {
+    id: 'cyno',
+    name: 'セノ',
+    element: 'electro',
+    weapon: 'polearm',
+    rarity: 5,
+    iconUrl: '/images/characters/cyno-icon.png',
+    fullImageUrl: '/images/characters/cyno.png',
+    role: 'attacker'
+  },
+  {
+    id: 'wanderer',
+    name: '放浪者',
+    element: 'anemo',
+    weapon: 'catalyst',
+    rarity: 5,
+    iconUrl: '/images/characters/wanderer-icon.png',
+    fullImageUrl: '/images/characters/wanderer.png',
+    role: 'attacker'
+  },
+  {
+    id: 'baizhu',
+    name: '白朮',
+    element: 'dendro',
+    weapon: 'catalyst',
+    rarity: 5,
+    iconUrl: '/images/characters/baizhu-icon.png',
+    fullImageUrl: '/images/characters/baizhu.png',
+    role: 'supporter'
+  },
+  {
+    id: 'dehya',
+    name: 'ディシア',
+    element: 'pyro',
+    weapon: 'claymore',
+    rarity: 5,
+    iconUrl: '/images/characters/dehya-icon.png',
+    fullImageUrl: '/images/characters/dehya.png',
+    role: 'attacker'
+  },
+  {
+    id: 'eula',
+    name: 'エウルア',
+    element: 'cryo',
+    weapon: 'claymore',
+    rarity: 5,
+    iconUrl: '/images/characters/eula-icon.png',
+    fullImageUrl: '/images/characters/eula.png',
+    role: 'attacker'
+  },
+  {
+    id: 'xiao',
+    name: '魈',
+    element: 'anemo',
+    weapon: 'polearm',
+    rarity: 5,
+    iconUrl: '/images/characters/xiao-icon.png',
+    fullImageUrl: '/images/characters/xiao.png',
+    role: 'attacker'
+  },
+  {
+    id: 'itto',
+    name: '荒瀧一斗',
+    element: 'geo',
+    weapon: 'claymore',
+    rarity: 5,
+    iconUrl: '/images/characters/itto-icon.png',
+    fullImageUrl: '/images/characters/itto.png',
+    role: 'attacker'
+  },
+  {
+    id: 'fischl',
+    name: 'フィッシュル',
+    element: 'electro',
+    weapon: 'bow',
+    rarity: 4,
+    iconUrl: '/images/characters/fischl-icon.png',
+    fullImageUrl: '/images/characters/fischl.png',
+    role: 'supporter'
+  },
+  {
+    id: 'sucrose',
+    name: 'スクロース',
+    element: 'anemo',
+    weapon: 'catalyst',
+    rarity: 4,
+    iconUrl: '/images/characters/sucrose-icon.png',
+    fullImageUrl: '/images/characters/sucrose.png',
+    role: 'supporter'
+  },
+  {
+    id: 'yaoyao',
+    name: 'ヨォーヨ',
+    element: 'dendro',
+    weapon: 'polearm',
+    rarity: 4,
+    iconUrl: '/images/characters/yaoyao-icon.png',
+    fullImageUrl: '/images/characters/yaoyao.png',
+    role: 'supporter'
+  },
+  {
+    id: 'kaveh',
+    name: 'カーヴェ',
+    element: 'dendro',
+    weapon: 'claymore',
+    rarity: 4,
+    iconUrl: '/images/characters/kaveh-icon.png',
+    fullImageUrl: '/images/characters/kaveh.png',
+    role: 'attacker'
+  },
+  {
+    id: 'kirara',
+    name: 'キララ',
+    element: 'dendro',
+    weapon: 'sword',
+    rarity: 4,
+    iconUrl: '/images/characters/kirara-icon.png',
+    fullImageUrl: '/images/characters/kirara.png',
+    role: 'supporter'
+  },
+  {
+    id: 'kuki-shinobu',
+    name: '久岐忍',
+    element: 'electro',
+    weapon: 'sword',
+    rarity: 4,
+    iconUrl: '/images/characters/kuki-shinobu-icon.png',
+    fullImageUrl: '/images/characters/kuki-shinobu.png',
+    role: 'supporter'
+  },
+  {
+    id: 'dori',
+    name: 'ドリー',
+    element: 'electro',
+    weapon: 'claymore',
+    rarity: 4,
+    iconUrl: '/images/characters/dori-icon.png',
+    fullImageUrl: '/images/characters/dori.png',
+    role: 'supporter'
+  },
+  {
+    id: 'collei',
+    name: 'コレイ',
+    element: 'dendro',
+    weapon: 'bow',
+    rarity: 4,
+    iconUrl: '/images/characters/collei-icon.png',
+    fullImageUrl: '/images/characters/collei.png',
+    role: 'supporter'
+  },
+  {
+    id: 'thoma',
+    name: 'トーマ',
+    element: 'pyro',
+    weapon: 'polearm',
+    rarity: 4,
+    iconUrl: '/images/characters/thoma-icon.png',
+    fullImageUrl: '/images/characters/thoma.png',
+    role: 'supporter'
+  },
+  {
+    id: 'sayu',
+    name: '早柚',
+    element: 'anemo',
+    weapon: 'claymore',
+    rarity: 4,
+    iconUrl: '/images/characters/sayu-icon.png',
+    fullImageUrl: '/images/characters/sayu.png',
+    role: 'supporter'
+  },
+  {
+    id: 'nilou',
+    name: 'ニィロウ',
+    element: 'hydro',
+    weapon: 'sword',
+    rarity: 5,
+    iconUrl: '/images/characters/nilou-icon.png',
+    fullImageUrl: '/images/characters/nilou.png',
+    role: 'attacker'
+  },
+  {
+    id: 'lyney',
+    name: 'リネ',
+    element: 'pyro',
+    weapon: 'bow',
+    rarity: 5,
+    iconUrl: '/images/characters/lyney-icon.png',
+    fullImageUrl: '/images/characters/lyney.png',
+    role: 'attacker'
+  },
+  {
+    id: 'lynette',
+    name: 'リネット',
+    element: 'anemo',
+    weapon: 'sword',
+    rarity: 4,
+    iconUrl: '/images/characters/lynette-icon.png',
+    fullImageUrl: '/images/characters/lynette.png',
+    role: 'supporter'
+  },
+  {
+    id: 'freminet',
+    name: 'フレミネ',
+    element: 'cryo',
+    weapon: 'claymore',
+    rarity: 4,
+    iconUrl: '/images/characters/freminet-icon.png',
+    fullImageUrl: '/images/characters/freminet.png',
+    role: 'attacker'
+  },
+  {
+    id: 'wriothesley',
+    name: 'リオセスリ',
+    element: 'cryo',
+    weapon: 'catalyst',
+    rarity: 5,
+    iconUrl: '/images/characters/wriothesley-icon.png',
+    fullImageUrl: '/images/characters/wriothesley.png',
+    role: 'attacker'
+  },
+  {
+    id: 'charlotte',
+    name: 'シャルロット',
+    element: 'cryo',
+    weapon: 'catalyst',
+    rarity: 4,
+    iconUrl: '/images/characters/charlotte-icon.png',
+    fullImageUrl: '/images/characters/charlotte.png',
+    role: 'supporter'
+  },
+  {
+    id: 'navia',
+    name: 'ナヴィア',
+    element: 'geo',
+    weapon: 'claymore',
+    rarity: 5,
+    iconUrl: '/images/characters/navia-icon.png',
+    fullImageUrl: '/images/characters/navia.png',
+    role: 'attacker'
+  },
+  {
+    id: 'chevreuse',
+    name: 'シュヴルーズ',
+    element: 'pyro',
+    weapon: 'polearm',
+    rarity: 4,
+    iconUrl: '/images/characters/chevreuse-icon.png',
+    fullImageUrl: '/images/characters/chevreuse.png',
+    role: 'supporter'
+  },
+  {
+    id: 'gaming',
+    name: 'ゲーミング',
+    element: 'pyro',
+    weapon: 'claymore',
+    rarity: 4,
+    iconUrl: '/images/characters/gaming-icon.png',
+    fullImageUrl: '/images/characters/gaming.png',
+    role: 'attacker'
+  },
+  {
+    id: 'xianyun',
+    name: '閑雲',
+    element: 'anemo',
+    weapon: 'catalyst',
+    rarity: 5,
+    iconUrl: '/images/characters/xianyun-icon.png',
+    fullImageUrl: '/images/characters/xianyun.png',
+    role: 'supporter'
+  },
+  {
+    id: 'chiori',
+    name: '千織',
+    element: 'geo',
+    weapon: 'sword',
+    rarity: 5,
+    iconUrl: '/images/characters/chiori-icon.png',
+    fullImageUrl: '/images/characters/chiori.png',
+    role: 'attacker'
+  },
+  {
+    id: 'amber',
+    name: 'アンバー',
+    element: 'pyro',
+    weapon: 'bow',
+    rarity: 4,
+    iconUrl: '/images/characters/amber-icon.png',
+    fullImageUrl: '/images/characters/amber.png',
+    role: 'attacker'
+  },
+  {
+    id: 'kaeya',
+    name: 'ガイア',
+    element: 'cryo',
+    weapon: 'sword',
+    rarity: 4,
+    iconUrl: '/images/characters/kaeya-icon.png',
+    fullImageUrl: '/images/characters/kaeya.png',
+    role: 'supporter'
+  },
+  {
+    id: 'lisa',
+    name: 'リサ',
+    element: 'electro',
+    weapon: 'catalyst',
+    rarity: 4,
+    iconUrl: '/images/characters/lisa-icon.png',
+    fullImageUrl: '/images/characters/lisa.png',
+    role: 'supporter'
+  },
+  {
+    id: 'noelle',
+    name: 'ノエル',
+    element: 'geo',
+    weapon: 'claymore',
+    rarity: 4,
+    iconUrl: '/images/characters/noelle-icon.png',
+    fullImageUrl: '/images/characters/noelle.png',
+    role: 'attacker'
+  },
+  {
+    id: 'barbara',
+    name: 'バーバラ',
+    element: 'hydro',
+    weapon: 'catalyst',
+    rarity: 4,
+    iconUrl: '/images/characters/barbara-icon.png',
+    fullImageUrl: '/images/characters/barbara.png',
+    role: 'supporter'
+  },
+  {
+    id: 'razor',
+    name: 'レザー',
+    element: 'electro',
+    weapon: 'claymore',
+    rarity: 4,
+    iconUrl: '/images/characters/razor-icon.png',
+    fullImageUrl: '/images/characters/razor.png',
+    role: 'attacker'
+  },
+  {
+    id: 'rosaria',
+    name: 'ロサリア',
+    element: 'cryo',
+    weapon: 'polearm',
+    rarity: 4,
+    iconUrl: '/images/characters/rosaria-icon.png',
+    fullImageUrl: '/images/characters/rosaria.png',
+    role: 'supporter'
+  },
+  {
+    id: 'mika',
+    name: 'ミカ',
+    element: 'cryo',
+    weapon: 'polearm',
+    rarity: 4,
+    iconUrl: '/images/characters/mika-icon.png',
+    fullImageUrl: '/images/characters/mika.png',
+    role: 'supporter'
+  },
+  {
+    id: 'beidou',
+    name: '北斗',
+    element: 'electro',
+    weapon: 'claymore',
+    rarity: 4,
+    iconUrl: '/images/characters/beidou-icon.png',
+    fullImageUrl: '/images/characters/beidou.png',
+    role: 'supporter'
+  },
+  {
+    id: 'ningguang',
+    name: '凝光',
+    element: 'geo',
+    weapon: 'catalyst',
+    rarity: 4,
+    iconUrl: '/images/characters/ningguang-icon.png',
+    fullImageUrl: '/images/characters/ningguang.png',
+    role: 'attacker'
+  },
+  {
+    id: 'chongyun',
+    name: '重雲',
+    element: 'cryo',
+    weapon: 'claymore',
+    rarity: 4,
+    iconUrl: '/images/characters/chongyun-icon.png',
+    fullImageUrl: '/images/characters/chongyun.png',
+    role: 'supporter'
+  },
+  {
+    id: 'xinyan',
+    name: '辛炎',
+    element: 'pyro',
+    weapon: 'claymore',
+    rarity: 4,
+    iconUrl: '/images/characters/xinyan-icon.png',
+    fullImageUrl: '/images/characters/xinyan.png',
+    role: 'attacker'
+  },
+  {
+    id: 'yunjin',
+    name: '雲菫',
+    element: 'geo',
+    weapon: 'polearm',
+    rarity: 4,
+    iconUrl: '/images/characters/yunjin-icon.png',
+    fullImageUrl: '/images/characters/yunjin.png',
+    role: 'supporter'
+  },
+  {
+    id: 'yanfei',
+    name: '煙緋',
+    element: 'pyro',
+    weapon: 'catalyst',
+    rarity: 4,
+    iconUrl: '/images/characters/yanfei-icon.png',
+    fullImageUrl: '/images/characters/yanfei.png',
+    role: 'attacker'
+  }
 ];
 
 // IDからキャラクターを取得する便利関数

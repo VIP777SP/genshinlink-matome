@@ -186,7 +186,7 @@ export default function Home() {
   // ウェルカムメッセージのアニメーション
   useEffect(() => {
     setShowWelcome(true);
-    const timer = setTimeout(() => setShowWelcome(false), 2000);
+    const timer = setTimeout(() => setShowWelcome(false), 300);
     return () => clearTimeout(timer);
   }, []);
 
@@ -254,9 +254,9 @@ export default function Home() {
   return (
     <main className="container mx-auto px-3 py-4 sm:px-6 sm:py-8">
       {/* ウェルカムオーバーレイ */}
-      <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md
+      <div className={`fixed inset-0 z-50 flex flex-col items-center justify-start pt-[20vh] bg-black/80 backdrop-blur-md
                       transition-opacity duration-1000 ${showWelcome ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-        <div className="text-4xl md:text-6xl font-bold text-white text-center tracking-wider animate-pulse">
+        <div className="text-6xl md:text-9xl font-bold text-white text-center tracking-wider animate-pulse">
           <span className="text-amber-400">原神</span>、起動！！
         </div>
       </div>

@@ -22,6 +22,7 @@ export const tiersC0: TierDefinition[] = [
     color: 'bg-red-600',
     characters: [
       characters.find(c => c.id === 'bennett')!,
+      characters.find(c => c.id === 'neuvillette')!,
       characters.find(c => c.id === 'xingqiu')!,
       characters.find(c => c.id === 'xiangling')!,
     ]
@@ -61,7 +62,9 @@ export const tiersC0: TierDefinition[] = [
     name: '改善待ちランク',
     description: 'C0・星4武器では力を発揮しづらく、凸数や専用武器が必要なキャラクター。',
     color: 'bg-blue-600',
-    characters: []
+    characters: [
+      characters.find(c => c.id === 'diluc')!,
+    ]
   },
 ];
 

@@ -16,12 +16,10 @@ type NavItem = {
 // ナビゲーションアイテムの配列
 const navItems: NavItem[] = [
   { href: '/', label: 'ホーム', icon: 'fa-home' },
-  { href: '/column', label: 'コラム', icon: 'fa-newspaper' },
-  { href: '/characters/tier', label: '最強キャラティア', icon: 'fa-trophy' },
+  { href: '/column', label: '記事一覧', icon: 'fa-newspaper' },
+  { href: '/characters/tier', label: '最強ランキング', icon: 'fa-trophy' },
   { href: '/tools', label: '便利ツール集', icon: 'fa-tools' },
-  { href: '/artifacts', label: '聖遺物攻略', icon: 'fa-gem' },
-  { href: '/teams', label: 'パーティー編成', icon: 'fa-users-cog' },
-  { href: '/news', label: 'ニュース', icon: 'fa-newspaper' },
+  { href: '/news', label: '最新ニュース', icon: 'fa-bullhorn' },
 ];
 
 export default function Navigation() {
