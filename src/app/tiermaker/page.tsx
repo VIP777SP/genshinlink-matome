@@ -209,12 +209,7 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
         fill
         className="object-cover"
       />
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-1">
-        <p className="text-xs text-white truncate text-center">{character.name}</p>
-      </div>
-      {character.rarity === 5 && (
-        <div className="absolute top-0 right-0 bg-amber-500 text-white text-xs px-1 rounded-bl">★5</div>
-      )}
+      
       {showRemoveButton && (
         <button 
           onClick={handleRemove}
