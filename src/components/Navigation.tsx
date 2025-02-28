@@ -16,9 +16,6 @@ type NavItem = {
 // ナビゲーションアイテムの配列
 const navItems: NavItem[] = [
   { href: '/', label: 'ホーム', icon: 'fa-home' },
-  { href: '/recsite', label: 'お役立ちサイト', icon: 'fa-globe' },
-  { href: '/reccommunity', label: 'コミュニティ', icon: 'fa-users' },
-  { href: '/recyoutuber', label: 'YouTuber', icon: 'fa-youtube' },
   { href: '/column', label: 'コラム', icon: 'fa-newspaper' },
   { href: '/characters/tier', label: '最強キャラティア', icon: 'fa-trophy' },
   { href: '/tools', label: '便利ツール集', icon: 'fa-tools' },
