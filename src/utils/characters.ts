@@ -957,6 +957,36 @@ export const characters: Character[] = [
     iconUrl: '/images/characters/xilonen-icon.png',
     fullImageUrl: '/images/characters/xilonen.png',
     role: 'attacker'
+  },
+  {
+    id: 'albedo',
+    name: 'アルベド',
+    element: 'geo',
+    weapon: 'sword',
+    rarity: 5,
+    iconUrl: '/images/characters/albedo-icon.png',
+    fullImageUrl: '/images/characters/albedo.png',
+    role: 'supporter'
+  },
+  {
+    id: 'klee',
+    name: 'クレー',
+    element: 'pyro',
+    weapon: 'catalyst',
+    rarity: 5,
+    iconUrl: '/images/characters/klee-icon.png',
+    fullImageUrl: '/images/characters/klee.png',
+    role: 'attacker'
+  },
+  {
+    id: 'keqing',
+    name: '刻晴',
+    element: 'electro',
+    weapon: 'sword',
+    rarity: 5,
+    iconUrl: '/images/characters/keqing-icon.png',
+    fullImageUrl: '/images/characters/keqing.png',
+    role: 'attacker'
   }
 ];
 
