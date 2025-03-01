@@ -18,15 +18,30 @@ import { TwitterShareButton, TwitterIcon } from 'react-share';
 import { characters as sourceCharacters } from '@/utils/characters';
 import { weapons as sourceWeapons } from '@/data/weapons';
 
-// react-dnd用のタッチに最適化したバックエンド設定
-const touchBackendOptions = {
-  enableMouseEvents: true, // マウスイベントも有効化
-  delayTouchStart: 0, // タッチスタート遅延なし（長押し不要）
-  enableKeyboardEvents: true, // キーボードイベントも有効化
-  touchSlop: 1, // ほとんど動かなくても反応するように設定
-  ignoreContextMenu: true, // コンテキストメニューを無視
-  enableTouchEvents: true, // タッチイベントを有効化
-  delay: 0 // すべての遅延を0に
+// react-dnd用のマルチバックエンド設定
+const HTML5toTouch = {
+  backends: [
+    {
+      id: 'html5',
+      backend: HTML5Backend,
+      transition: TouchTransition,
+      preview: true
+    },
+    {
+      id: 'touch',
+      backend: TouchBackend,
+      options: {
+        enableMouseEvents: true,
+        delayTouchStart: 0,
+        enableKeyboardEvents: true,
+        touchSlop: 1,
+        ignoreContextMenu: true,
+        enableTouchEvents: true,
+        delay: 0
+      },
+      preview: true
+    }
+  ]
 };
 
 // Tiermaker用に必要な情報だけを取り出したキャラクターリスト
@@ -333,7 +348,7 @@ interface WeaponTierRowProps {
 // 武器Tier行コンポーネント - メモ化してパフォーマンスを向上
 const WeaponTierRow = React.memo(({ tier, weaponsInTier, onDrop }: WeaponTierRowProps) => {
   const ref = useRef<HTMLDivElement>(null);
-  const [{ isOver }, drop] = useDrop(() => ({
+  const [{ isOver }, drop] = useDrop({
     accept: ItemTypes.WEAPON,
     drop: (item: DragItem) => {
       console.log('Dropped weapon:', item, 'to tier:', tier.id);
@@ -343,7 +358,7 @@ const WeaponTierRow = React.memo(({ tier, weaponsInTier, onDrop }: WeaponTierRow
     collect: monitor => ({
       isOver: !!monitor.isOver(),
     }),
-  }));
+  });
   
   // ref と drop を接続
   drop(ref);
@@ -381,7 +396,7 @@ WeaponTierRow.displayName = 'WeaponTierRow';
 // Tier行コンポーネント - メモ化してパフォーマンスを向上
 const TierRow = React.memo(({ tier, charactersInTier, onDrop }: TierRowProps) => {
   const ref = useRef<HTMLDivElement>(null);
-  const [{ isOver }, drop] = useDrop(() => ({
+  const [{ isOver }, drop] = useDrop({
     accept: ItemTypes.CHARACTER,
     drop: (item: DragItem) => {
       console.log('Dropped character:', item, 'to tier:', tier.id);
@@ -391,7 +406,7 @@ const TierRow = React.memo(({ tier, charactersInTier, onDrop }: TierRowProps) =>
     collect: monitor => ({
       isOver: !!monitor.isOver(),
     }),
-  }));
+  });
   
   console.log(`TierRow ${tier.id} rendering with ${charactersInTier.length} characters`);
   
@@ -1100,8 +1115,100 @@ export default function TierMakerPage() {
     return result;
   };
   
+  // 未割り当てキャラクター
+  const UnassignedCharactersArea = React.memo(() => {
+    const ref = useRef<HTMLDivElement>(null);
+    const [{ isOver }, drop] = useDrop({
+      accept: ItemTypes.CHARACTER,
+      drop: (item: DragItem) => {
+        console.log('Dropped character to unassigned area:', item);
+        handleDrop(item.id, 'unassigned');
+        return { id: 'unassigned' };
+      },
+      collect: monitor => ({
+        isOver: !!monitor.isOver(),
+      }),
+    });
+
+    // ref と drop を接続
+    drop(ref);
+
+    const unassignedCharacters = getUnassignedCharacters();
+    
+    return (
+      <div 
+        ref={ref}
+        className={`min-h-40 p-4 border-2 border-dashed ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-300 dark:border-gray-600'} rounded-lg flex flex-wrap gap-3 transition-colors`}
+        style={{ justifyContent: unassignedCharacters.length > 0 ? 'flex-start' : 'center' }}
+      >
+        {unassignedCharacters.length > 0 ? (
+          unassignedCharacters.map(char => (
+            <CharacterCard 
+              key={char.id}
+              character={char}
+              onDrop={handleDrop}
+              currentTier="unassigned"
+            />
+          ))
+        ) : (
+          <div className="w-full text-center text-gray-500 dark:text-gray-400 py-8">
+            すべてのキャラクターが配置されました！
+          </div>
+        )}
+      </div>
+    );
+  });
+  
+  UnassignedCharactersArea.displayName = 'UnassignedCharactersArea';
+
+  // 未割り当て武器
+  const UnassignedWeaponsArea = React.memo(() => {
+    const ref = useRef<HTMLDivElement>(null);
+    const [{ isOver }, drop] = useDrop({
+      accept: ItemTypes.WEAPON,
+      drop: (item: DragItem) => {
+        console.log('Dropped weapon to unassigned area:', item);
+        handleWeaponDrop(item.id, 'weapon-unassigned');
+        return { id: 'weapon-unassigned' };
+      },
+      collect: monitor => ({
+        isOver: !!monitor.isOver(),
+      }),
+    });
+
+    // ref と drop を接続
+    drop(ref);
+
+    const unassignedWeapons = getUnassignedWeapons();
+    
+    return (
+      <div 
+        ref={ref}
+        className={`min-h-40 p-4 border-2 border-dashed ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-300 dark:border-gray-600'} rounded-lg flex flex-wrap gap-3 transition-colors`}
+        style={{ justifyContent: unassignedWeapons.length > 0 ? 'flex-start' : 'center' }}
+      >
+        {unassignedWeapons.length > 0 ? (
+          unassignedWeapons.map(weapon => (
+            <WeaponCard 
+              key={weapon.id}
+              weapon={weapon}
+              onDrop={handleWeaponDrop}
+              currentTier="weapon-unassigned"
+            />
+          ))
+        ) : (
+          <div className="w-full text-center text-gray-500 dark:text-gray-400 py-8">
+            すべての武器が配置されました！
+          </div>
+        )}
+      </div>
+    );
+  });
+  
+  UnassignedWeaponsArea.displayName = 'UnassignedWeaponsArea';
+
   return (
-    <DndProvider backend={TouchBackend} options={touchBackendOptions}>
+    <DndProvider backend={MultiBackend} options={HTML5toTouch}>
       <div style={{ position: 'relative', zIndex: 9999 }}>
         <CustomDragLayer characters={tierMakerCharacters} weapons={tierMakerWeapons} />
       </div>
@@ -1358,25 +1465,7 @@ export default function TierMakerPage() {
         {/* 未割り当てキャラクター */}
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
           <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">利用可能なキャラクター</h2>
-          <div 
-            className="min-h-40 p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex flex-wrap gap-3"
-            style={{ justifyContent: getUnassignedCharacters().length > 0 ? 'flex-start' : 'center' }}
-          >
-            {getUnassignedCharacters().length > 0 ? (
-              getUnassignedCharacters().map(char => (
-                <CharacterCard 
-                  key={char.id}
-                  character={char}
-                  onDrop={handleDrop}
-                  currentTier="unassigned"
-                />
-              ))
-            ) : (
-              <div className="w-full text-center text-gray-500 dark:text-gray-400 py-8">
-                すべてのキャラクターが配置されました！
-              </div>
-            )}
-          </div>
+          <UnassignedCharactersArea />
         </div>
         
         {/* 武器Tiermaker */}
@@ -1601,25 +1690,7 @@ export default function TierMakerPage() {
           {/* 未割り当て武器 */}
           <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
             <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">利用可能な武器</h2>
-            <div 
-              className="min-h-40 p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex flex-wrap gap-3"
-              style={{ justifyContent: getUnassignedWeapons().length > 0 ? 'flex-start' : 'center' }}
-            >
-              {getUnassignedWeapons().length > 0 ? (
-                getUnassignedWeapons().map(weapon => (
-                  <WeaponCard 
-                    key={weapon.id}
-                    weapon={weapon}
-                    onDrop={handleWeaponDrop}
-                    currentTier="weapon-unassigned"
-                  />
-                ))
-              ) : (
-                <div className="w-full text-center text-gray-500 dark:text-gray-400 py-8">
-                  すべての武器が配置されました！
-                </div>
-              )}
-            </div>
+            <UnassignedWeaponsArea />
           </div>
         </div>
       </div>
