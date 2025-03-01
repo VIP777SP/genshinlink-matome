@@ -368,8 +368,13 @@ const WeaponTierRow = React.memo(({ tier, weaponsInTier, onDrop }: WeaponTierRow
       ref={ref} 
       className={`flex items-center mb-2 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} rounded-lg overflow-hidden transition-colors`}
     >
-      <div className={`${tier.color} text-white font-bold w-16 sm:w-20 py-2 px-2 sm:px-3 flex items-center justify-center text-sm sm:text-base`}>
-        {tier.name}
+      <div className={`relative w-16 sm:w-20 flex-shrink-0 overflow-hidden`}>
+        <div className={`${tier.color} absolute inset-0 bg-gradient-to-br from-white/10 to-black/20 flex items-center justify-center transform -skew-x-6 shadow-inner`}>
+          <span className="text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md px-2 py-3 transform skew-x-6">
+            {tier.name}
+          </span>
+        </div>
+        <div className="absolute top-0 right-0 w-3 h-full bg-black/10"></div>
       </div>
       <div className="flex-1 min-h-24 p-2 flex flex-wrap gap-2">
         {weaponsInTier.map(weapon => (
@@ -418,8 +423,13 @@ const TierRow = React.memo(({ tier, charactersInTier, onDrop }: TierRowProps) =>
       ref={ref} 
       className={`flex items-center mb-2 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} rounded-lg overflow-hidden transition-colors`}
     >
-      <div className={`${tier.color} text-white font-bold w-16 sm:w-20 py-2 px-2 sm:px-3 flex items-center justify-center text-sm sm:text-base`}>
-        {tier.name}
+      <div className={`relative w-16 sm:w-20 flex-shrink-0 overflow-hidden`}>
+        <div className={`${tier.color} absolute inset-0 bg-gradient-to-br from-white/10 to-black/20 flex items-center justify-center transform -skew-x-6 shadow-inner`}>
+          <span className="text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md px-2 py-3 transform skew-x-6">
+            {tier.name}
+          </span>
+        </div>
+        <div className="absolute top-0 right-0 w-3 h-full bg-black/10"></div>
       </div>
       <div className="flex-1 min-h-24 p-2 flex flex-wrap gap-2">
         {charactersInTier.map(char => (
