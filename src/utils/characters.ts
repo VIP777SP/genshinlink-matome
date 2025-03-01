@@ -987,6 +987,26 @@ export const characters: Character[] = [
     iconUrl: '/images/characters/keqing-icon.png',
     fullImageUrl: '/images/characters/keqing.png',
     role: 'attacker'
+  },
+  {
+    id: 'lumine',
+    name: 'ルミーネ',
+    element: 'anemo',
+    weapon: 'sword',
+    rarity: 5,
+    iconUrl: '/images/characters/lumine-icon.png',
+    fullImageUrl: '/images/characters/lumine.png',
+    role: 'attacker'
+  },
+  {
+    id: 'aether',
+    name: 'エーテル',
+    element: 'anemo',
+    weapon: 'sword',
+    rarity: 5,
+    iconUrl: '/images/characters/aether-icon.png',
+    fullImageUrl: '/images/characters/aether.png',
+    role: 'attacker'
   }
 ];
 
