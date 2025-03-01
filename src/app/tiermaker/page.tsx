@@ -380,7 +380,7 @@ const WeaponTierRow = React.memo(({ tier, weaponsInTier, onDrop }: WeaponTierRow
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/20"></div>
         
         {/* テキスト */}
-        <span className="relative z-10 text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md py-3">
+        <span className="relative z-10 text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md py-6">
           {tier.name}
         </span>
       </div>
@@ -443,7 +443,7 @@ const TierRow = React.memo(({ tier, charactersInTier, onDrop }: TierRowProps) =>
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/20"></div>
         
         {/* テキスト */}
-        <span className="relative z-10 text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md py-3">
+        <span className="relative z-10 text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md py-6">
           {tier.name}
         </span>
       </div>
