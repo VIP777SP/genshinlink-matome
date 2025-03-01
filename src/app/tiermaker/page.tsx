@@ -369,12 +369,18 @@ const WeaponTierRow = React.memo(({ tier, weaponsInTier, onDrop }: WeaponTierRow
       className={`flex items-center mb-2 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} rounded-lg overflow-hidden transition-colors`}
     >
       <div className={`relative w-16 sm:w-20 flex-shrink-0 overflow-hidden`}>
-        <div className={`${tier.color} absolute inset-0 bg-gradient-to-br from-white/10 to-black/20 flex items-center justify-center transform -skew-x-6 shadow-inner`}>
-          <span className="text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md px-2 py-3 transform skew-x-6">
+        <div className={`${tier.color} absolute inset-0 flex items-center justify-center`}>
+          {/* 背景グラデーション */}
+          <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-black/30"></div>
+          {/* 右上から左下への斜めライン */}
+          <div className="absolute top-0 right-0 w-8 h-8 bg-white/10 transform rotate-45 translate-x-4 translate-y-[-50%]"></div>
+          {/* テキスト */}
+          <span className="relative z-10 text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md">
             {tier.name}
           </span>
         </div>
-        <div className="absolute top-0 right-0 w-3 h-full bg-black/10"></div>
+        {/* 右側の影 */}
+        <div className="absolute top-0 right-0 bottom-0 w-1 bg-black/20"></div>
       </div>
       <div className="flex-1 min-h-24 p-2 flex flex-wrap gap-2">
         {weaponsInTier.map(weapon => (
@@ -424,12 +430,18 @@ const TierRow = React.memo(({ tier, charactersInTier, onDrop }: TierRowProps) =>
       className={`flex items-center mb-2 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} rounded-lg overflow-hidden transition-colors`}
     >
       <div className={`relative w-16 sm:w-20 flex-shrink-0 overflow-hidden`}>
-        <div className={`${tier.color} absolute inset-0 bg-gradient-to-br from-white/10 to-black/20 flex items-center justify-center transform -skew-x-6 shadow-inner`}>
-          <span className="text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md px-2 py-3 transform skew-x-6">
+        <div className={`${tier.color} absolute inset-0 flex items-center justify-center`}>
+          {/* 背景グラデーション */}
+          <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-black/30"></div>
+          {/* 右上から左下への斜めライン */}
+          <div className="absolute top-0 right-0 w-8 h-8 bg-white/10 transform rotate-45 translate-x-4 translate-y-[-50%]"></div>
+          {/* テキスト */}
+          <span className="relative z-10 text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md">
             {tier.name}
           </span>
         </div>
-        <div className="absolute top-0 right-0 w-3 h-full bg-black/10"></div>
+        {/* 右側の影 */}
+        <div className="absolute top-0 right-0 bottom-0 w-1 bg-black/20"></div>
       </div>
       <div className="flex-1 min-h-24 p-2 flex flex-wrap gap-2">
         {charactersInTier.map(char => (
