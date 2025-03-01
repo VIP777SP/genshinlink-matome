@@ -1416,6 +1416,29 @@ export default function TierMakerPage() {
           </div>
         )}
         
+        {/* Tierリスト */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">{isEditMode && customTemplate ? customTemplate.name : selectedTemplate.name}</h2>
+          <div className="border-t-2 border-l-2 border-r-2 border-gray-300 dark:border-gray-600 rounded-t-lg overflow-hidden">
+            {(isEditMode && customTemplate ? customTemplate.tiers : selectedTemplate.tiers).map((tier, index, array) => (
+              <div key={tier.id} className={`${index === array.length - 1 ? 'rounded-b-lg overflow-hidden' : ''}`}>
+                <TierRow 
+                  tier={tier}
+                  charactersInTier={getCharactersInTier(tier.id)}
+                  onDrop={handleDrop}
+                />
+                {index < array.length - 1 && <div className="border-b border-gray-300 dark:border-gray-600"></div>}
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* 未割り当てキャラクター */}
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">利用可能なキャラクター</h2>
+          <UnassignedCharactersArea />
+        </div>
+        
         {/* 武器Tiermaker */}
         <div className="mt-12 pt-12 border-t-2 border-amber-200 dark:border-amber-800">
           <div className="mb-8 text-center">
