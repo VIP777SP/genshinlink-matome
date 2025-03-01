@@ -371,13 +371,16 @@ const WeaponTierRow = React.memo(({ tier, weaponsInTier, onDrop }: WeaponTierRow
       className={`flex items-stretch mb-0 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} transition-colors`}
     >
       {/* 左側のTier名ラベル - スタイリッシュなデザインに変更 */}
-      <div className={`${tier.color} w-16 sm:w-20 h-full py-2 px-2 sm:px-3 flex-shrink-0 flex items-center justify-center relative`}>
-        {/* 斜めのエッジ効果を持つ背景 */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-black/20"></div>
-        {/* 右側に小さな三角形を追加して矢印のような形に */}
-        <div className="absolute right-0 top-0 bottom-0 w-2 bg-black/10"></div>
+      <div className={`${tier.color} w-16 sm:w-20 h-full flex-shrink-0 flex items-center justify-center relative`}>
+        {/* グラデーション背景 */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-black/30"></div>
+        
+        {/* 表のヘッダーセルのような装飾 */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-white/30"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/20"></div>
+        
         {/* テキスト */}
-        <span className="relative z-10 text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md">
+        <span className="relative z-10 text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md py-3">
           {tier.name}
         </span>
       </div>
@@ -431,13 +434,16 @@ const TierRow = React.memo(({ tier, charactersInTier, onDrop }: TierRowProps) =>
       className={`flex items-stretch mb-0 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} transition-colors`}
     >
       {/* 左側のTier名ラベル - スタイリッシュなデザインに変更 */}
-      <div className={`${tier.color} w-16 sm:w-20 h-full py-2 px-2 sm:px-3 flex-shrink-0 flex items-center justify-center relative`}>
-        {/* 斜めのエッジ効果を持つ背景 */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-black/20"></div>
-        {/* 右側に小さな三角形を追加して矢印のような形に */}
-        <div className="absolute right-0 top-0 bottom-0 w-2 bg-black/10"></div>
+      <div className={`${tier.color} w-16 sm:w-20 h-full flex-shrink-0 flex items-center justify-center relative`}>
+        {/* グラデーション背景 */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-black/30"></div>
+        
+        {/* 表のヘッダーセルのような装飾 */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-white/30"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/20"></div>
+        
         {/* テキスト */}
-        <span className="relative z-10 text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md">
+        <span className="relative z-10 text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md py-3">
           {tier.name}
         </span>
       </div>
