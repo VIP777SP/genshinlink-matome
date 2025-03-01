@@ -214,7 +214,7 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
   return (
     <div
       ref={ref}
-      className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden 
+      className={`relative w-16 h-24 sm:w-20 sm:h-24 rounded-lg overflow-hidden 
                   border-2 border-amber-200 dark:border-amber-800
                   shadow-md cursor-move transition-transform
                   ${isDragging ? 'opacity-50' : 'opacity-100'}
@@ -227,7 +227,7 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
         src={character.iconUrl}
         alt={character.name}
         fill
-        className="object-contain"
+        className="object-cover"
         unoptimized // 画像の最適化を無効化して、ドラッグ中の表示を改善
       />
       
@@ -294,7 +294,7 @@ const WeaponCard = ({ weapon, onDrop, currentTier }: WeaponCardProps) => {
   return (
     <div
       ref={ref}
-      className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden 
+      className={`relative w-16 h-24 sm:w-20 sm:h-24 rounded-lg overflow-hidden 
                   border-2 border-amber-200 dark:border-amber-800
                   shadow-md cursor-move transition-transform
                   ${isDragging ? 'opacity-50' : 'opacity-100'}
@@ -307,7 +307,7 @@ const WeaponCard = ({ weapon, onDrop, currentTier }: WeaponCardProps) => {
         src={weapon.iconUrl}
         alt={weapon.name}
         fill
-        className="object-contain"
+        className="object-cover"
         unoptimized // 画像の最適化を無効化して、ドラッグ中の表示を改善
       />
       
