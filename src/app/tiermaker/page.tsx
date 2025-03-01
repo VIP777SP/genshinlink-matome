@@ -227,12 +227,12 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
         src={character.iconUrl}
         alt={character.name}
         fill
-        className="object-cover"
+        className="object-cover object-center"
         unoptimized // 画像の最適化を無効化して、ドラッグ中の表示を改善
       />
       
-      {/* キャラクター名を表示 */}
-      <div className="absolute bottom-0 left-0 right-0 bg-black/60 py-0.5 px-1 text-white text-xs text-center truncate">
+      {/* キャラクター名を表示 - py-1に統一して余白を均等にする */}
+      <div className="absolute bottom-0 left-0 right-0 bg-black/60 py-1 px-1 text-white text-xs text-center truncate">
         {character.name}
       </div>
       
@@ -312,12 +312,12 @@ const WeaponCard = ({ weapon, onDrop, currentTier }: WeaponCardProps) => {
         src={weapon.iconUrl}
         alt={weapon.name}
         fill
-        className="object-cover"
+        className="object-cover object-center"
         unoptimized // 画像の最適化を無効化して、ドラッグ中の表示を改善
       />
       
-      {/* 武器名を表示 */}
-      <div className="absolute bottom-0 left-0 right-0 bg-black/60 py-0.5 px-1 text-white text-xs text-center truncate">
+      {/* 武器名を表示 - py-1に統一して余白を均等にする */}
+      <div className="absolute bottom-0 left-0 right-0 bg-black/60 py-1 px-1 text-white text-xs text-center truncate">
         {weapon.name}
       </div>
       
