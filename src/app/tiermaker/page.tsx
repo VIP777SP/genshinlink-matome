@@ -368,7 +368,7 @@ const WeaponTierRow = React.memo(({ tier, weaponsInTier, onDrop }: WeaponTierRow
       ref={ref} 
       className={`flex items-center mb-2 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} rounded-lg overflow-hidden transition-colors`}
     >
-      <div className={`${tier.color} text-white font-bold w-24 py-3 px-4 flex items-center justify-center`}>
+      <div className={`${tier.color} text-white font-bold w-16 sm:w-20 py-2 px-2 sm:px-3 flex items-center justify-center text-sm sm:text-base`}>
         {tier.name}
       </div>
       <div className="flex-1 min-h-24 p-2 flex flex-wrap gap-2">
@@ -418,7 +418,7 @@ const TierRow = React.memo(({ tier, charactersInTier, onDrop }: TierRowProps) =>
       ref={ref} 
       className={`flex items-center mb-2 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} rounded-lg overflow-hidden transition-colors`}
     >
-      <div className={`${tier.color} text-white font-bold w-24 py-3 px-4 flex items-center justify-center`}>
+      <div className={`${tier.color} text-white font-bold w-16 sm:w-20 py-2 px-2 sm:px-3 flex items-center justify-center text-sm sm:text-base`}>
         {tier.name}
       </div>
       <div className="flex-1 min-h-24 p-2 flex flex-wrap gap-2">
