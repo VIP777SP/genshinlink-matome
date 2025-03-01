@@ -288,13 +288,13 @@ export const characters: Character[] = [
     role: 'attacker'
   },
   {
-    id: 'yaemiko',
+    id: 'yae',
     name: '八重神子',
     element: 'electro',
     weapon: 'catalyst',
     rarity: 5,
-    iconUrl: '/images/characters/yaemiko-icon.png',
-    fullImageUrl: '/images/characters/yaemiko.png',
+    iconUrl: '/images/characters/yae-icon.png',
+    fullImageUrl: '/images/characters/yae.png',
     role: 'attacker'
   },
   {
@@ -781,7 +781,7 @@ export const characters: Character[] = [
     id: 'clorinde',
     name: 'クロリンデ',
     element: 'electro',
-    weapon: 'polearm',
+    weapon: 'sword',
     rarity: 5,
     iconUrl: '/images/characters/clorinde-icon.png',
     fullImageUrl: '/images/characters/clorinde.png',
@@ -789,9 +789,9 @@ export const characters: Character[] = [
   },
   {
     id: 'emilie',
-    name: 'エミリー',
-    element: 'hydro',
-    weapon: 'sword',
+    name: 'エミリエ',
+    element: 'dendro',
+    weapon: 'polearm',
     rarity: 5,
     iconUrl: '/images/characters/emilie-icon.png',
     fullImageUrl: '/images/characters/emilie.png',
@@ -839,19 +839,19 @@ export const characters: Character[] = [
   },
   {
     id: 'kachina',
-    name: 'カチナ',
-    element: 'pyro',
-    weapon: 'catalyst',
-    rarity: 5,
+    name: 'カチーナ',
+    element: 'geo',
+    weapon: 'polearm',
+    rarity: 4,
     iconUrl: '/images/characters/kachina-icon.png',
     fullImageUrl: '/images/characters/kachina.png',
-    role: 'attacker'
+    role: 'supporter'
   },
   {
     id: 'kinichi',
-    name: 'キニチ',
-    element: 'geo',
-    weapon: 'sword',
+    name: 'キィニチ',
+    element: 'dendro',
+    weapon: 'claymore',
     rarity: 5,
     iconUrl: '/images/characters/kinichi-icon.png',
     fullImageUrl: '/images/characters/kinichi.png',
@@ -859,10 +859,10 @@ export const characters: Character[] = [
   },
   {
     id: 'lanyan',
-    name: '蘭言',
-    element: 'cryo',
+    name: '藍硯',
+    element: 'anemo',
     weapon: 'catalyst',
-    rarity: 5,
+    rarity: 4,
     iconUrl: '/images/characters/lanyan-icon.png',
     fullImageUrl: '/images/characters/lanyan.png',
     role: 'supporter'
@@ -881,21 +881,21 @@ export const characters: Character[] = [
     id: 'mizuki',
     name: 'ミズキ',
     element: 'electro',
-    weapon: 'sword',
+    weapon: 'catalyst',
     rarity: 5,
     iconUrl: '/images/characters/mizuki-icon.png',
     fullImageUrl: '/images/characters/mizuki.png',
-    role: 'attacker'
+    role: 'supporter'
   },
   {
     id: 'olorun',
     name: 'オロルン',
-    element: 'hydro',
-    weapon: 'claymore',
-    rarity: 5,
+    element: 'electro',
+    weapon: 'bow',
+    rarity: 4,
     iconUrl: '/images/characters/olorun-icon.png',
     fullImageUrl: '/images/characters/olorun.png',
-    role: 'attacker'
+    role: 'supporter'
   },
   {
     id: 'sara',
@@ -910,23 +910,14 @@ export const characters: Character[] = [
   {
     id: 'setos',
     name: 'セトス',
-    element: 'geo',
-    weapon: 'polearm',
-    rarity: 5,
+    element: 'electro',
+    weapon: 'bow',
+    rarity: 4,
     iconUrl: '/images/characters/setos-icon.png',
     fullImageUrl: '/images/characters/setos.png',
     role: 'attacker'
   },
-  {
-    id: 'shinobu',
-    name: '忍',
-    element: 'electro',
-    weapon: 'sword',
-    rarity: 4,
-    iconUrl: '/images/characters/shinobu-icon.png',
-    fullImageUrl: '/images/characters/shinobu.png',
-    role: 'supporter'
-  },
+  
   {
     id: 'tartaglia',
     name: 'タルタリヤ',
@@ -949,7 +940,7 @@ export const characters: Character[] = [
   },
   {
     id: 'venti',
-    name: 'ヴェンティ',
+    name: 'ウェンティ',
     element: 'anemo',
     weapon: 'bow',
     rarity: 5,
@@ -960,8 +951,8 @@ export const characters: Character[] = [
   {
     id: 'xilonen',
     name: 'シロネン',
-    element: 'pyro',
-    weapon: 'claymore',
+    element: 'geo',
+    weapon: 'sword',
     rarity: 5,
     iconUrl: '/images/characters/xilonen-icon.png',
     fullImageUrl: '/images/characters/xilonen.png',
