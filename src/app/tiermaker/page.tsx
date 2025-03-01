@@ -368,14 +368,22 @@ const WeaponTierRow = React.memo(({ tier, weaponsInTier, onDrop }: WeaponTierRow
   return (
     <div 
       ref={ref} 
-      className={`flex items-center mb-2 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} rounded-lg overflow-hidden transition-colors`}
+      className={`flex items-stretch mb-0 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} transition-colors`}
     >
-      <div className={`${tier.color} w-16 sm:w-20 h-full py-2 px-2 sm:px-3 flex-shrink-0 flex items-center justify-center`}>
-        <span className="text-white font-bold text-sm sm:text-base">
+      {/* 左側のTier名ラベル - スタイリッシュなデザインに変更 */}
+      <div className={`${tier.color} w-16 sm:w-20 h-full py-2 px-2 sm:px-3 flex-shrink-0 flex items-center justify-center relative`}>
+        {/* 斜めのエッジ効果を持つ背景 */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-black/20"></div>
+        {/* 右側に小さな三角形を追加して矢印のような形に */}
+        <div className="absolute right-0 top-0 bottom-0 w-2 bg-black/10"></div>
+        {/* テキスト */}
+        <span className="relative z-10 text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md">
           {tier.name}
         </span>
       </div>
-      <div className="flex-1 min-h-24 p-2 flex flex-wrap gap-2">
+      
+      {/* 右側のドロップエリア - 表のセルのように見せる */}
+      <div className="flex-1 min-h-24 p-2 flex flex-wrap gap-2 bg-white/50 dark:bg-gray-800/50 border-l border-gray-300 dark:border-gray-600">
         {weaponsInTier.map(weapon => (
           <WeaponCard 
             key={weapon.id} 
@@ -420,14 +428,22 @@ const TierRow = React.memo(({ tier, charactersInTier, onDrop }: TierRowProps) =>
   return (
     <div 
       ref={ref} 
-      className={`flex items-center mb-2 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} rounded-lg overflow-hidden transition-colors`}
+      className={`flex items-stretch mb-0 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} transition-colors`}
     >
-      <div className={`${tier.color} w-16 sm:w-20 h-full py-2 px-2 sm:px-3 flex-shrink-0 flex items-center justify-center`}>
-        <span className="text-white font-bold text-sm sm:text-base">
+      {/* 左側のTier名ラベル - スタイリッシュなデザインに変更 */}
+      <div className={`${tier.color} w-16 sm:w-20 h-full py-2 px-2 sm:px-3 flex-shrink-0 flex items-center justify-center relative`}>
+        {/* 斜めのエッジ効果を持つ背景 */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-black/20"></div>
+        {/* 右側に小さな三角形を追加して矢印のような形に */}
+        <div className="absolute right-0 top-0 bottom-0 w-2 bg-black/10"></div>
+        {/* テキスト */}
+        <span className="relative z-10 text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md">
           {tier.name}
         </span>
       </div>
-      <div className="flex-1 min-h-24 p-2 flex flex-wrap gap-2">
+      
+      {/* 右側のドロップエリア - 表のセルのように見せる */}
+      <div className="flex-1 min-h-24 p-2 flex flex-wrap gap-2 bg-white/50 dark:bg-gray-800/50 border-l border-gray-300 dark:border-gray-600">
         {charactersInTier.map(char => (
           <CharacterCard 
             key={char.id} 
@@ -1458,14 +1474,18 @@ export default function TierMakerPage() {
         {/* Tierリスト */}
         <div className="mb-8">
           <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">{isEditMode && customTemplate ? customTemplate.name : selectedTemplate.name}</h2>
-          {(isEditMode && customTemplate ? customTemplate.tiers : selectedTemplate.tiers).map(tier => (
-            <TierRow 
-              key={tier.id}
-              tier={tier}
-              charactersInTier={getCharactersInTier(tier.id)}
-              onDrop={handleDrop}
-            />
-          ))}
+          <div className="border-t-2 border-l-2 border-r-2 border-gray-300 dark:border-gray-600 rounded-t-lg overflow-hidden">
+            {(isEditMode && customTemplate ? customTemplate.tiers : selectedTemplate.tiers).map((tier, index, array) => (
+              <div key={tier.id} className={`${index === array.length - 1 ? 'rounded-b-lg overflow-hidden' : ''}`}>
+                <TierRow 
+                  tier={tier}
+                  charactersInTier={getCharactersInTier(tier.id)}
+                  onDrop={handleDrop}
+                />
+                {index < array.length - 1 && <div className="border-b border-gray-300 dark:border-gray-600"></div>}
+              </div>
+            ))}
+          </div>
         </div>
         
         {/* 未割り当てキャラクター */}
@@ -1683,14 +1703,18 @@ export default function TierMakerPage() {
           {/* 武器Tierリスト */}
           <div className="mb-8">
             <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">{isWeaponEditMode && customWeaponTemplate ? customWeaponTemplate.name : selectedWeaponTemplate.name}</h2>
-            {(isWeaponEditMode && customWeaponTemplate ? customWeaponTemplate.tiers : selectedWeaponTemplate.tiers).map(tier => (
-              <WeaponTierRow 
-                key={tier.id}
-                tier={tier}
-                weaponsInTier={getWeaponsInTier(tier.id)}
-                onDrop={handleWeaponDrop}
-              />
-            ))}
+            <div className="border-t-2 border-l-2 border-r-2 border-gray-300 dark:border-gray-600 rounded-t-lg overflow-hidden">
+              {(isWeaponEditMode && customWeaponTemplate ? customWeaponTemplate.tiers : selectedWeaponTemplate.tiers).map((tier, index, array) => (
+                <div key={tier.id} className={`${index === array.length - 1 ? 'rounded-b-lg overflow-hidden' : ''}`}>
+                  <WeaponTierRow 
+                    tier={tier}
+                    weaponsInTier={getWeaponsInTier(tier.id)}
+                    onDrop={handleWeaponDrop}
+                  />
+                  {index < array.length - 1 && <div className="border-b border-gray-300 dark:border-gray-600"></div>}
+                </div>
+              ))}
+            </div>
           </div>
           
           {/* 未割り当て武器 */}
