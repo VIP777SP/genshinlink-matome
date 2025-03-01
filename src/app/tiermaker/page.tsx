@@ -36,7 +36,8 @@ const tierMakerCharacters: Character[] = sourceCharacters.map(character => ({
   element: character.element,
   weapon: character.weapon,
   rarity: character.rarity,
-  iconUrl: character.iconUrl
+  iconUrl: character.iconUrl,
+  role: character.role
 }));
 
 // Tiermaker用に必要な情報だけを取り出した武器リスト
@@ -176,9 +177,12 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
       anchorY: 0.5,
     },
     end: (item, monitor) => {
-      console.log('Character drag ended');
+      const dropResult = monitor.getDropResult();
+      if (dropResult) {
+        console.log('Character dropped:', item.id, 'Result:', dropResult);
+      }
     },
-  }));
+  }), [character.id, onDrop]); // 依存配列を追加
   
   // ref と drag を接続
   drag(ref);
@@ -200,7 +204,7 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
                   shadow-md cursor-move transition-transform
                   ${isDragging ? 'opacity-50' : 'opacity-100'}
                   hover:scale-105 hover:shadow-lg hover:z-10`}
-      style={{ opacity: isDragging ? 0.5 : 1 }}
+      style={{ opacity: isDragging ? 0.5 : 1, touchAction: 'none' }} // touchActionを追加
       onTouchStart={() => console.log('Touch start on character:', character.id)}
     >
       <Image
@@ -208,7 +212,13 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
         alt={character.name}
         fill
         className="object-cover"
+        unoptimized // 画像の最適化を無効化して、ドラッグ中の表示を改善
       />
+      
+      {/* キャラクター名を表示 */}
+      <div className="absolute bottom-0 left-0 right-0 bg-black/60 py-0.5 px-1 text-white text-xs text-center truncate">
+        {character.name}
+      </div>
       
       {showRemoveButton && (
         <button 
@@ -251,20 +261,23 @@ const WeaponCard = ({ weapon, onDrop, currentTier }: WeaponCardProps) => {
       anchorY: 0.5,
     },
     end: (item, monitor) => {
-      console.log('Weapon drag ended');
+      const dropResult = monitor.getDropResult();
+      if (dropResult) {
+        console.log('Weapon dropped:', item.id, 'Result:', dropResult);
+      }
     },
-  }));
+  }), [weapon.id, onDrop]); // 依存配列を追加
   
   // ref と drag を接続
   drag(ref);
 
   // 未割り当てエリア以外に配置されている場合のみ削除ボタンを表示
-  const showRemoveButton = currentTier !== 'weapon-unassigned';
+  const showRemoveButton = currentTier !== 'unassigned';
 
   // 削除ボタンクリック時の処理
   const handleRemove = (e: React.MouseEvent) => {
     e.stopPropagation(); // ドラッグイベントが発火しないよう阻止
-    onDrop(weapon.id, 'weapon-unassigned');
+    onDrop(weapon.id, 'unassigned');
   };
 
   return (
@@ -275,7 +288,7 @@ const WeaponCard = ({ weapon, onDrop, currentTier }: WeaponCardProps) => {
                   shadow-md cursor-move transition-transform
                   ${isDragging ? 'opacity-50' : 'opacity-100'}
                   hover:scale-105 hover:shadow-lg hover:z-10`}
-      style={{ opacity: isDragging ? 0.5 : 1 }}
+      style={{ opacity: isDragging ? 0.5 : 1, touchAction: 'none' }} // touchActionを追加
       onTouchStart={() => console.log('Touch start on weapon:', weapon.id)}
     >
       <Image
@@ -283,13 +296,14 @@ const WeaponCard = ({ weapon, onDrop, currentTier }: WeaponCardProps) => {
         alt={weapon.name}
         fill
         className="object-cover"
+        unoptimized // 画像の最適化を無効化して、ドラッグ中の表示を改善
       />
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-1">
-        <p className="text-xs text-white truncate text-center">{weapon.name}</p>
+      
+      {/* 武器名を表示 */}
+      <div className="absolute bottom-0 left-0 right-0 bg-black/60 py-0.5 px-1 text-white text-xs text-center truncate">
+        {weapon.name}
       </div>
-      {weapon.rarity >= 4 && (
-      <div className="absolute top-0 right-0 bg-amber-500 text-white text-xs px-1 rounded-bl">★{weapon.rarity}</div>
-      )}
+      
       {showRemoveButton && (
         <button 
           onClick={handleRemove}
