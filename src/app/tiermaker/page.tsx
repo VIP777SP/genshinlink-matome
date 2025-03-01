@@ -468,16 +468,14 @@ export default function TierMakerPage() {
   const [characterTiers, setCharacterTiers] = useState<Record<string, string[]>>({
     unassigned: tierMakerCharacters.map(char => char.id)
   });
-  const [searchQuery, setSearchQuery] = useState('');
-  const [elementFilter, setElementFilter] = useState<ElementType | 'all'>('all');
+  // searchQueryとelementFilterを削除
   
   // 武器Tiermaker用の状態
   const [selectedWeaponTemplate, setSelectedWeaponTemplate] = useState<TierTemplate>(weaponTemplates[0]);
   const [weaponTiers, setWeaponTiers] = useState<Record<string, string[]>>({
     'weapon-unassigned': tierMakerWeapons.map(weapon => weapon.id)
   });
-  const [weaponSearchQuery, setWeaponSearchQuery] = useState('');
-  const [weaponTypeFilter, setWeaponTypeFilter] = useState<WeaponType | 'all'>('all');
+  // weaponSearchQueryとweaponTypeFilterを削除
   const [customWeaponTemplates, setCustomWeaponTemplates] = useState<TierTemplate[]>([]);
   const [isWeaponEditMode, setIsWeaponEditMode] = useState(false);
   const [customWeaponTemplate, setCustomWeaponTemplate] = useState<TierTemplate | null>(null);
@@ -842,13 +840,6 @@ export default function TierMakerPage() {
     return result;
   };
   
-  // キャラクター検索フィルター
-  const filteredCharacters = tierMakerCharacters.filter(char => {
-    const matchesSearch = char.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesElement = elementFilter === 'all' || char.element === elementFilter;
-    return matchesSearch && matchesElement;
-  });
-  
   // 未割り当てのキャラクターを取得
   const getUnassignedCharacters = (): Character[] => {
     // characterTiers['unassigned']が存在するか確認
@@ -858,9 +849,8 @@ export default function TierMakerPage() {
     }
     
     console.log('getUnassignedCharacters() - unassignedリスト:', characterTiers['unassigned']);
-    console.log('getUnassignedCharacters() - フィルター前のキャラ数:', filteredCharacters.length);
     
-    const result = filteredCharacters.filter(char => 
+    const result = tierMakerCharacters.filter(char => 
       characterTiers['unassigned'].includes(char.id)
     );
     
@@ -1111,13 +1101,6 @@ export default function TierMakerPage() {
     return result;
   };
   
-  // 武器検索フィルター
-  const filteredWeapons = tierMakerWeapons.filter(weapon => {
-    const matchesSearch = weapon.name.toLowerCase().includes(weaponSearchQuery.toLowerCase());
-    const matchesType = weaponTypeFilter === 'all' || weapon.type === weaponTypeFilter;
-    return matchesSearch && matchesType;
-  });
-  
   // 未割り当ての武器を取得
   const getUnassignedWeapons = (): Weapon[] => {
     // weaponTiers['weapon-unassigned']が存在するか確認
@@ -1126,7 +1109,7 @@ export default function TierMakerPage() {
       return [];
     }
     
-    const result = filteredWeapons.filter(weapon => 
+    const result = tierMakerWeapons.filter(weapon => 
       weaponTiers['weapon-unassigned'].includes(weapon.id)
     );
     
@@ -1433,63 +1416,6 @@ export default function TierMakerPage() {
           </div>
         )}
         
-        {/* フィルターと検索 */}
-        <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">属性フィルター</label>
-            <div className="flex flex-wrap gap-2">
-              <button 
-                className={`px-3 py-1 rounded ${elementFilter === 'all' ? 'bg-gray-800 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
-                onClick={() => setElementFilter('all')}
-              >
-                全て
-              </button>
-              {(['pyro', 'hydro', 'anemo', 'electro', 'dendro', 'cryo', 'geo'] as ElementType[]).map(element => (
-                <button 
-                  key={element}
-                  className={`px-3 py-1 rounded ${elementFilter === element ? 'bg-amber-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
-                  onClick={() => setElementFilter(element)}
-                >
-                  {element}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">検索</label>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="キャラクター名を検索..."
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
-            />
-          </div>
-        </div>
-        
-        {/* Tierリスト */}
-        <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">{isEditMode && customTemplate ? customTemplate.name : selectedTemplate.name}</h2>
-          <div className="border-t-2 border-l-2 border-r-2 border-gray-300 dark:border-gray-600 rounded-t-lg overflow-hidden">
-            {(isEditMode && customTemplate ? customTemplate.tiers : selectedTemplate.tiers).map((tier, index, array) => (
-              <div key={tier.id} className={`${index === array.length - 1 ? 'rounded-b-lg overflow-hidden' : ''}`}>
-                <TierRow 
-                  tier={tier}
-                  charactersInTier={getCharactersInTier(tier.id)}
-                  onDrop={handleDrop}
-                />
-                {index < array.length - 1 && <div className="border-b border-gray-300 dark:border-gray-600"></div>}
-              </div>
-            ))}
-          </div>
-        </div>
-        
-        {/* 未割り当てキャラクター */}
-        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
-          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">利用可能なキャラクター</h2>
-          <UnassignedCharactersArea />
-        </div>
-        
         {/* 武器Tiermaker */}
         <div className="mt-12 pt-12 border-t-2 border-amber-200 dark:border-amber-800">
           <div className="mb-8 text-center">
@@ -1661,40 +1587,6 @@ export default function TierMakerPage() {
               </div>
             </div>
           )}
-          
-          {/* 武器フィルターと検索 */}
-          <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">武器タイプフィルター</label>
-              <div className="flex flex-wrap gap-2">
-                <button 
-                  className={`px-3 py-1 rounded ${weaponTypeFilter === 'all' ? 'bg-gray-800 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
-                  onClick={() => setWeaponTypeFilter('all')}
-                >
-                  全て
-                </button>
-                {(['sword', 'claymore', 'polearm', 'bow', 'catalyst'] as WeaponType[]).map(type => (
-                  <button 
-                    key={type}
-                    className={`px-3 py-1 rounded ${weaponTypeFilter === type ? 'bg-amber-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
-                    onClick={() => setWeaponTypeFilter(type)}
-                  >
-                    {type}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">武器検索</label>
-              <input
-                type="text"
-                value={weaponSearchQuery}
-                onChange={(e) => setWeaponSearchQuery(e.target.value)}
-                placeholder="武器名を検索..."
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
-              />
-            </div>
-          </div>
           
           {/* 武器Tierリスト */}
           <div className="mb-8">
