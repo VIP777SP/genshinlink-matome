@@ -361,7 +361,7 @@ const WeaponTierRow = React.memo(({ tier, weaponsInTier, onDrop }: WeaponTierRow
       className={`flex items-stretch mb-0 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} transition-colors`}
     >
       {/* 左側のTier名ラベル - スタイリッシュなデザインに変更 */}
-      <div className={`${tier.color} w-16 sm:w-20 h-24 flex-shrink-0 flex items-center justify-center relative`}>
+      <div className={`${tier.color} w-16 sm:w-20 h-28 flex-shrink-0 flex items-center justify-center relative`}>
         {/* グラデーション背景 */}
         <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-black/30"></div>
         
@@ -376,7 +376,7 @@ const WeaponTierRow = React.memo(({ tier, weaponsInTier, onDrop }: WeaponTierRow
       </div>
       
       {/* 右側のドロップエリア - 表のセルのように見せる */}
-      <div className="flex-1 min-h-24 p-2 flex flex-wrap gap-2 bg-white/50 dark:bg-gray-800/50 border-l border-gray-300 dark:border-gray-600">
+      <div className="flex-1 min-h-28 p-2 flex flex-wrap gap-2 bg-white/50 dark:bg-gray-800/50 border-l border-gray-300 dark:border-gray-600">
         {weaponsInTier.map(weapon => (
           <WeaponCard 
             key={weapon.id} 
@@ -386,7 +386,7 @@ const WeaponTierRow = React.memo(({ tier, weaponsInTier, onDrop }: WeaponTierRow
           />
         ))}
         {weaponsInTier.length === 0 && (
-          <div className="w-full h-20 flex items-center justify-center text-gray-400 dark:text-gray-500 italic">
+          <div className="w-full h-24 flex items-center justify-center text-gray-400 dark:text-gray-500 italic">
             ここに武器をドラッグ
           </div>
         )}
@@ -424,7 +424,7 @@ const TierRow = React.memo(({ tier, charactersInTier, onDrop }: TierRowProps) =>
       className={`flex items-stretch mb-0 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} transition-colors`}
     >
       {/* 左側のTier名ラベル - スタイリッシュなデザインに変更 */}
-      <div className={`${tier.color} w-16 sm:w-20 h-24 flex-shrink-0 flex items-center justify-center relative`}>
+      <div className={`${tier.color} w-16 sm:w-20 h-28 flex-shrink-0 flex items-center justify-center relative`}>
         {/* グラデーション背景 */}
         <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-black/30"></div>
         
@@ -439,7 +439,7 @@ const TierRow = React.memo(({ tier, charactersInTier, onDrop }: TierRowProps) =>
       </div>
       
       {/* 右側のドロップエリア - 表のセルのように見せる */}
-      <div className="flex-1 min-h-24 p-2 flex flex-wrap gap-2 bg-white/50 dark:bg-gray-800/50 border-l border-gray-300 dark:border-gray-600">
+      <div className="flex-1 min-h-28 p-2 flex flex-wrap gap-2 bg-white/50 dark:bg-gray-800/50 border-l border-gray-300 dark:border-gray-600">
         {charactersInTier.map(char => (
           <CharacterCard 
             key={char.id} 
@@ -449,7 +449,7 @@ const TierRow = React.memo(({ tier, charactersInTier, onDrop }: TierRowProps) =>
           />
         ))}
         {charactersInTier.length === 0 && (
-          <div className="w-full h-20 flex items-center justify-center text-gray-400 dark:text-gray-500 italic">
+          <div className="w-full h-24 flex items-center justify-center text-gray-400 dark:text-gray-500 italic">
             ここにキャラクターをドラッグ
           </div>
         )}
