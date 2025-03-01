@@ -188,6 +188,56 @@ export const characters: Character[] = [
     role: 'supporter'
   },
   {
+    id: 'ayato',
+    name: '綾人 ',
+    element: 'hydro',
+    weapon: 'sword',
+    rarity: 5,
+    iconUrl: '/images/characters/ayato-icon.png',
+    fullImageUrl: '/images/characters/ayato.png',
+    role: 'attacker'
+  },
+  {
+    id: 'candace',
+    name: 'キャンディス',
+    element: 'hydro',
+    weapon: 'catalyst',
+    rarity: 4,
+    iconUrl: '/images/characters/candace-icon.png',
+    fullImageUrl: '/images/characters/candace.png',
+    role: 'supporter'
+  },
+  {
+    id: 'mona',
+    name: 'モナ',
+    element: 'hydro',
+    weapon: 'catalyst',
+    rarity: 5,
+    iconUrl: '/images/characters/mona-icon.png',
+    fullImageUrl: '/images/characters/mona.png',
+    role: 'supporter'
+  },
+  {
+    id: 'sigewinne',
+    name: 'シグウィン',
+    element: 'hydro',
+    weapon: 'bow',
+    rarity: 5,
+    iconUrl: '/images/characters/sigewinne-icon.png',
+    fullImageUrl: '/images/characters/sigewinne.png',
+    role: 'supporter'
+  },
+  {
+    id: 'mualani',
+    name: 'ムアラニ',
+    element: 'dendro',
+    weapon: 'catalyst',
+    rarity: 5,
+    iconUrl: '/images/characters/mualani-icon.png',
+    fullImageUrl: '/images/characters/mualani.png',
+    role: 'attacker'
+  },
+  {
     id: 'furina',
     name: 'フリーナ',
     element: 'hydro',
@@ -295,6 +345,56 @@ export const characters: Character[] = [
     rarity: 5,
     iconUrl: '/images/characters/eula-icon.png',
     fullImageUrl: '/images/characters/eula.png',
+    role: 'attacker'
+  },
+  {
+    id: 'citlali',
+    name: 'シトラリ',
+    element: 'cryo',
+    weapon: 'catalyst',
+    rarity: 5,
+    iconUrl: '/images/characters/citlali-icon.png',
+    fullImageUrl: '/images/characters/citlali.png',
+    role: 'supporter'
+  },
+  {
+    id: 'shenhe',
+    name: '申鶴',
+    element: 'cryo',
+    weapon: 'polearm',
+    rarity: 5,
+    iconUrl: '/images/characters/shenhe-icon.png',
+    fullImageUrl: '/images/characters/shenhe.png',
+    role: 'supporter'
+  },
+  {
+    id: 'diona',
+    name: 'ディオナ',
+    element: 'cryo',
+    weapon: 'bow',
+    rarity: 4,
+    iconUrl: '/images/characters/diona-icon.png',
+    fullImageUrl: '/images/characters/diona.png',
+    role: 'supporter'
+  },
+  {
+    id: 'qiqi',
+    name: '七七',
+    element: 'cryo',
+    weapon: 'sword',
+    rarity: 5,
+    iconUrl: '/images/characters/qiqi-icon.png',
+    fullImageUrl: '/images/characters/qiqi.png',
+    role: 'supporter'
+  },
+  {
+    id: 'aloy',
+    name: 'アーロイ',
+    element: 'cryo',
+    weapon: 'bow',
+    rarity: 5,
+    iconUrl: '/images/characters/aloy-icon.png',
+    fullImageUrl: '/images/characters/aloy.png',
     role: 'attacker'
   },
   {
@@ -665,6 +765,206 @@ export const characters: Character[] = [
     rarity: 4,
     iconUrl: '/images/characters/yanfei-icon.png',
     fullImageUrl: '/images/characters/yanfei.png',
+    role: 'attacker'
+  },
+  {
+    id: 'chasca',
+    name: 'チャスカ',
+    element: 'pyro',
+    weapon: 'bow',
+    rarity: 5,
+    iconUrl: '/images/characters/chasca-icon.png',
+    fullImageUrl: '/images/characters/chasca.png',
+    role: 'attacker'
+  },
+  {
+    id: 'clorinde',
+    name: 'クロリンデ',
+    element: 'electro',
+    weapon: 'polearm',
+    rarity: 5,
+    iconUrl: '/images/characters/clorinde-icon.png',
+    fullImageUrl: '/images/characters/clorinde.png',
+    role: 'attacker'
+  },
+  {
+    id: 'emilie',
+    name: 'エミリー',
+    element: 'hydro',
+    weapon: 'sword',
+    rarity: 5,
+    iconUrl: '/images/characters/emilie-icon.png',
+    fullImageUrl: '/images/characters/emilie.png',
+    role: 'supporter'
+  },
+  {
+    id: 'faruzan',
+    name: 'ファルザン',
+    element: 'anemo',
+    weapon: 'bow',
+    rarity: 4,
+    iconUrl: '/images/characters/faruzan-icon.png',
+    fullImageUrl: '/images/characters/faruzan.png',
+    role: 'supporter'
+  },
+  {
+    id: 'gorou',
+    name: 'ゴロー',
+    element: 'geo',
+    weapon: 'bow',
+    rarity: 4,
+    iconUrl: '/images/characters/gorou-icon.png',
+    fullImageUrl: '/images/characters/gorou.png',
+    role: 'supporter'
+  },
+  {
+    id: 'heizou',
+    name: '平蔵',
+    element: 'anemo',
+    weapon: 'catalyst',
+    rarity: 4,
+    iconUrl: '/images/characters/heizou-icon.png',
+    fullImageUrl: '/images/characters/heizou.png',
+    role: 'attacker'
+  },
+  {
+    id: 'jean',
+    name: 'ジン',
+    element: 'anemo',
+    weapon: 'sword',
+    rarity: 5,
+    iconUrl: '/images/characters/jean-icon.png',
+    fullImageUrl: '/images/characters/jean.png',
+    role: 'supporter'
+  },
+  {
+    id: 'kachina',
+    name: 'カチナ',
+    element: 'pyro',
+    weapon: 'catalyst',
+    rarity: 5,
+    iconUrl: '/images/characters/kachina-icon.png',
+    fullImageUrl: '/images/characters/kachina.png',
+    role: 'attacker'
+  },
+  {
+    id: 'kinichi',
+    name: 'キニチ',
+    element: 'geo',
+    weapon: 'sword',
+    rarity: 5,
+    iconUrl: '/images/characters/kinichi-icon.png',
+    fullImageUrl: '/images/characters/kinichi.png',
+    role: 'attacker'
+  },
+  {
+    id: 'lanyan',
+    name: '蘭言',
+    element: 'cryo',
+    weapon: 'catalyst',
+    rarity: 5,
+    iconUrl: '/images/characters/lanyan-icon.png',
+    fullImageUrl: '/images/characters/lanyan.png',
+    role: 'supporter'
+  },
+  {
+    id: 'layla',
+    name: 'レイラ',
+    element: 'cryo',
+    weapon: 'sword',
+    rarity: 4,
+    iconUrl: '/images/characters/layla-icon.png',
+    fullImageUrl: '/images/characters/layla.png',
+    role: 'supporter'
+  },
+  {
+    id: 'mizuki',
+    name: 'ミズキ',
+    element: 'electro',
+    weapon: 'sword',
+    rarity: 5,
+    iconUrl: '/images/characters/mizuki-icon.png',
+    fullImageUrl: '/images/characters/mizuki.png',
+    role: 'attacker'
+  },
+  {
+    id: 'olorun',
+    name: 'オロルン',
+    element: 'hydro',
+    weapon: 'claymore',
+    rarity: 5,
+    iconUrl: '/images/characters/olorun-icon.png',
+    fullImageUrl: '/images/characters/olorun.png',
+    role: 'attacker'
+  },
+  {
+    id: 'sara',
+    name: 'サラ',
+    element: 'electro',
+    weapon: 'bow',
+    rarity: 4,
+    iconUrl: '/images/characters/sara-icon.png',
+    fullImageUrl: '/images/characters/sara.png',
+    role: 'supporter'
+  },
+  {
+    id: 'setos',
+    name: 'セトス',
+    element: 'geo',
+    weapon: 'polearm',
+    rarity: 5,
+    iconUrl: '/images/characters/setos-icon.png',
+    fullImageUrl: '/images/characters/setos.png',
+    role: 'attacker'
+  },
+  {
+    id: 'shinobu',
+    name: '忍',
+    element: 'electro',
+    weapon: 'sword',
+    rarity: 4,
+    iconUrl: '/images/characters/shinobu-icon.png',
+    fullImageUrl: '/images/characters/shinobu.png',
+    role: 'supporter'
+  },
+  {
+    id: 'tartaglia',
+    name: 'タルタリヤ',
+    element: 'hydro',
+    weapon: 'bow',
+    rarity: 5,
+    iconUrl: '/images/characters/tartaglia-icon.png',
+    fullImageUrl: '/images/characters/tartaglia.png',
+    role: 'attacker'
+  },
+  {
+    id: 'tighnari',
+    name: 'ティナリ',
+    element: 'dendro',
+    weapon: 'bow',
+    rarity: 5,
+    iconUrl: '/images/characters/tighnari-icon.png',
+    fullImageUrl: '/images/characters/tighnari.png',
+    role: 'attacker'
+  },
+  {
+    id: 'venti',
+    name: 'ヴェンティ',
+    element: 'anemo',
+    weapon: 'bow',
+    rarity: 5,
+    iconUrl: '/images/characters/venti-icon.png',
+    fullImageUrl: '/images/characters/venti.png',
+    role: 'supporter'
+  },
+  {
+    id: 'xilonen',
+    name: 'シロネン',
+    element: 'pyro',
+    weapon: 'claymore',
+    rarity: 5,
+    iconUrl: '/images/characters/xilonen-icon.png',
+    fullImageUrl: '/images/characters/xilonen.png',
     role: 'attacker'
   }
 ];
