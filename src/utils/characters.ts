@@ -599,7 +599,7 @@ export const characters: Character[] = [
   },
   {
     id: 'gaming',
-    name: 'ゲーミング',
+    name: '嘉明',
     element: 'pyro',
     weapon: 'claymore',
     rarity: 4,
@@ -770,7 +770,7 @@ export const characters: Character[] = [
   {
     id: 'chasca',
     name: 'チャスカ',
-    element: 'pyro',
+    element: 'anemo',
     weapon: 'bow',
     rarity: 5,
     iconUrl: '/images/characters/chasca-icon.png',
@@ -879,8 +879,8 @@ export const characters: Character[] = [
   },
   {
     id: 'mizuki',
-    name: 'ミズキ',
-    element: 'electro',
+    name: '夢見月瑞樹',
+    element: 'anemo',
     weapon: 'catalyst',
     rarity: 5,
     iconUrl: '/images/characters/mizuki-icon.png',
@@ -899,7 +899,7 @@ export const characters: Character[] = [
   },
   {
     id: 'sara',
-    name: 'サラ',
+    name: '九条沙羅',
     element: 'electro',
     weapon: 'bow',
     rarity: 4,
@@ -990,23 +990,23 @@ export const characters: Character[] = [
   },
   {
     id: 'lumine',
-    name: 'ルミーネ',
+    name: '蛍',
     element: 'anemo',
     weapon: 'sword',
     rarity: 5,
     iconUrl: '/images/characters/lumine-icon.png',
     fullImageUrl: '/images/characters/lumine.png',
-    role: 'attacker'
+    role: 'supporter'
   },
   {
     id: 'aether',
-    name: 'エーテル',
+    name: '空',
     element: 'anemo',
     weapon: 'sword',
     rarity: 5,
     iconUrl: '/images/characters/aether-icon.png',
     fullImageUrl: '/images/characters/aether.png',
-    role: 'attacker'
+    role: 'supporter'
   }
 ];
 
