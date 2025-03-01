@@ -220,6 +220,7 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
                   ${isDragging ? 'opacity-50' : 'opacity-100'}
                   hover:scale-105 hover:shadow-lg hover:z-10`}
       style={{ opacity: isDragging ? 0.5 : 1, touchAction: 'none' }} // touchActionを追加
+      onContextMenu={(e) => e.preventDefault()}
       onTouchStart={() => console.log('Touch start on character:', character.id)}
     >
       <Image
@@ -304,6 +305,7 @@ const WeaponCard = ({ weapon, onDrop, currentTier }: WeaponCardProps) => {
                   ${isDragging ? 'opacity-50' : 'opacity-100'}
                   hover:scale-105 hover:shadow-lg hover:z-10`}
       style={{ opacity: isDragging ? 0.5 : 1, touchAction: 'none' }} // touchActionを追加
+      onContextMenu={(e) => e.preventDefault()}
       onTouchStart={() => console.log('Touch start on weapon:', weapon.id)}
     >
       <Image
