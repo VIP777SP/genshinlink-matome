@@ -507,40 +507,40 @@ export default function Home() {
 
         {/* カードグリッド - モバイルとデスクトップで調整 */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5 lg:gap-6">
-          {cards.map((card, index) => (
-            <Link 
-              key={index}
-              href={card.href} 
-              className={`
-                relative overflow-hidden
+        {cards.map((card, index) => (
+          <Link 
+            key={index}
+            href={card.href} 
+            className={`
+              relative overflow-hidden
                 p-3 sm:p-4 md:p-6 rounded-xl transition-all duration-300
                 transform hover:scale-105 active:scale-95 hover:-translate-y-1
-                shadow-md ${card.hoverShadow}
-                bg-gradient-to-br ${card.gradientFrom} ${card.gradientTo}
+              shadow-md ${card.hoverShadow}
+              bg-gradient-to-br ${card.gradientFrom} ${card.gradientTo}
                 group flex flex-col justify-between min-h-[110px] sm:min-h-[130px] md:min-h-[160px]
-                backdrop-filter backdrop-blur-sm
-                border border-white/10
+              backdrop-filter backdrop-blur-sm
+              border border-white/10
                 touch-manipulation
-              `}
-            >
-              {/* 元素アイコン */}
-              <ElementIcon element={card.element} />
-              
-              {/* キラキラエフェクト */}
+            `}
+          >
+            {/* 元素アイコン */}
+            <ElementIcon element={card.element} />
+            
+            {/* キラキラエフェクト */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity duration-500">
-                <div className="absolute inset-0 bg-white/10 animate-sparkle"></div>
-              </div>
-              
-              {/* 背景の装飾的な円 */}
+              <div className="absolute inset-0 bg-white/10 animate-sparkle"></div>
+            </div>
+            
+            {/* 背景の装飾的な円 */}
               <div className={`absolute -bottom-6 -right-6 w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white opacity-10 
                               group-hover:scale-150 group-active:scale-125 transition-transform duration-700 ease-out`}></div>
-              
+            
               <h2 className="text-xs sm:text-sm md:text-base font-bold text-white relative z-10 drop-shadow-md">{card.title}</h2>
               <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold mt-1 sm:mt-2 text-center text-white relative z-10 drop-shadow-lg">
-                {card.subtitle}
-              </p>
-            </Link>
-          ))}
+              {card.subtitle}
+            </p>
+          </Link>
+        ))}
         </div>
       </div>
       
