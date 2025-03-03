@@ -450,24 +450,116 @@ const WeaponTierRow = React.memo(({ tier, weaponsInTier, onDrop }: WeaponTierRow
 // displayNameを追加
 WeaponTierRow.displayName = 'WeaponTierRow';
 
+// 列ドロップエリアのためのインターフェース
+interface ColumnDropAreaProps {
+  columnIndex: number;
+  tier: {
+    id: string;
+    name: string;
+    color: string;
+  };
+  charactersInTier: Character[];
+  characterColumnAssignments: Record<string, number>;
+  columnLabels: string[];
+  onDrop: (characterId: string, tierId: string) => void;
+  changeCharacterColumn?: (characterId: string, newColumnIndex: number) => void;
+}
+
+// 列ドロップエリアコンポーネント
+const ColumnDropArea = ({ 
+  columnIndex,
+  tier,
+  charactersInTier,
+  characterColumnAssignments,
+  columnLabels,
+  onDrop,
+  changeCharacterColumn
+}: ColumnDropAreaProps) => {
+  // フィルタリングロジックを変更 - isSplitView は常に true
+  const charactersInColumn = charactersInTier.filter(char => 
+    characterColumnAssignments[char.id] === columnIndex
+  );
+  
+  // 各列固有のドロップハンドラを定義
+  const columnRef = useRef<HTMLDivElement>(null);
+  const [{ isColumnOver }, dropColumn] = useDrop<DragItem, any, { isColumnOver: boolean }>({
+    accept: ItemTypes.CHARACTER,
+    drop: (item) => {
+      console.log(`Dropped character ${item.id} to tier ${tier.id}, column ${columnIndex}`);
+      onDrop(item.id, tier.id);
+      
+      // 列の割り当ても自動的に行う
+      if (changeCharacterColumn) {
+        changeCharacterColumn(item.id, columnIndex);
+      }
+      
+      return { id: tier.id, column: columnIndex };
+    },
+    collect: (monitor) => ({
+      isColumnOver: !!monitor.isOver(),
+    }),
+  });
+  
+  // refをマージ
+  dropColumn(columnRef);
+  
+  return (
+    <div 
+      ref={columnRef}
+      key={`column-${columnIndex}`} 
+      className={`flex-1 min-h-28 p-2 flex flex-wrap gap-2 
+        ${isColumnOver ? 'bg-amber-50 dark:bg-amber-900/20' : 'bg-white/50 dark:bg-gray-800/50'} 
+        transition-colors relative`}
+      data-column-index={columnIndex}
+    >
+      {/* 列のヘッダー表示（オプション） */}
+      <div className="absolute top-0 left-0 right-0 text-xs text-center text-gray-400 dark:text-gray-500 -mt-4">
+        {columnLabels[columnIndex] || `列 ${columnIndex + 1}`}
+      </div>
+      
+      {/* キャラクターカード */}
+      <div className="w-full flex flex-wrap gap-2">
+        {charactersInColumn.map(character => (
+          <CharacterCard 
+            key={character.id} 
+            character={character} 
+            onDrop={onDrop} // 通常のドロップハンドラに戻す
+            currentTier={tier.id} 
+          />
+        ))}
+        {charactersInColumn.length === 0 && (
+          <div className="w-full h-24 flex items-center justify-center text-gray-400 dark:text-gray-500 italic">
+            ここにドラッグ
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 // Tier行コンポーネント - メモ化してパフォーマンスを向上
 const TierRow = React.memo(({ 
   tier, 
   charactersInTier, 
-  onDrop,
-  isSplitView = false,
-  columnCount = 2,
-  columnLabels = ['列1', '列2'],
+  onDrop, 
+  isSplitView, 
+  columnCount = 1,
+  columnLabels = ['列1'],
   characterColumnAssignments = {},
-  changeCharacterColumn = () => {},
-  onTierNameEdit = () => {}
+  changeCharacterColumn,
+  onTierNameEdit
 }: TierRowProps) => {
+  // ティア名編集のための状態
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editingName, setEditingName] = useState(tier.name);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  
+  // ドロップターゲット設定
   const ref = useRef<HTMLDivElement>(null);
-  const [{ isOver }, drop] = useDrop({
+  const [{ isOver }, drop] = useDrop<DragItem, any, { isOver: boolean }>({
     accept: ItemTypes.CHARACTER,
     drop: (item: DragItem) => {
-      console.log('Dropped character:', item, 'to tier:', tier.id);
-      onDrop(item.id, tier.id);
+      console.log('Dropped character to tier:', tier.id);
       return { id: tier.id };
     },
     collect: monitor => ({
@@ -475,10 +567,8 @@ const TierRow = React.memo(({
     }),
   });
   
-  // 行ラベル編集用の状態
-  const [isEditingName, setIsEditingName] = useState(false);
-  const [editingName, setEditingName] = useState(tier.name);
-  const nameInputRef = useRef<HTMLInputElement>(null);
+  // refとdropを接続
+  drop(ref);
   
   // 編集開始
   const startNameEdit = () => {
@@ -531,73 +621,6 @@ const TierRow = React.memo(({
   
   console.log(`TierRow ${tier.id} rendering with ${charactersInTier.length} characters`);
   
-  // ref と drop を接続
-  drop(ref);
-
-  // 分割表示時の列ごとのドロップエリア
-  const renderColumnDropArea = (columnIndex: number) => {
-    // フィルタリングロジックを変更 - isSplitView は常に true
-    const charactersInColumn = charactersInTier.filter(char => 
-      characterColumnAssignments[char.id] === columnIndex
-    );
-    
-    // 各列固有のドロップハンドラを定義
-    const columnRef = useRef<HTMLDivElement>(null);
-    const [{ isColumnOver }, dropColumn] = useDrop<DragItem, any, { isColumnOver: boolean }>({
-      accept: ItemTypes.CHARACTER,
-      drop: (item) => {
-        console.log(`Dropped character ${item.id} to tier ${tier.id}, column ${columnIndex}`);
-        onDrop(item.id, tier.id);
-        
-        // 列の割り当ても自動的に行う
-        if (changeCharacterColumn) {
-          changeCharacterColumn(item.id, columnIndex);
-        }
-        
-        return { id: tier.id, column: columnIndex };
-      },
-      collect: (monitor) => ({
-        isColumnOver: !!monitor.isOver(),
-      }),
-    });
-    
-    // refをマージ
-    dropColumn(columnRef);
-    
-    return (
-      <div 
-        ref={columnRef}
-        key={`column-${columnIndex}`} 
-        className={`flex-1 min-h-28 p-2 flex flex-wrap gap-2 
-          ${isColumnOver ? 'bg-amber-50 dark:bg-amber-900/20' : 'bg-white/50 dark:bg-gray-800/50'} 
-          transition-colors relative`}
-        data-column-index={columnIndex}
-      >
-        {/* 列のヘッダー表示（オプション） */}
-        <div className="absolute top-0 left-0 right-0 text-xs text-center text-gray-400 dark:text-gray-500 -mt-4">
-          {columnLabels[columnIndex] || `列 ${columnIndex + 1}`}
-        </div>
-        
-        {/* キャラクターカード */}
-        <div className="w-full flex flex-wrap gap-2">
-          {charactersInColumn.map(character => (
-            <CharacterCard 
-              key={character.id} 
-              character={character} 
-              onDrop={onDrop} // 通常のドロップハンドラに戻す
-              currentTier={tier.id} 
-            />
-          ))}
-          {charactersInColumn.length === 0 && (
-            <div className="w-full h-24 flex items-center justify-center text-gray-400 dark:text-gray-500 italic">
-              ここにドラッグ
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
-  
   return (
     <div 
       ref={ref} 
@@ -637,7 +660,18 @@ const TierRow = React.memo(({
       
       {/* キャラクタードロップエリア - 常に分割表示 */}
       <div className="flex flex-row flex-1 min-h-[120px] border-box divide-x-2 divide-gray-300 dark:divide-gray-600">
-        {Array.from({ length: columnCount }).map((_, index) => renderColumnDropArea(index))}
+        {Array.from({ length: columnCount }).map((_, index) => (
+          <ColumnDropArea
+            key={`column-${index}`}
+            columnIndex={index}
+            tier={tier}
+            charactersInTier={charactersInTier}
+            characterColumnAssignments={characterColumnAssignments}
+            columnLabels={columnLabels}
+            onDrop={onDrop}
+            changeCharacterColumn={changeCharacterColumn}
+          />
+        ))}
       </div>
     </div>
   );
@@ -645,6 +679,7 @@ const TierRow = React.memo(({
 
 // displayNameを追加
 TierRow.displayName = 'TierRow';
+ColumnDropArea.displayName = 'ColumnDropArea';
 
 // メインTiermakerページコンポーネント
 export default function TierMakerPage() {
