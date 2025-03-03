@@ -413,10 +413,14 @@ const WeaponTierRow = React.memo(({ tier, weaponsInTier, onDrop }: WeaponTierRow
       className={`flex items-stretch mb-0 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} transition-colors`}
     >
       {/* 左側のTier名ラベル - スタイリッシュなデザインに変更 */}
-      <div className={`${tier.color} w-16 sm:w-20 h-28 flex-shrink-0 flex items-center justify-center relative`}>
-        {/* グラデーション背景 */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-black/30"></div>
-        
+      <div 
+        className={`${tier.color} w-16 sm:w-20 flex-shrink-0 flex items-center justify-center relative overflow-hidden`}
+        style={{
+          minHeight: '7rem',
+          height: '100%', // 親要素の高さに合わせて伸縮
+          backgroundImage: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(0,0,0,0.3) 100%)'
+        }}
+      >
         {/* 表のヘッダーセルのような装飾 */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-white/30"></div>
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/20"></div>
@@ -626,12 +630,16 @@ const TierRow = React.memo(({
       ref={ref} 
       className={`flex items-stretch mb-0 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} transition-colors`}
     >
-      {/* 左側のTier名ラベル - スタイリッシュなデザインに変更 */}
-      <div className={`${tier.color} w-16 sm:w-20 h-28 flex-shrink-0 flex items-center justify-center relative`}>
-        {/* グラデーション背景 */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-black/30"></div>
-        
-        {/* 表のヘッダーセルのような装飾 */}
+      {/* 左側のTier名ラベル - 実装改善 */}
+      <div 
+        className={`${tier.color} w-16 sm:w-20 flex-shrink-0 flex items-center justify-center relative overflow-hidden`}
+        style={{
+          minHeight: '7rem',
+          height: '100%', // 親要素の高さに合わせて伸縮
+          backgroundImage: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(0,0,0,0.3) 100%)'
+        }}
+      >
+        {/* 表のヘッダーセルのような装飾 - 絶対位置で配置して確実に広がるように */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-white/30"></div>
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/20"></div>
         
