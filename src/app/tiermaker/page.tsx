@@ -179,9 +179,24 @@ interface TierRowProps {
   changeCharacterColumn?: (characterId: string, newColumnIndex: number) => void;
 }
 
+// Windowオブジェクトの型拡張
+declare global {
+  interface Window {
+    tiermakerState?: {
+      isSplitView: boolean;
+      columnCount: number;
+      columnLabels: string[];
+      characterColumnAssignments: Record<string, number>;
+    };
+    tiermakerChangeCharacterColumn?: (characterId: string, columnIndex: number) => void;
+  }
+}
+
 // キャラクターカードコンポーネント
 const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) => {
   const ref = useRef<HTMLDivElement>(null);
+  const [showMenu, setShowMenu] = useState(false);
+  
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes.CHARACTER,
     item: { id: character.id, type: 'character' } as DragItem,
@@ -190,12 +205,7 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
     }),
     options: {
       dropEffect: 'move', 
-      touchStartThreshold: 1 // ほとんど動かさなくてもドラッグ開始
-    },
-    previewOptions: {
-      captureDraggingState: true,
-      anchorX: 0.5,
-      anchorY: 0.5,
+      touchStartThreshold: 1
     },
     end: (item, monitor) => {
       const dropResult = monitor.getDropResult();
@@ -203,7 +213,7 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
         console.log('Character dropped:', item.id, 'Result:', dropResult);
       }
     },
-  }), [character.id, onDrop]); // 依存配列を追加
+  }), [character.id, onDrop]);
   
   // ref と drag を接続
   drag(ref);
@@ -216,6 +226,39 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
     e.stopPropagation(); // ドラッグイベントが発火しないよう阻止
     onDrop(character.id, 'unassigned');
   };
+  
+  // 右クリックメニュー表示の処理
+  const handleContextMenu = (e: React.MouseEvent) => {
+    if (window.tiermakerState?.isSplitView) {
+      e.preventDefault();
+      setShowMenu(!showMenu);
+    }
+  };
+  
+  // 列割り当て変更の処理
+  const handleChangeColumn = (columnIndex: number) => {
+    if (window.tiermakerChangeCharacterColumn) {
+      window.tiermakerChangeCharacterColumn(character.id, columnIndex);
+    }
+    setShowMenu(false);
+  };
+  
+  // メニュー外クリックでメニューを閉じる
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setShowMenu(false);
+      }
+    };
+    
+    if (showMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showMenu]);
 
   return (
     <div
@@ -225,8 +268,8 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
                   shadow-md cursor-move transition-transform
                   ${isDragging ? 'opacity-50' : 'opacity-100'}
                   hover:scale-105 hover:shadow-lg hover:z-10`}
-      style={{ opacity: isDragging ? 0.5 : 1, touchAction: 'none' }} // touchActionを追加
-      onContextMenu={(e) => e.preventDefault()}
+      style={{ opacity: isDragging ? 0.5 : 1, touchAction: 'none' }}
+      onContextMenu={handleContextMenu}
       onTouchStart={() => console.log('Touch start on character:', character.id)}
     >
       <Image
@@ -237,16 +280,34 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
         unoptimized // 画像の最適化を無効化して、ドラッグ中の表示を改善
       />
       
+      {/* 削除ボタン */}
       {showRemoveButton && (
-        <button 
+        <button
           onClick={handleRemove}
-          className="absolute top-0 left-0 bg-red-500 text-white rounded-br p-0.5 opacity-70 hover:opacity-100"
-          title="Tierから削除"
+          className="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 flex items-center justify-center rounded-bl-md opacity-80 hover:opacity-100 transition-opacity"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-          </svg>
+          ×
         </button>
+      )}
+      
+      {/* 列選択メニュー */}
+      {window.tiermakerState?.isSplitView && showMenu && (
+        <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg rounded-t-md z-20">
+          <div className="p-1 text-xs font-medium text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-700">
+            表示列を選択
+          </div>
+          <div className="max-h-32 overflow-y-auto">
+            {Array.from({ length: window.tiermakerState?.columnCount ?? 2 }).map((_, index) => (
+              <div
+                key={`column-menu-${index}`}
+                className="px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                onClick={() => handleChangeColumn(index)}
+              >
+                {window.tiermakerState?.columnLabels?.[index] ?? `列${index + 1}`}
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );
@@ -1312,6 +1373,19 @@ export default function TierMakerPage() {
   
   UnassignedWeaponsArea.displayName = 'UnassignedWeaponsArea';
 
+  // グローバル状態と関数を設定
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.tiermakerState = {
+        isSplitView,
+        columnCount,
+        columnLabels,
+        characterColumnAssignments
+      };
+      window.tiermakerChangeCharacterColumn = changeCharacterColumn;
+    }
+  }, [isSplitView, columnCount, columnLabels, characterColumnAssignments, changeCharacterColumn]);
+
   return (
     <DndProvider backend={MultiBackend} options={HTML5toTouch}>
       <div style={{ position: 'relative', zIndex: 9999 }}>
@@ -1358,10 +1432,20 @@ export default function TierMakerPage() {
         </div>
         
         {/* テンプレート選択とカスタマイズモード切り替え */}
-        <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+        <div className="mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
             <label className="block text-lg font-medium text-gray-700 dark:text-gray-200 mb-2 sm:mb-0">テンプレート選択</label>
-            <div className="flex space-x-2">
+            <div className="flex gap-2">
+              <button
+                onClick={toggleSplitView}
+                className={`px-4 py-2 rounded-lg text-white ${
+                  isSplitView ? 'bg-purple-600 hover:bg-purple-700' : 'bg-indigo-600 hover:bg-indigo-700'
+                } transition-colors`}
+                title={isSplitView ? '分割表示を解除' : '表示を分割して複数の列で表示'}
+              >
+                {isSplitView ? '通常表示に戻す' : '列を分割する'}
+              </button>
+              
               <button
                 onClick={toggleEditMode}
                 className={`px-4 py-2 rounded-lg text-white ${
@@ -1370,20 +1454,72 @@ export default function TierMakerPage() {
               >
                 {isEditMode ? '編集を適用' : 'ティアをカスタマイズ'}
               </button>
-              
-              {/* 分割表示切り替えボタン */}
-              <button
-                onClick={toggleSplitView}
-                className={`px-4 py-2 rounded-lg text-white ${
-                  isSplitView ? 'bg-purple-600 hover:bg-purple-700' : 'bg-indigo-600 hover:bg-indigo-700'
-                } transition-colors`}
-              >
-                {isSplitView ? '通常表示に戻す' : '列を分割する'}
-                {isWeaponEditMode ? '編集を適用' : 'ティアをカスタマイズ'}
-              </button>
             </div>
             
-            {!isWeaponEditMode && (
+            {/* 分割表示設定 - 分割表示時のみ表示 */}
+            {isSplitView && (
+              <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-3">分割表示設定</h3>
+                
+                {/* 列数設定 */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">列数</label>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => {
+                        if (columnCount > 2) {
+                          setColumnCount(columnCount - 1);
+                          // 列ラベル配列を更新
+                          setColumnLabels(prevLabels => prevLabels.slice(0, columnCount - 1));
+                        }
+                      }}
+                      disabled={columnCount <= 2}
+                      className={`px-3 py-1 rounded-lg ${
+                        columnCount <= 2 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-red-500 text-white hover:bg-red-600'
+                      }`}
+                    >
+                      -
+                    </button>
+                    <span className="text-lg font-medium">{columnCount}</span>
+                    <button
+                      onClick={() => {
+                        setColumnCount(columnCount + 1);
+                        // 列ラベル配列を更新
+                        setColumnLabels(prevLabels => [...prevLabels, `列${columnCount + 1}`]);
+                      }}
+                      className="px-3 py-1 rounded-lg bg-green-500 text-white hover:bg-green-600"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+                
+                {/* 列ラベル編集 */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">列ラベル</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                    {columnLabels.map((label, index) => (
+                      <div key={`label-${index}`} className="flex items-center">
+                        <input
+                          type="text"
+                          value={label}
+                          onChange={(e) => handleColumnLabelChange(index, e.target.value)}
+                          className="w-full px-3 py-1 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+                          placeholder={`列${index + 1}`}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* キャラクター列割り当てヘルプ */}
+                <div className="text-sm text-gray-600 dark:text-gray-400 bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
+                  <p>キャラクターを右クリックして表示する列を選択できます。各キャラクターを適切な列に割り振って整理しましょう。</p>
+                </div>
+              </div>
+            )}
+            
+            {!isEditMode && (
               <div className="flex flex-wrap gap-3">
                 {[...weaponTemplates, ...customWeaponTemplates].map(template => (
                   <div key={template.id} className="relative group">
