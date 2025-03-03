@@ -436,15 +436,20 @@ const WeaponTierRow = React.memo(({ tier, weaponsInTier, onDrop }: WeaponTierRow
       className={`flex w-full items-stretch mb-0 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} transition-colors`}
       style={{ minHeight: '120px' }}
     >
-      {/* 左側のTier名ラベル - より確実に色を適用 */}
-      <div 
-        className={`${bgColorClass} w-16 sm:w-20 flex-shrink-0 flex items-center justify-center`}
-        style={{ height: 'auto', minHeight: '100%' }}
-      >
-        {/* テキスト */}
-        <span className="relative z-10 text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md">
-          {tier.name}
-        </span>
+      {/* 左側のTier名ラベル - absoluteポジション背景で確実に色を適用 */}
+      <div className="w-16 sm:w-20 flex-shrink-0 relative">
+        {/* 背景色 - 絶対位置指定で確実に埋める */}
+        <div 
+          className={`${bgColorClass} absolute inset-0 w-full h-full`}
+          aria-hidden="true"
+        ></div>
+        
+        {/* コンテンツ - 相対位置で背景の上に配置 */}
+        <div className="relative z-10 flex items-center justify-center w-full h-full">
+          <span className="text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md">
+            {tier.name}
+          </span>
+        </div>
       </div>
       
       {/* 右側のドロップエリア - 表のセルのように見せる */}
@@ -658,32 +663,41 @@ const TierRow = React.memo(({
       className={`flex w-full items-stretch mb-0 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} transition-colors`}
       style={{ minHeight: '120px' }}
     >
-      {/* 左側のTier名ラベル - より確実に色を適用 */}
-      <div 
-        className={`${bgColorClass} w-16 sm:w-20 flex-shrink-0 flex items-center justify-center`}
-        style={{ height: 'auto', minHeight: '100%' }}
-      >
-        {/* テキスト - 編集可能に変更 */}
-        {isEditingName ? (
-          <input
-            ref={nameInputRef}
-            type="text"
-            value={editingName}
-            onChange={(e) => setEditingName(e.target.value)}
-            onKeyDown={handleNameKeyDown}
-            onBlur={saveNameEdit}
-            className="relative z-10 w-12 sm:w-16 text-center px-1 py-0.5 border border-blue-400 dark:border-blue-600 rounded bg-white/90 dark:bg-gray-800/90 text-gray-800 dark:text-gray-200"
-            placeholder="Tier名"
-          />
-        ) : (
-          <div
-            onClick={startNameEdit}
-            className="relative z-10 text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md cursor-pointer hover:bg-white/20 rounded px-2 py-1 transition-colors"
-          >
-            {tier.name}
-            <span className="ml-1 opacity-50 text-xs">✎</span>
-          </div>
-        )}
+      {/* 
+        左側のTier名ラベル - 根本的な修正: 
+        1. absoluteポジションの背景色Divを配置
+        2. 編集可能テキストは通常通り表示
+      */}
+      <div className="w-16 sm:w-20 flex-shrink-0 relative">
+        {/* 背景色 - 絶対位置指定で確実に埋める */}
+        <div 
+          className={`${bgColorClass} absolute inset-0 w-full h-full`}
+          aria-hidden="true"
+        ></div>
+        
+        {/* コンテンツ - 相対位置で背景の上に配置 */}
+        <div className="relative z-10 flex items-center justify-center w-full h-full">
+          {isEditingName ? (
+            <input
+              ref={nameInputRef}
+              type="text"
+              value={editingName}
+              onChange={(e) => setEditingName(e.target.value)}
+              onKeyDown={handleNameKeyDown}
+              onBlur={saveNameEdit}
+              className="relative z-10 w-12 sm:w-16 text-center px-1 py-0.5 border border-blue-400 dark:border-blue-600 rounded bg-white/90 dark:bg-gray-800/90 text-gray-800 dark:text-gray-200"
+              placeholder="Tier名"
+            />
+          ) : (
+            <div
+              onClick={startNameEdit}
+              className="text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md cursor-pointer hover:bg-white/20 rounded px-2 py-1 transition-colors"
+            >
+              {tier.name}
+              <span className="ml-1 opacity-50 text-xs">✎</span>
+            </div>
+          )}
+        </div>
       </div>
       
       {/* キャラクタードロップエリア - 常に分割表示 */}
