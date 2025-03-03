@@ -228,23 +228,16 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
   const ref = useRef<HTMLDivElement>(null);
   const [showMenu, setShowMenu] = useState(false);
   
-  const [{ isDragging }, drag] = useDrag({
+  const [dragProps, drag] = useDrag({
     type: ItemTypes.CHARACTER,
     item: { id: character.id, type: 'character' } as DragItem,
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
-    options: {
-      dropEffect: 'move', 
-      touchStartThreshold: 1
-    },
-    end: (item, monitor) => {
-      const dropResult = monitor.getDropResult();
-      if (dropResult) {
-        console.log('Character dropped:', item.id, 'Result:', dropResult);
-      }
-    },
   });
+  
+  // isDraggingをsafeに取得
+  const isDragging = Boolean(dragProps?.isDragging);
   
   // IDが複製されたものかどうかをチェック
   const isDuplicate = character.id.includes('_copy_');
@@ -280,6 +273,7 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
         isDragging ? 'opacity-50' : 'opacity-100'
       } ${isDuplicate ? 'ring-2 ring-blue-400 dark:ring-blue-600' : ''}`}
       style={{ width: '60px', height: '60px' }}
+      title={character.name} // titleでホバー時の標準ツールチップを表示
     >
       <img
         src={character.iconUrl}
@@ -310,11 +304,6 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
       >
         +
       </button>
-      
-      {/* キャラクター名ツールチップ */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity bg-black/50 text-white text-xs p-1 text-center">
-        {character.name.length > 10 ? character.name.substring(0, 8) + '...' : character.name}
-      </div>
     </div>
   );
 };
