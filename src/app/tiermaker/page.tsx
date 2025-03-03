@@ -177,6 +177,8 @@ interface TierRowProps {
   columnLabels?: string[];
   characterColumnAssignments?: Record<string, number>;
   changeCharacterColumn?: (characterId: string, newColumnIndex: number) => void;
+  // 行ラベル（Tier名）編集用のコールバック関数
+  onTierNameEdit?: (tierId: string, newName: string) => void;
 }
 
 // Windowオブジェクトの型拡張
@@ -474,7 +476,8 @@ const TierRow = React.memo(({
   columnCount = 2,
   columnLabels = ['列1', '列2'],
   characterColumnAssignments = {},
-  changeCharacterColumn = () => {}
+  changeCharacterColumn = () => {},
+  onTierNameEdit = () => {}
 }: TierRowProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const [{ isOver }, drop] = useDrop({
@@ -488,6 +491,60 @@ const TierRow = React.memo(({
       isOver: !!monitor.isOver(),
     }),
   });
+  
+  // 行ラベル編集用の状態
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editingName, setEditingName] = useState(tier.name);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  
+  // 編集開始
+  const startNameEdit = () => {
+    setIsEditingName(true);
+    setEditingName(tier.name);
+    // 次のレンダリングでフォーカスさせるためのタイムアウト
+    setTimeout(() => {
+      if (nameInputRef.current) {
+        nameInputRef.current.focus();
+        nameInputRef.current.select();
+      }
+    }, 10);
+  };
+  
+  // 編集保存
+  const saveNameEdit = () => {
+    if (isEditingName && editingName.trim() !== '') {
+      // onTierNameEditプロパティが渡されている場合のみ実行
+      if (onTierNameEdit) {
+        onTierNameEdit(tier.id, editingName);
+      }
+    }
+    setIsEditingName(false);
+  };
+  
+  // キー入力処理
+  const handleNameKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      saveNameEdit();
+    } else if (e.key === 'Escape') {
+      setIsEditingName(false);
+    }
+  };
+  
+  // 編集中の外部クリック処理
+  useEffect(() => {
+    if (isEditingName) {
+      const handleClickOutside = (e: MouseEvent) => {
+        if (nameInputRef.current && !nameInputRef.current.contains(e.target as Node)) {
+          saveNameEdit();
+        }
+      };
+      
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [isEditingName, tier.id, onTierNameEdit]); // tier.idとonTierNameEditを依存配列に追加
   
   console.log(`TierRow ${tier.id} rendering with ${charactersInTier.length} characters`);
   
@@ -542,10 +599,27 @@ const TierRow = React.memo(({
         <div className="absolute top-0 left-0 right-0 h-1 bg-white/30"></div>
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/20"></div>
         
-        {/* テキスト - py-6を削除して親要素に高さを任せる */}
-        <span className="relative z-10 text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md">
-          {tier.name}
-        </span>
+        {/* テキスト - 編集可能に変更 */}
+        {isEditingName ? (
+          <input
+            ref={nameInputRef}
+            type="text"
+            value={editingName}
+            onChange={(e) => setEditingName(e.target.value)}
+            onKeyDown={handleNameKeyDown}
+            onBlur={saveNameEdit}
+            className="relative z-10 w-12 sm:w-16 text-center px-1 py-0.5 border border-blue-400 dark:border-blue-600 rounded bg-white/90 dark:bg-gray-800/90 text-gray-800 dark:text-gray-200"
+            placeholder="Tier名"
+          />
+        ) : (
+          <div
+            onClick={startNameEdit}
+            className="relative z-10 text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md cursor-pointer hover:bg-white/20 rounded px-2 py-1 transition-colors"
+          >
+            {tier.name}
+            <span className="ml-1 opacity-50 text-xs">✎</span>
+          </div>
+        )}
       </div>
       
       {/* キャラクタードロップエリア - 分割表示かどうかで表示を切り替え */}
@@ -1443,6 +1517,53 @@ export default function TierMakerPage() {
     }
   }, [editingLabelIndex, editingLabelValue]);
 
+  // 行ラベル（Tier名）の直接編集ハンドラー
+  const handleDirectTierNameEdit = (tierId: string, newName: string) => {
+    // 編集モード時
+    if (isEditMode && customTemplate) {
+      // 該当するTierのnameを更新
+      const updatedTiers = customTemplate.tiers.map((tier: TierTemplate['tiers'][0]) => {
+        if (tier.id === tierId) {
+          return { ...tier, name: newName };
+        }
+        return tier;
+      });
+      
+      setCustomTemplate({
+        ...customTemplate,
+        tiers: updatedTiers
+      });
+    } else {
+      // 通常モード時はカスタムテンプレートを作成
+      const templateCopy = JSON.parse(JSON.stringify(selectedTemplate));
+      const updatedTiers = templateCopy.tiers.map((tier: TierTemplate['tiers'][0]) => {
+        if (tier.id === tierId) {
+          return { ...tier, name: newName };
+        }
+        return tier;
+      });
+      
+      // カスタムテンプレートを作成
+      const customId = `custom-${Date.now()}`;
+      const customTemplate = {
+        ...templateCopy,
+        id: customId,
+        name: `${templateCopy.name} (カスタム)`,
+        tiers: updatedTiers
+      };
+      
+      // カスタムテンプレートを追加
+      const newCustomTemplates = [...customTemplates, customTemplate];
+      setCustomTemplates(newCustomTemplates);
+      
+      // 新しいテンプレートを選択
+      setSelectedTemplate(customTemplate);
+      
+      // カスタムテンプレートをローカルストレージに保存
+      localStorage.setItem('customTierTemplates', JSON.stringify(newCustomTemplates));
+    }
+  };
+
   return (
     <DndProvider backend={MultiBackend} options={HTML5toTouch}>
       <div style={{ position: 'relative', zIndex: 9999 }}>
@@ -1780,6 +1901,7 @@ export default function TierMakerPage() {
                     columnLabels={columnLabels}
                     characterColumnAssignments={characterColumnAssignments}
                     changeCharacterColumn={changeCharacterColumn}
+                    onTierNameEdit={handleDirectTierNameEdit}
                   />
                   {index < array.length - 1 && <div className="border-b border-gray-300 dark:border-gray-600"></div>}
                 </div>
