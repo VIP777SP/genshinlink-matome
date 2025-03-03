@@ -1878,7 +1878,7 @@ export default function TierMakerPage() {
                       onChange={(e) => setEditingLabelValue(e.target.value)}
                       onKeyDown={handleLabelKeyDown}
                       onBlur={saveLabelEdit}
-                      className="w-full px-2 py-1 text-center border-2 border-blue-400 dark:border-blue-600 rounded bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 relative z-10"
+                      className="w-full px-2 py-1 text-center border-2 border-blue-400 dark:border-blue-600 rounded bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 relative z-10 font-['Hiragino_Sans','Noto_Sans_JP','YuGothic','Meiryo',sans-serif] font-bold text-lg"
                       placeholder={`列${index + 1}`}
                     />
                   ) : (
@@ -1886,7 +1886,11 @@ export default function TierMakerPage() {
                       onClick={() => startLabelEdit(index)}
                       className="cursor-pointer hover:bg-white/30 dark:hover:bg-gray-600/50 rounded px-2 py-1 transition-all duration-200 flex items-center justify-center relative z-10 group-hover:scale-105 group-hover:shadow-sm"
                     >
-                      <span className="relative z-10">{label}</span>
+                      <span className="relative z-10 font-bold text-lg font-['Hiragino_Sans','Noto_Sans_JP','YuGothic','Meiryo',sans-serif] tracking-wide text-center w-full truncate transform scale-100 origin-center" style={{ 
+                        maxWidth: '100%',
+                        display: 'block',
+                        transform: label.length > 6 ? `scale(${Math.max(0.7, 1 - (label.length - 6) * 0.05)})` : 'scale(1)'
+                      }}>{label}</span>
                       <span className="ml-1 opacity-50 text-xs group-hover:opacity-80 transition-opacity">✎</span>
                       
                       {/* 下線アクセント（ホバー時に表示） */}
