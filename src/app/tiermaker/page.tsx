@@ -1631,32 +1631,13 @@ export default function TierMakerPage() {
                 {isEditMode ? '編集を適用' : 'ティアをカスタマイズ'}
               </button>
             </div>
-          </div>
-          
-          {/* 列ラベル編集 */}
-          <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">列ラベル:</label>
-              <div className="flex flex-wrap gap-2">
-                {columnLabels.map((label, index) => (
-                  <div key={`label-${index}`} className="flex items-center">
-                    <input
-                      type="text"
-                      value={label}
-                      onChange={(e) => handleColumnLabelChange(index, e.target.value)}
-                      className="w-24 px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
-                      placeholder={`列${index + 1}`}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
+            {/* 操作ヒント */}
             <div className="text-xs text-gray-600 dark:text-gray-400 mt-2">
-              <p>キャラクターを右クリックして表示する列を選択できます。</p>
+              <p>ヒント: キャラクターを右クリックして表示する列を選択できます。列ラベルをクリックして編集できます。</p>
             </div>
           </div>
           
-          {/* 分割表示設定 - 削除 */}
+          {/* 列ラベル編集セクションを削除 */}
           
           {!isEditMode && (
             <div className="flex flex-wrap gap-3">
