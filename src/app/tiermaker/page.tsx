@@ -278,8 +278,6 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
       <Image 
         src={character.iconUrl} 
         alt={character.name}
-        width={80}
-        height={96}
         fill
         className="object-cover"
         unoptimized // 画像の最適化を無効化して、ドラッグ中の表示を改善
