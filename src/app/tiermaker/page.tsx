@@ -1572,7 +1572,8 @@ export default function TierMakerPage() {
         tiers: updatedTiers
       });
     } else {
-      // 通常モード時はカスタムテンプレートを作成
+      // 通常モード時も直接編集するだけで、カスタムテンプレートは作成しない
+      // 選択中のテンプレートを一時的にコピーして編集
       const templateCopy = JSON.parse(JSON.stringify(selectedTemplate));
       const updatedTiers = templateCopy.tiers.map((tier: TierTemplate['tiers'][0]) => {
         if (tier.id === tierId) {
@@ -1581,24 +1582,14 @@ export default function TierMakerPage() {
         return tier;
       });
       
-      // カスタムテンプレートを作成
-      const customId = `custom-${Date.now()}`;
-      const customTemplate = {
+      // 選択中のテンプレートに変更を適用（メモリ上での一時的な変更）
+      const updatedTemplate = {
         ...templateCopy,
-        id: customId,
-        name: `${templateCopy.name} (カスタム)`,
         tiers: updatedTiers
       };
       
-      // カスタムテンプレートを追加
-      const newCustomTemplates = [...customTemplates, customTemplate];
-      setCustomTemplates(newCustomTemplates);
-      
-      // 新しいテンプレートを選択
-      setSelectedTemplate(customTemplate);
-      
-      // カスタムテンプレートをローカルストレージに保存
-      localStorage.setItem('customTierTemplates', JSON.stringify(newCustomTemplates));
+      // テンプレートを更新
+      setSelectedTemplate(updatedTemplate);
     }
   };
 
