@@ -720,13 +720,14 @@ export default function TierMakerPage() {
   });
   // weaponSearchQueryとweaponTypeFilterを削除
   const [customWeaponTemplates, setCustomWeaponTemplates] = useState<TierTemplate[]>([]);
-  const [isWeaponEditMode, setIsWeaponEditMode] = useState(false);
+  // 元々状態変数として定義していた編集モードを常にfalseにする（カスタム機能を無効化）
+  const isWeaponEditMode = false; // 常にfalseにして、カスタム機能を無効化
   const [customWeaponTemplate, setCustomWeaponTemplate] = useState<TierTemplate | null>(null);
   const [newWeaponTierName, setNewWeaponTierName] = useState('');
   const [newWeaponTierColor, setNewWeaponTierColor] = useState('bg-gray-500');
   
   // 編集モード関連の状態
-  const [isEditMode, setIsEditMode] = useState(false);
+  const isEditMode = false; // 常にfalseにして、カスタム機能を無効化
   const [customTemplate, setCustomTemplate] = useState<TierTemplate | null>(null);
   const [newTierName, setNewTierName] = useState('');
   const [newTierColor, setNewTierColor] = useState('bg-gray-500');
@@ -833,11 +834,12 @@ export default function TierMakerPage() {
   
   // 編集モードの切り替え
   const toggleEditMode = () => {
-    const newEditMode = !isEditMode;
-    setIsEditMode(newEditMode);
+    // 常にfalseになるようにします
+    // const newEditMode = !isEditMode;
+    // setIsEditMode(newEditMode);
     
-    // 編集モードを終了する場合
-    if (!newEditMode && customTemplate) {
+    // 編集モードを終了する場合（現在は常にfalseなので、この条件は実行されない）
+    if (customTemplate) {
       // 変更を適用
       setSelectedTemplate(customTemplate);
       setCustomTemplate(null);
@@ -1152,11 +1154,12 @@ export default function TierMakerPage() {
   
   // 武器編集モードの切り替え
   const toggleWeaponEditMode = () => {
-    const newEditMode = !isWeaponEditMode;
-    setIsWeaponEditMode(newEditMode);
+    // 常にfalseになるようにします
+    // const newEditMode = !isWeaponEditMode;
+    // setIsWeaponEditMode(newEditMode);
     
-    // 編集モードを終了する場合
-    if (!newEditMode && customWeaponTemplate) {
+    // 編集モードを終了する場合（現在は常にfalseなので、この条件は実行されない）
+    if (customWeaponTemplate) {
       // 変更を適用
       setSelectedWeaponTemplate(customWeaponTemplate);
       setCustomWeaponTemplate(null);
