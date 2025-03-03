@@ -506,15 +506,10 @@ const TierRow = React.memo(({
         key={`column-${columnIndex}`} 
         className="flex-1 min-h-28 p-2 flex flex-wrap gap-2 bg-white/50 dark:bg-gray-800/50 border-l border-gray-300 dark:border-gray-600 relative"
       >
-        {/* 列ラベル - 分割表示時のみ表示 */}
-        {isSplitView && (
-          <div className="absolute top-0 left-0 right-0 bg-gray-100 dark:bg-gray-700 p-1 text-center text-sm font-medium border-b border-gray-300 dark:border-gray-600">
-            {columnLabels[columnIndex]}
-          </div>
-        )}
+        {/* 列ラベルはここから削除 */}
         
-        {/* キャラクターカード - 上部にマージンを追加して列ラベルと重ならないようにする */}
-        <div className={`w-full flex flex-wrap gap-2 ${isSplitView ? 'mt-7' : ''}`}>
+        {/* キャラクターカード - マージンも不要になったので削除 */}
+        <div className="w-full flex flex-wrap gap-2">
           {charactersInColumn.map(character => (
             <CharacterCard 
               key={character.id} 
@@ -1684,6 +1679,27 @@ export default function TierMakerPage() {
           {/* キャラクターTierリスト */}
           <div className="mb-8">
             <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">{isEditMode && customTemplate ? customTemplate.name : selectedTemplate.name}</h2>
+            
+            {/* 分割表示時に列ラベルヘッダーを追加 */}
+            {isSplitView && (
+              <div className="flex border-t-2 border-l-2 border-r-2 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700">
+                {/* 左側のスペース - Tier名ラベルと同じ幅 */}
+                <div className="w-16 sm:w-20 flex-shrink-0"></div>
+                
+                {/* 列ラベル - 分割表示時のみ表示 */}
+                <div className="flex-1 flex">
+                  {columnLabels.map((label, index) => (
+                    <div 
+                      key={`header-column-${index}`} 
+                      className="flex-1 p-2 text-center font-medium text-gray-700 dark:text-gray-300 border-l border-gray-300 dark:border-gray-600"
+                    >
+                      {label}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
             <div className="border-t-2 border-l-2 border-r-2 border-gray-300 dark:border-gray-600 rounded-t-lg overflow-hidden">
               {(isEditMode && customTemplate ? customTemplate.tiers : selectedTemplate.tiers).map((tier, index, array) => (
                 <div key={tier.id} className={`${index === array.length - 1 ? 'rounded-b-lg overflow-hidden' : ''}`}>
