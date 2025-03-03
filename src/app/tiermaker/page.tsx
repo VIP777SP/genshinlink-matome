@@ -231,14 +231,15 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
   
   // 右クリックメニュー表示の処理
   const handleContextMenu = (e: React.MouseEvent) => {
-    if (window.tiermakerState?.isSplitView) {
-      e.preventDefault();
-      setShowMenu(!showMenu);
-    }
+    // 右クリックメニューを表示しないように変更
+    // e.preventDefault();
+    // setShowMenu(!showMenu);
   };
   
   // 列割り当て変更の処理
   const handleChangeColumn = (columnIndex: number) => {
+    // 右クリックメニューでの列変更は削除するが、
+    // この関数自体は他の場所から呼ばれる可能性があるため残しておく
     if (window.tiermakerChangeCharacterColumn) {
       window.tiermakerChangeCharacterColumn(character.id, columnIndex);
     }
@@ -269,14 +270,16 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
                   border-2 border-amber-200 dark:border-amber-800
                   shadow-md cursor-move transition-transform
                   ${isDragging ? 'opacity-50' : 'opacity-100'}
-                  hover:scale-105 hover:shadow-lg hover:z-10`}
-      style={{ opacity: isDragging ? 0.5 : 1, touchAction: 'none' }}
+                  hover:scale-105`}
+      title={character.name}
       onContextMenu={handleContextMenu}
-      onTouchStart={() => console.log('Touch start on character:', character.id)}
     >
-      <Image
-        src={character.iconUrl}
+      {/* 画像 */}
+      <Image 
+        src={character.iconUrl} 
         alt={character.name}
+        width={80}
+        height={96}
         fill
         className="object-cover"
         unoptimized // 画像の最適化を無効化して、ドラッグ中の表示を改善
@@ -292,25 +295,7 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
         </button>
       )}
       
-      {/* 列選択メニュー */}
-      {window.tiermakerState?.isSplitView && showMenu && (
-        <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg rounded-t-md z-20">
-          <div className="p-1 text-xs font-medium text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-700">
-            表示列を選択
-          </div>
-          <div className="max-h-32 overflow-y-auto">
-            {Array.from({ length: window.tiermakerState?.columnCount ?? 2 }).map((_, index) => (
-              <div
-                key={`column-menu-${index}`}
-                className="px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-                onClick={() => handleChangeColumn(index)}
-              >
-                {window.tiermakerState?.columnLabels?.[index] ?? `列${index + 1}`}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* 列選択メニュー - 削除 */}
     </div>
   );
 };
@@ -558,20 +543,29 @@ const TierRow = React.memo(({
       characterColumnAssignments[char.id] === columnIndex
     );
     
+    // ドロップ時に列情報も一緒に渡す関数
+    const handleDropWithColumn = (characterId: string, tierId: string) => {
+      // 通常のドロップ処理を呼び出す
+      onDrop(characterId, tierId);
+      
+      // 列の割り当ても自動的に行う
+      if (changeCharacterColumn) {
+        changeCharacterColumn(characterId, columnIndex);
+      }
+    };
+    
     return (
       <div 
         key={`column-${columnIndex}`} 
         className="flex-1 min-h-28 p-2 flex flex-wrap gap-2 bg-white/50 dark:bg-gray-800/50 border-l border-gray-300 dark:border-gray-600 relative"
       >
-        {/* 列ラベルはここから削除 */}
-        
-        {/* キャラクターカード - マージンも不要になったので削除 */}
+        {/* キャラクターカード */}
         <div className="w-full flex flex-wrap gap-2">
           {charactersInColumn.map(character => (
             <CharacterCard 
               key={character.id} 
               character={character} 
-              onDrop={onDrop} 
+              onDrop={handleDropWithColumn} // 列情報付きのドロップハンドラを使用
               currentTier={tier.id} 
             />
           ))}
@@ -1352,6 +1346,8 @@ export default function TierMakerPage() {
       drop: (item: DragItem) => {
         console.log('Dropped character to unassigned area:', item);
         handleDrop(item.id, 'unassigned');
+        // 未割り当てエリアに戻す場合は列の割り当ても解除（デフォルトの0列目に戻す）
+        changeCharacterColumn(item.id, 0);
         return { id: 'unassigned' };
       },
       collect: monitor => ({
@@ -1633,7 +1629,7 @@ export default function TierMakerPage() {
             </div>
             {/* 操作ヒント */}
             <div className="text-xs text-gray-600 dark:text-gray-400 mt-2">
-              <p>ヒント: キャラクターを右クリックして表示する列を選択できます。列ラベルをクリックして編集できます。</p>
+              <p>ヒント: 列ラベルをクリックして編集できます。</p>
             </div>
           </div>
           
