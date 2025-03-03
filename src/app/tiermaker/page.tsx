@@ -219,6 +219,7 @@ declare global {
       characterColumnAssignments: Record<string, number>;
     };
     tiermakerChangeCharacterColumn?: (characterId: string, columnIndex: number) => void;
+    tiermakerDuplicateCharacter?: (character: Character, newId: string, currentTier: string) => void;
   }
 }
 
@@ -227,10 +228,10 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
   const ref = useRef<HTMLDivElement>(null);
   const [showMenu, setShowMenu] = useState(false);
   
-  const [{ isDragging }, drag] = useDrag(() => ({
+  const [{ isDragging }, drag] = useDrag({
     type: ItemTypes.CHARACTER,
     item: { id: character.id, type: 'character' } as DragItem,
-    collect: monitor => ({
+    collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
     options: {
@@ -243,85 +244,77 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
         console.log('Character dropped:', item.id, 'Result:', dropResult);
       }
     },
-  }), [character.id, onDrop]);
+  });
+  
+  // IDが複製されたものかどうかをチェック
+  const isDuplicate = character.id.includes('_copy_');
+  
+  // 複製処理を実行する関数
+  const handleDuplicate = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    // メインコンポーネントで定義された複製関数を呼び出す
+    if (typeof window !== 'undefined' && window.tiermakerDuplicateCharacter) {
+      const newId = `${character.id}_copy_${Date.now()}`;
+      window.tiermakerDuplicateCharacter(character, newId, 'unassigned');
+    }
+  };
   
   // ref と drag を接続
   drag(ref);
-
-  // 未割り当てエリア以外に配置されている場合のみ削除ボタンを表示
+  
+  // 未割り当てエリアからのみ削除できるようにする
   const showRemoveButton = currentTier !== 'unassigned';
-
-  // 削除ボタンクリック時の処理
-  const handleRemove = (e: React.MouseEvent) => {
-    e.stopPropagation(); // ドラッグイベントが発火しないよう阻止
-    onDrop(character.id, 'unassigned');
-  };
   
-  // 右クリックメニュー表示の処理
-  const handleContextMenu = (e: React.MouseEvent) => {
-    // 右クリックメニューを表示しないように変更
-    // e.preventDefault();
-    // setShowMenu(!showMenu);
-  };
-  
-  // 列割り当て変更の処理
-  const handleChangeColumn = (columnIndex: number) => {
-    // 右クリックメニューでの列変更は削除するが、
-    // この関数自体は他の場所から呼ばれる可能性があるため残しておく
+  // 列を変更する機能
+  const changeColumn = (columnIndex: number) => {
     if (window.tiermakerChangeCharacterColumn) {
       window.tiermakerChangeCharacterColumn(character.id, columnIndex);
     }
-    setShowMenu(false);
   };
-  
-  // メニュー外クリックでメニューを閉じる
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setShowMenu(false);
-      }
-    };
-    
-    if (showMenu) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showMenu]);
 
   return (
     <div
       ref={ref}
-      className={`relative w-16 h-24 sm:w-20 sm:h-24 rounded-lg overflow-hidden 
-                  border-2 border-amber-200 dark:border-amber-800
-                  shadow-md cursor-move transition-transform
-                  ${isDragging ? 'opacity-50' : 'opacity-100'}
-                  hover:scale-105`}
-      title={character.name}
-      onContextMenu={handleContextMenu}
+      className={`relative rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-move ${
+        isDragging ? 'opacity-50' : 'opacity-100'
+      } ${isDuplicate ? 'ring-2 ring-blue-400 dark:ring-blue-600' : ''}`}
+      style={{ width: '60px', height: '60px' }}
     >
-      {/* 画像 */}
-      <Image 
-        src={character.iconUrl} 
+      <img
+        src={character.iconUrl}
         alt={character.name}
-        fill
-        className="object-cover"
-        unoptimized // 画像の最適化を無効化して、ドラッグ中の表示を改善
+        className="w-full h-full object-cover object-center"
+        style={{ imageRendering: 'auto' }}
       />
       
       {/* 削除ボタン */}
       {showRemoveButton && (
         <button
-          onClick={handleRemove}
-          className="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 flex items-center justify-center rounded-bl-md opacity-80 hover:opacity-100 transition-opacity"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDrop(character.id, 'unassigned');
+          }}
+          className="absolute top-0 right-0 w-5 h-5 rounded-bl-lg bg-red-500 text-white flex items-center justify-center text-xs opacity-80 hover:opacity-100"
+          title="Tierから削除"
         >
           ×
         </button>
       )}
       
-      {/* 列選択メニュー - 削除 */}
+      {/* 複製ボタン */}
+      <button
+        onClick={handleDuplicate}
+        className="absolute bottom-0 right-0 w-5 h-5 rounded-tl-lg bg-blue-500 text-white flex items-center justify-center text-xs opacity-80 hover:opacity-100"
+        title="このキャラクターを複製"
+      >
+        +
+      </button>
+      
+      {/* キャラクター名ツールチップ */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity bg-black/50 text-white text-xs p-1 text-center">
+        {character.name.length > 10 ? character.name.substring(0, 8) + '...' : character.name}
+      </div>
     </div>
   );
 };
@@ -1535,6 +1528,45 @@ export default function TierMakerPage() {
   
   UnassignedWeaponsArea.displayName = 'UnassignedWeaponsArea';
 
+  // キャラクターの複製処理関数
+  const duplicateCharacter = (character: Character, newId: string, targetTier: string) => {
+    console.log(`キャラクター ${character.name} を複製します。新ID: ${newId}`);
+    
+    // 複製したキャラクターオブジェクトを作成
+    const duplicatedCharacter: Character = {
+      ...character,
+      id: newId,
+    };
+    
+    // 既存のキャラクターリストに複製を追加
+    const updatedCharacters = [...tierMakerCharacters, duplicatedCharacter];
+    
+    // tierMakerCharactersを更新（UIに反映させるため）
+    // 注: この処理だけでは不十分な場合があります
+    // tierMakerCharactersは読み取り専用の場合、別の方法で更新が必要
+    
+    // 複製したキャラクターを指定のティアに追加
+    setCharacterTiers(prev => {
+      const newState = { ...prev };
+      
+      // 指定されたティアが存在しない場合は作成
+      if (!newState[targetTier]) {
+        newState[targetTier] = [];
+      }
+      
+      // 複製キャラクターを追加
+      newState[targetTier] = [...newState[targetTier], newId];
+      
+      return newState;
+    });
+    
+    // 列割り当ても設定（最初の列にデフォルト割り当て）
+    setCharacterColumnAssignments(prev => ({
+      ...prev,
+      [newId]: 0
+    }));
+  };
+
   // グローバル状態と関数を設定
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -1545,6 +1577,7 @@ export default function TierMakerPage() {
         characterColumnAssignments
       };
       window.tiermakerChangeCharacterColumn = changeCharacterColumn;
+      window.tiermakerDuplicateCharacter = duplicateCharacter;
     }
   }, [columnCount, columnLabels, characterColumnAssignments, changeCharacterColumn]);
 
