@@ -172,7 +172,7 @@ interface TierRowProps {
   charactersInTier: Character[];
   onDrop: (characterId: string, tierId: string) => void;
   // 分割表示のためのプロパティを追加
-  isSplitView?: boolean;
+  isSplitView?: boolean; // 互換性のために残す
   columnCount?: number;
   columnLabels?: string[];
   characterColumnAssignments?: Record<string, number>;
@@ -553,9 +553,9 @@ const TierRow = React.memo(({
 
   // 分割表示時の列ごとのドロップエリア
   const renderColumnDropArea = (columnIndex: number) => {
-    // 列に属するキャラクターを取得
+    // フィルタリングロジックを変更 - isSplitView は常に true
     const charactersInColumn = charactersInTier.filter(char => 
-      !isSplitView || characterColumnAssignments[char.id] === columnIndex
+      characterColumnAssignments[char.id] === columnIndex
     );
     
     return (
@@ -623,13 +623,14 @@ const TierRow = React.memo(({
       </div>
       
       {/* キャラクタードロップエリア - 分割表示かどうかで表示を切り替え */}
-      {isSplitView ? (
-        // 分割表示時は列ごとに表示
-        <div className="flex-1 flex">
+      {true ? ( // isSplitView を true に固定
+        // 分割表示時の表示
+        <div className="flex flex-col flex-1 min-h-[120px]">
           {Array.from({ length: columnCount }).map((_, index) => renderColumnDropArea(index))}
         </div>
       ) : (
-        // 通常表示時は1列で表示
+        // 通常表示時の表示（このブロックは実行されませんが、コードの一貫性のために残します）
+        // ... existing code ...
         <div className="flex-1 min-h-28 p-2 flex flex-wrap gap-2 bg-white/50 dark:bg-gray-800/50 border-l border-gray-300 dark:border-gray-600">
           {charactersInTier.map(character => (
             <CharacterCard 
@@ -663,11 +664,10 @@ export default function TierMakerPage() {
   // searchQueryとelementFilterを削除
   
   // 列分割機能のための状態
-  const [isSplitView, setIsSplitView] = useState(false);
   const [columnCount, setColumnCount] = useState(2);
   const [columnLabels, setColumnLabels] = useState(['列1', '列2']);
   const [characterColumnAssignments, setCharacterColumnAssignments] = useState<Record<string, number>>(() => {
-    // 初期状態では、キャラクターをランダムに列に割り当てる
+    // 初期状態では、キャラクターを最初の列に割り当てる
     const assignments: Record<string, number> = {};
     tierMakerCharacters.forEach(char => {
       assignments[char.id] = 0; // デフォルトでは最初の列に全て割り当て
@@ -1081,8 +1081,8 @@ export default function TierMakerPage() {
           console.warn(`ID ${id} に一致するキャラクターが見つかりません`);
           return undefined;
         }
-        // 分割表示モードの場合、指定された列に属するキャラクターのみを返す
-        if (isSplitView && characterColumnAssignments[id] !== columnIndex) {
+        // 列分割表示では、指定された列に属するキャラクターのみを返す
+        if (characterColumnAssignments[id] !== columnIndex) {
           return undefined;
         }
         return char;
@@ -1105,10 +1105,7 @@ export default function TierMakerPage() {
     }));
   };
   
-  // 分割表示を切り替える関数
-  const toggleSplitView = () => {
-    setIsSplitView(!isSplitView);
-  };
+  // 分割表示を切り替える関数 - 削除 (不要になったため)
   
   // 武器テンプレート名の変更ハンドラ
   const handleWeaponTemplateNameChange = (newName: string) => {
@@ -1464,14 +1461,14 @@ export default function TierMakerPage() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       window.tiermakerState = {
-        isSplitView,
+        isSplitView: true, // 常にtrueとして設定
         columnCount,
         columnLabels,
         characterColumnAssignments
       };
       window.tiermakerChangeCharacterColumn = changeCharacterColumn;
     }
-  }, [isSplitView, columnCount, columnLabels, characterColumnAssignments, changeCharacterColumn]);
+  }, [columnCount, columnLabels, characterColumnAssignments, changeCharacterColumn]);
 
   // 列ラベル編集のハンドラ関数
   const startLabelEdit = (index: number) => {
@@ -1614,16 +1611,38 @@ export default function TierMakerPage() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
             <label className="block text-lg font-medium text-gray-700 dark:text-gray-200 mb-2 sm:mb-0">テンプレート選択</label>
             <div className="flex gap-2">
-              <button
-                onClick={toggleSplitView}
-                className={`px-4 py-2 rounded-lg text-white ${
-                  isSplitView ? 'bg-purple-600 hover:bg-purple-700' : 'bg-indigo-600 hover:bg-indigo-700'
-                } transition-colors`}
-                title={isSplitView ? '分割表示を解除' : '表示を分割して複数の列で表示'}
-              >
-                {isSplitView ? '通常表示に戻す' : '列を分割する'}
-              </button>
-              
+              {/* 列数調整ボタン */}
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => {
+                    if (columnCount > 2) {
+                      setColumnCount(columnCount - 1);
+                      // 列ラベル配列を更新
+                      setColumnLabels(prevLabels => prevLabels.slice(0, columnCount - 1));
+                    }
+                  }}
+                  disabled={columnCount <= 2}
+                  className={`px-3 py-1 rounded-lg ${
+                    columnCount <= 2 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-red-500 text-white hover:bg-red-600'
+                  }`}
+                  title="列数を減らす"
+                >
+                  -
+                </button>
+                <span className="text-lg font-medium">{columnCount}</span>
+                <button
+                  onClick={() => {
+                    setColumnCount(columnCount + 1);
+                    // 列ラベル配列を更新
+                    setColumnLabels(prevLabels => [...prevLabels, `列${columnCount + 1}`]);
+                  }}
+                  className="px-3 py-1 rounded-lg bg-green-500 text-white hover:bg-green-600"
+                  title="列数を増やす"
+                >
+                  +
+                </button>
+              </div>
+
               <button
                 onClick={toggleEditMode}
                 className={`px-4 py-2 rounded-lg text-white ${
@@ -1633,95 +1652,297 @@ export default function TierMakerPage() {
                 {isEditMode ? '編集を適用' : 'ティアをカスタマイズ'}
               </button>
             </div>
-            
-            {/* 分割表示設定 - 分割表示時のみ表示 */}
-            {isSplitView && (
-              <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-3">分割表示設定</h3>
-                
-                {/* 列数設定 */}
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">列数</label>
-                  <div className="flex items-center space-x-2">
+          </div>
+          
+          {/* 列ラベル編集 */}
+          <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">列ラベル:</label>
+              <div className="flex flex-wrap gap-2">
+                {columnLabels.map((label, index) => (
+                  <div key={`label-${index}`} className="flex items-center">
+                    <input
+                      type="text"
+                      value={label}
+                      onChange={(e) => handleColumnLabelChange(index, e.target.value)}
+                      className="w-24 px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+                      placeholder={`列${index + 1}`}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="text-xs text-gray-600 dark:text-gray-400 mt-2">
+              <p>キャラクターを右クリックして表示する列を選択できます。</p>
+            </div>
+          </div>
+          
+          {/* 分割表示設定 - 削除 */}
+          
+          {!isEditMode && (
+            <div className="flex flex-wrap gap-3">
+              {allTemplates.map(template => (
+                <div key={template.id} className="relative group">
+                  <button
+                    className={`px-4 py-2 rounded-lg ${selectedTemplate.id === template.id ? 'bg-amber-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'} hover:bg-amber-400 dark:hover:bg-amber-600 transition-colors`}
+                    onClick={() => setSelectedTemplate(template)}
+                  >
+                    {template.name}
+                  </button>
+                  
+                  {/* カスタムテンプレートの削除ボタン */}
+                  {template.id.startsWith('custom-') && (
                     <button
-                      onClick={() => {
-                        if (columnCount > 2) {
-                          setColumnCount(columnCount - 1);
-                          // 列ラベル配列を更新
-                          setColumnLabels(prevLabels => prevLabels.slice(0, columnCount - 1));
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (confirm(`「${template.name}」テンプレートを削除してもよろしいですか？`)) {
+                          deleteCustomTemplate(template.id);
                         }
                       }}
-                      disabled={columnCount <= 2}
-                      className={`px-3 py-1 rounded-lg ${
-                        columnCount <= 2 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-red-500 text-white hover:bg-red-600'
-                      }`}
+                      className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      title="テンプレートを削除"
                     >
-                      -
+                      ×
                     </button>
-                    <span className="text-lg font-medium">{columnCount}</span>
-                    <button
-                      onClick={() => {
-                        setColumnCount(columnCount + 1);
-                        // 列ラベル配列を更新
-                        setColumnLabels(prevLabels => [...prevLabels, `列${columnCount + 1}`]);
-                      }}
-                      className="px-3 py-1 rounded-lg bg-green-500 text-white hover:bg-green-600"
-                    >
-                      +
-                    </button>
-                  </div>
+                  )}
                 </div>
-                
-                {/* 列ラベル編集 */}
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">列ラベル</label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                    {columnLabels.map((label, index) => (
-                      <div key={`label-${index}`} className="flex items-center">
-                        <input
-                          type="text"
-                          value={label}
-                          onChange={(e) => handleColumnLabelChange(index, e.target.value)}
-                          className="w-full px-3 py-1 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
-                          placeholder={`列${index + 1}`}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                
-                {/* キャラクター列割り当てヘルプ */}
-                <div className="text-sm text-gray-600 dark:text-gray-400 bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
-                  <p>キャラクターを右クリックして表示する列を選択できます。各キャラクターを適切な列に割り振って整理しましょう。</p>
-                </div>
-              </div>
-            )}
+              ))}
+            </div>
+          )}
+        </div>
+        
+        {/* 編集モード時のティア管理UI */}
+        {isEditMode && customTemplate && (
+          <div className="mb-6 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">ティアをカスタマイズ</h2>
+              
+              <button
+                onClick={saveCustomTemplate}
+                className="mt-2 sm:mt-0 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center"
+              >
+                <span className="mr-1">新規テンプレートとして保存</span>
+              </button>
+            </div>
             
-            {!isEditMode && (
+            {/* テンプレート名の編集 */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">テンプレート名</label>
+              <input
+                type="text"
+                value={customTemplate.name}
+                onChange={(e) => handleTemplateNameChange(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+                placeholder="テンプレート名"
+              />
+            </div>
+            
+            {/* 既存ティアの編集 */}
+            <div className="mb-4">
+              <h3 className="text-lg font-medium mb-2 text-gray-700 dark:text-gray-300">既存のティア</h3>
+              <div className="space-y-2">
+                {customTemplate.tiers.map((tier, index) => (
+                  <div key={tier.id} className="flex flex-wrap gap-2 items-center p-2 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                    <div className={`${tier.color} w-8 h-8 rounded-md flex-shrink-0`}></div>
+                    <input
+                      type="text"
+                      value={tier.name}
+                      onChange={(e) => handleTierNameChange(index, e.target.value)}
+                      className="flex-grow px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+                      placeholder="ティア名"
+                    />
+                    <select
+                      value={tier.color}
+                      onChange={(e) => handleTierColorChange(index, e.target.value)}
+                      className="px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+                    >
+                      {availableColors.map(color => (
+                        <option key={color.value} value={color.value}>{color.label}</option>
+                      ))}
+                    </select>
+                    
+                    {/* ティア順序の変更ボタン */}
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => moveTierUp(index)}
+                        disabled={index === 0}
+                        className={`p-1 rounded ${index === 0 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
+                        title="上に移動"
+                      >
+                        ↑
+                      </button>
+                      <button
+                        onClick={() => moveTierDown(index)}
+                        disabled={index === customTemplate.tiers.length - 1}
+                        className={`p-1 rounded ${index === customTemplate.tiers.length - 1 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
+                        title="下に移動"
+                      >
+                        ↓
+                      </button>
+                    </div>
+                    
+                    <button
+                      onClick={() => removeTier(index)}
+                      className="p-2 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 rounded-lg"
+                      title="削除"
+                    >
+                      <span className="text-sm">削除</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* 新規ティアの追加 */}
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+              <h3 className="text-lg font-medium mb-2 text-gray-700 dark:text-gray-300">新しいティアを追加</h3>
+              <div className="flex flex-wrap gap-2 items-center">
+                <div className={`${newTierColor} w-8 h-8 rounded-md flex-shrink-0`}></div>
+                <input
+                  type="text"
+                  value={newTierName}
+                  onChange={(e) => setNewTierName(e.target.value)}
+                  className="flex-grow px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+                  placeholder="新しいティア名"
+                />
+                <select
+                  value={newTierColor}
+                  onChange={(e) => setNewTierColor(e.target.value)}
+                  className="px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+                >
+                  {availableColors.map(color => (
+                    <option key={color.value} value={color.value}>{color.label}</option>
+                  ))}
+                </select>
+                <button
+                  onClick={addNewTier}
+                  disabled={!newTierName.trim()}
+                  className={`px-4 py-1 rounded-lg text-white ${
+                    newTierName.trim() ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'
+                  }`}
+                >
+                  追加
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* キャラクターTierリスト */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">{isEditMode && customTemplate ? customTemplate.name : selectedTemplate.name}</h2>
+          
+          {/* 列ラベルヘッダー */}
+          <div className="flex border-t-2 border-l-2 border-r-2 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700">
+            {/* 左側のスペース - Tier名ラベルと同じ幅 */}
+            <div className="w-16 sm:w-20 flex-shrink-0"></div>
+            
+            {/* 列ラベル */}
+            <div className="flex-1 flex">
+              {columnLabels.map((label, index) => (
+                <div 
+                  key={`header-column-${index}`} 
+                  className="flex-1 p-2 text-center font-medium text-gray-700 dark:text-gray-300 border-l border-gray-300 dark:border-gray-600 relative"
+                >
+                  {editingLabelIndex === index ? (
+                    <input
+                      ref={labelEditInputRef}
+                      type="text"
+                      value={editingLabelValue}
+                      onChange={(e) => setEditingLabelValue(e.target.value)}
+                      onKeyDown={handleLabelKeyDown}
+                      onBlur={saveLabelEdit}
+                      className="w-full px-2 py-1 text-center border border-blue-400 dark:border-blue-600 rounded bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+                      placeholder={`列${index + 1}`}
+                    />
+                  ) : (
+                    <div 
+                      onClick={() => startLabelEdit(index)}
+                      className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 rounded px-2 py-1 transition-colors"
+                    >
+                      {label}
+                      <span className="ml-1 opacity-50 text-xs">✎</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div className="border-t-2 border-l-2 border-r-2 border-gray-300 dark:border-gray-600 rounded-t-lg overflow-hidden">
+            {(isEditMode && customTemplate ? customTemplate.tiers : selectedTemplate.tiers).map((tier, index, array) => (
+              <div key={tier.id} className={`${index === array.length - 1 ? 'rounded-b-lg overflow-hidden' : ''}`}>
+                <TierRow 
+                  tier={tier}
+                  charactersInTier={getCharactersInTier(tier.id)}
+                  onDrop={handleDrop}
+                  isSplitView={true}
+                  columnCount={columnCount}
+                  columnLabels={columnLabels}
+                  characterColumnAssignments={characterColumnAssignments}
+                  changeCharacterColumn={changeCharacterColumn}
+                  onTierNameEdit={handleDirectTierNameEdit}
+                />
+                {index < array.length - 1 && <div className="border-b border-gray-300 dark:border-gray-600"></div>}
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* 未割り当てキャラクター */}
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">利用可能なキャラクター</h2>
+          <UnassignedCharactersArea />
+        </div>
+        
+        {/* 武器Tiermaker */}
+        <div className="mt-12 pt-12 border-t-2 border-amber-200 dark:border-amber-800">
+          <div className="mb-8 text-center">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">【武器Tierメーカー】</h1>
+            <p className="text-md text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              原神の武器をTierリストで整理しよう！武器をドラッグ＆ドロップして、性能や好みに応じて分類できます。
+            </p>
+          </div>
+          
+          {/* 武器テンプレート選択とカスタマイズモード切り替え */}
+          <div className="mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
+              <label className="block text-lg font-medium text-gray-700 dark:text-gray-200 mb-2 sm:mb-0">武器テンプレート選択</label>
+              <button
+                onClick={toggleWeaponEditMode}
+                className={`px-4 py-2 rounded-lg text-white ${
+                  isWeaponEditMode ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'
+                } transition-colors`}
+              >
+                {isWeaponEditMode ? '編集を適用' : 'ティアをカスタマイズ'}
+              </button>
+            </div>
+            
+            {!isWeaponEditMode && (
               <div className="flex flex-wrap gap-3">
-                {allTemplates.map(template => (
+                {[...weaponTemplates, ...customWeaponTemplates].map(template => (
                   <div key={template.id} className="relative group">
                     <button
-                      className={`px-4 py-2 rounded-lg ${selectedTemplate.id === template.id ? 'bg-amber-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'} hover:bg-amber-400 dark:hover:bg-amber-600 transition-colors`}
-                      onClick={() => setSelectedTemplate(template)}
+                      className={`px-4 py-2 rounded-lg ${selectedWeaponTemplate.id === template.id ? 'bg-amber-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'} hover:bg-amber-400 dark:hover:bg-amber-600 transition-colors`}
+                      onClick={() => setSelectedWeaponTemplate(template)}
                     >
                       {template.name}
                     </button>
                     
                     {/* カスタムテンプレートの削除ボタン */}
-                    {template.id.startsWith('custom-') && (
+                    {template.id.startsWith('weapon-custom-') && (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           if (confirm(`「${template.name}」テンプレートを削除してもよろしいですか？`)) {
-                            deleteCustomTemplate(template.id);
+                            deleteWeaponCustomTemplate(template.id);
                           }
                         }}
                         className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                         title="テンプレートを削除"
                       >
                         ×
-                      </button>
+                        </button>
                     )}
                   </div>
                 ))}
@@ -1729,14 +1950,14 @@ export default function TierMakerPage() {
             )}
           </div>
           
-          {/* 編集モード時のティア管理UI */}
-          {isEditMode && customTemplate && (
+          {/* 武器編集モード時のティア管理UI */}
+          {isWeaponEditMode && customWeaponTemplate && (
             <div className="mb-6 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">ティアをカスタマイズ</h2>
+                <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">武器ティアをカスタマイズ</h2>
                 
                 <button
-                  onClick={saveCustomTemplate}
+                  onClick={saveWeaponCustomTemplate}
                   className="mt-2 sm:mt-0 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center"
                 >
                   <span className="mr-1">新規テンプレートとして保存</span>
@@ -1748,8 +1969,8 @@ export default function TierMakerPage() {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">テンプレート名</label>
                 <input
                   type="text"
-                  value={customTemplate.name}
-                  onChange={(e) => handleTemplateNameChange(e.target.value)}
+                  value={customWeaponTemplate.name}
+                  onChange={(e) => handleWeaponTemplateNameChange(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
                   placeholder="テンプレート名"
                 />
@@ -1757,21 +1978,21 @@ export default function TierMakerPage() {
               
               {/* 既存ティアの編集 */}
               <div className="mb-4">
-                <h3 className="text-lg font-medium mb-2 text-gray-700 dark:text-gray-300">既存のティア</h3>
+                <h3 className="text-lg font-medium mb-2 text-gray-700 dark:text-gray-300">既存の武器ティア</h3>
                 <div className="space-y-2">
-                  {customTemplate.tiers.map((tier, index) => (
+                  {customWeaponTemplate.tiers.map((tier, index) => (
                     <div key={tier.id} className="flex flex-wrap gap-2 items-center p-2 bg-gray-50 dark:bg-gray-900 rounded-lg">
                       <div className={`${tier.color} w-8 h-8 rounded-md flex-shrink-0`}></div>
                       <input
                         type="text"
                         value={tier.name}
-                        onChange={(e) => handleTierNameChange(index, e.target.value)}
+                        onChange={(e) => handleWeaponTierNameChange(index, e.target.value)}
                         className="flex-grow px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
                         placeholder="ティア名"
                       />
                       <select
                         value={tier.color}
-                        onChange={(e) => handleTierColorChange(index, e.target.value)}
+                        onChange={(e) => handleWeaponTierColorChange(index, e.target.value)}
                         className="px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
                       >
                         {availableColors.map(color => (
@@ -1782,7 +2003,7 @@ export default function TierMakerPage() {
                       {/* ティア順序の変更ボタン */}
                       <div className="flex gap-1">
                         <button
-                          onClick={() => moveTierUp(index)}
+                          onClick={() => moveWeaponTierUp(index)}
                           disabled={index === 0}
                           className={`p-1 rounded ${index === 0 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
                           title="上に移動"
@@ -1790,9 +2011,9 @@ export default function TierMakerPage() {
                           ↑
                         </button>
                         <button
-                          onClick={() => moveTierDown(index)}
-                          disabled={index === customTemplate.tiers.length - 1}
-                          className={`p-1 rounded ${index === customTemplate.tiers.length - 1 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
+                          onClick={() => moveWeaponTierDown(index)}
+                          disabled={index === customWeaponTemplate.tiers.length - 1}
+                          className={`p-1 rounded ${index === customWeaponTemplate.tiers.length - 1 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
                           title="下に移動"
                         >
                           ↓
@@ -1800,7 +2021,7 @@ export default function TierMakerPage() {
                       </div>
                       
                       <button
-                        onClick={() => removeTier(index)}
+                        onClick={() => removeWeaponTier(index)}
                         className="p-2 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 rounded-lg"
                         title="削除"
                       >
@@ -1813,19 +2034,19 @@ export default function TierMakerPage() {
               
               {/* 新規ティアの追加 */}
               <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                <h3 className="text-lg font-medium mb-2 text-gray-700 dark:text-gray-300">新しいティアを追加</h3>
+                <h3 className="text-lg font-medium mb-2 text-gray-700 dark:text-gray-300">新しい武器ティアを追加</h3>
                 <div className="flex flex-wrap gap-2 items-center">
-                  <div className={`${newTierColor} w-8 h-8 rounded-md flex-shrink-0`}></div>
+                  <div className={`${newWeaponTierColor} w-8 h-8 rounded-md flex-shrink-0`}></div>
                   <input
                     type="text"
-                    value={newTierName}
-                    onChange={(e) => setNewTierName(e.target.value)}
+                    value={newWeaponTierName}
+                    onChange={(e) => setNewWeaponTierName(e.target.value)}
                     className="flex-grow px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
                     placeholder="新しいティア名"
                   />
                   <select
-                    value={newTierColor}
-                    onChange={(e) => setNewTierColor(e.target.value)}
+                    value={newWeaponTierColor}
+                    onChange={(e) => setNewWeaponTierColor(e.target.value)}
                     className="px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
                   >
                     {availableColors.map(color => (
@@ -1833,10 +2054,10 @@ export default function TierMakerPage() {
                     ))}
                   </select>
                   <button
-                    onClick={addNewTier}
-                    disabled={!newTierName.trim()}
+                    onClick={addNewWeaponTier}
+                    disabled={!newWeaponTierName.trim()}
                     className={`px-4 py-1 rounded-lg text-white ${
-                      newTierName.trim() ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'
+                      newWeaponTierName.trim() ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'
                     }`}
                   >
                     追加
@@ -1846,62 +2067,16 @@ export default function TierMakerPage() {
             </div>
           )}
           
-          {/* キャラクターTierリスト */}
+          {/* 武器Tierリスト */}
           <div className="mb-8">
-            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">{isEditMode && customTemplate ? customTemplate.name : selectedTemplate.name}</h2>
-            
-            {/* 分割表示時に列ラベルヘッダーを追加 */}
-            {isSplitView && (
-              <div className="flex border-t-2 border-l-2 border-r-2 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700">
-                {/* 左側のスペース - Tier名ラベルと同じ幅 */}
-                <div className="w-16 sm:w-20 flex-shrink-0"></div>
-                
-                {/* 列ラベル - 分割表示時のみ表示 */}
-                <div className="flex-1 flex">
-                  {columnLabels.map((label, index) => (
-                    <div 
-                      key={`header-column-${index}`} 
-                      className="flex-1 p-2 text-center font-medium text-gray-700 dark:text-gray-300 border-l border-gray-300 dark:border-gray-600 relative"
-                    >
-                      {editingLabelIndex === index ? (
-                        <input
-                          ref={labelEditInputRef}
-                          type="text"
-                          value={editingLabelValue}
-                          onChange={(e) => setEditingLabelValue(e.target.value)}
-                          onKeyDown={handleLabelKeyDown}
-                          onBlur={saveLabelEdit}
-                          className="w-full px-2 py-1 text-center border border-blue-400 dark:border-blue-600 rounded bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
-                          placeholder={`列${index + 1}`}
-                        />
-                      ) : (
-                        <div 
-                          onClick={() => startLabelEdit(index)}
-                          className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 rounded px-2 py-1 transition-colors"
-                        >
-                          {label}
-                          <span className="ml-1 opacity-50 text-xs">✎</span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            
+            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">{isWeaponEditMode && customWeaponTemplate ? customWeaponTemplate.name : selectedWeaponTemplate.name}</h2>
             <div className="border-t-2 border-l-2 border-r-2 border-gray-300 dark:border-gray-600 rounded-t-lg overflow-hidden">
-              {(isEditMode && customTemplate ? customTemplate.tiers : selectedTemplate.tiers).map((tier, index, array) => (
+              {(isWeaponEditMode && customWeaponTemplate ? customWeaponTemplate.tiers : selectedWeaponTemplate.tiers).map((tier, index, array) => (
                 <div key={tier.id} className={`${index === array.length - 1 ? 'rounded-b-lg overflow-hidden' : ''}`}>
-                  <TierRow 
+                  <WeaponTierRow 
                     tier={tier}
-                    charactersInTier={getCharactersInTier(tier.id)}
-                    onDrop={handleDrop}
-                    isSplitView={isSplitView}
-                    columnCount={columnCount}
-                    columnLabels={columnLabels}
-                    characterColumnAssignments={characterColumnAssignments}
-                    changeCharacterColumn={changeCharacterColumn}
-                    onTierNameEdit={handleDirectTierNameEdit}
+                    weaponsInTier={getWeaponsInTier(tier.id)}
+                    onDrop={handleWeaponDrop}
                   />
                   {index < array.length - 1 && <div className="border-b border-gray-300 dark:border-gray-600"></div>}
                 </div>
@@ -1909,206 +2084,10 @@ export default function TierMakerPage() {
             </div>
           </div>
           
-          {/* 未割り当てキャラクター */}
+          {/* 未割り当て武器 */}
           <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
-            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">利用可能なキャラクター</h2>
-            <UnassignedCharactersArea />
-          </div>
-          
-          {/* 武器Tiermaker */}
-          <div className="mt-12 pt-12 border-t-2 border-amber-200 dark:border-amber-800">
-            <div className="mb-8 text-center">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">【武器Tierメーカー】</h1>
-              <p className="text-md text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                原神の武器をTierリストで整理しよう！武器をドラッグ＆ドロップして、性能や好みに応じて分類できます。
-              </p>
-            </div>
-            
-            {/* 武器テンプレート選択とカスタマイズモード切り替え */}
-            <div className="mb-6">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
-                <label className="block text-lg font-medium text-gray-700 dark:text-gray-200 mb-2 sm:mb-0">武器テンプレート選択</label>
-                <button
-                  onClick={toggleWeaponEditMode}
-                  className={`px-4 py-2 rounded-lg text-white ${
-                    isWeaponEditMode ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'
-                  } transition-colors`}
-                >
-                  {isWeaponEditMode ? '編集を適用' : 'ティアをカスタマイズ'}
-                </button>
-              </div>
-              
-              {!isWeaponEditMode && (
-                <div className="flex flex-wrap gap-3">
-                  {[...weaponTemplates, ...customWeaponTemplates].map(template => (
-                    <div key={template.id} className="relative group">
-                      <button
-                        className={`px-4 py-2 rounded-lg ${selectedWeaponTemplate.id === template.id ? 'bg-amber-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'} hover:bg-amber-400 dark:hover:bg-amber-600 transition-colors`}
-                        onClick={() => setSelectedWeaponTemplate(template)}
-                      >
-                        {template.name}
-                      </button>
-                      
-                      {/* カスタムテンプレートの削除ボタン */}
-                      {template.id.startsWith('weapon-custom-') && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (confirm(`「${template.name}」テンプレートを削除してもよろしいですか？`)) {
-                              deleteWeaponCustomTemplate(template.id);
-                            }
-                          }}
-                          className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                          title="テンプレートを削除"
-                        >
-                          ×
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            
-            {/* 武器編集モード時のティア管理UI */}
-            {isWeaponEditMode && customWeaponTemplate && (
-              <div className="mb-6 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
-                  <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">武器ティアをカスタマイズ</h2>
-                  
-                  <button
-                    onClick={saveWeaponCustomTemplate}
-                    className="mt-2 sm:mt-0 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center"
-                  >
-                    <span className="mr-1">新規テンプレートとして保存</span>
-                  </button>
-                </div>
-                
-                {/* テンプレート名の編集 */}
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">テンプレート名</label>
-                  <input
-                    type="text"
-                    value={customWeaponTemplate.name}
-                    onChange={(e) => handleWeaponTemplateNameChange(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
-                    placeholder="テンプレート名"
-                  />
-                </div>
-                
-                {/* 既存ティアの編集 */}
-                <div className="mb-4">
-                  <h3 className="text-lg font-medium mb-2 text-gray-700 dark:text-gray-300">既存の武器ティア</h3>
-                  <div className="space-y-2">
-                    {customWeaponTemplate.tiers.map((tier, index) => (
-                      <div key={tier.id} className="flex flex-wrap gap-2 items-center p-2 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                        <div className={`${tier.color} w-8 h-8 rounded-md flex-shrink-0`}></div>
-                        <input
-                          type="text"
-                          value={tier.name}
-                          onChange={(e) => handleWeaponTierNameChange(index, e.target.value)}
-                          className="flex-grow px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
-                          placeholder="ティア名"
-                        />
-                        <select
-                          value={tier.color}
-                          onChange={(e) => handleWeaponTierColorChange(index, e.target.value)}
-                          className="px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
-                        >
-                          {availableColors.map(color => (
-                            <option key={color.value} value={color.value}>{color.label}</option>
-                          ))}
-                        </select>
-                        
-                        {/* ティア順序の変更ボタン */}
-                        <div className="flex gap-1">
-                          <button
-                            onClick={() => moveWeaponTierUp(index)}
-                            disabled={index === 0}
-                            className={`p-1 rounded ${index === 0 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
-                            title="上に移動"
-                          >
-                            ↑
-                          </button>
-                          <button
-                            onClick={() => moveWeaponTierDown(index)}
-                            disabled={index === customWeaponTemplate.tiers.length - 1}
-                            className={`p-1 rounded ${index === customWeaponTemplate.tiers.length - 1 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
-                            title="下に移動"
-                          >
-                            ↓
-                          </button>
-                        </div>
-                        
-                        <button
-                          onClick={() => removeWeaponTier(index)}
-                          className="p-2 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 rounded-lg"
-                          title="削除"
-                        >
-                          <span className="text-sm">削除</span>
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                
-                {/* 新規ティアの追加 */}
-                <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <h3 className="text-lg font-medium mb-2 text-gray-700 dark:text-gray-300">新しい武器ティアを追加</h3>
-                  <div className="flex flex-wrap gap-2 items-center">
-                    <div className={`${newWeaponTierColor} w-8 h-8 rounded-md flex-shrink-0`}></div>
-                    <input
-                      type="text"
-                      value={newWeaponTierName}
-                      onChange={(e) => setNewWeaponTierName(e.target.value)}
-                      className="flex-grow px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
-                      placeholder="新しいティア名"
-                    />
-                    <select
-                      value={newWeaponTierColor}
-                      onChange={(e) => setNewWeaponTierColor(e.target.value)}
-                      className="px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
-                    >
-                      {availableColors.map(color => (
-                        <option key={color.value} value={color.value}>{color.label}</option>
-                      ))}
-                    </select>
-                    <button
-                      onClick={addNewWeaponTier}
-                      disabled={!newWeaponTierName.trim()}
-                      className={`px-4 py-1 rounded-lg text-white ${
-                        newWeaponTierName.trim() ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'
-                      }`}
-                    >
-                      追加
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-            
-            {/* 武器Tierリスト */}
-            <div className="mb-8">
-              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">{isWeaponEditMode && customWeaponTemplate ? customWeaponTemplate.name : selectedWeaponTemplate.name}</h2>
-              <div className="border-t-2 border-l-2 border-r-2 border-gray-300 dark:border-gray-600 rounded-t-lg overflow-hidden">
-                {(isWeaponEditMode && customWeaponTemplate ? customWeaponTemplate.tiers : selectedWeaponTemplate.tiers).map((tier, index, array) => (
-                  <div key={tier.id} className={`${index === array.length - 1 ? 'rounded-b-lg overflow-hidden' : ''}`}>
-                    <WeaponTierRow 
-                      tier={tier}
-                      weaponsInTier={getWeaponsInTier(tier.id)}
-                      onDrop={handleWeaponDrop}
-                    />
-                    {index < array.length - 1 && <div className="border-b border-gray-300 dark:border-gray-600"></div>}
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            {/* 未割り当て武器 */}
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
-              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">利用可能な武器</h2>
-              <UnassignedWeaponsArea />
-            </div>
+            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">利用可能な武器</h2>
+            <UnassignedWeaponsArea />
           </div>
         </div>
       </div>
