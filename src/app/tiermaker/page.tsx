@@ -109,6 +109,17 @@ const templates: TierTemplate[] = [
       { id: 'maybe', name: '検討中', color: 'bg-yellow-500' },
       { id: 'skip', name: 'スキップ', color: 'bg-gray-500' },
     ]
+  },
+  {
+    id: 'should-pull',
+    name: '引くべきキャラティア',
+    tiers: [
+      { id: 'must-pull', name: '必引き', color: 'bg-red-600' },
+      { id: 'good-to-have', name: '推奨', color: 'bg-orange-500' },
+      { id: 'situational', name: '状況次第', color: 'bg-yellow-500' },
+      { id: 'optional', name: 'お好みで', color: 'bg-green-500' },
+      { id: 'skip', name: 'スキップ推奨', color: 'bg-gray-500' },
+    ]
   }
 ];
 
@@ -700,8 +711,8 @@ export default function TierMakerPage() {
   // searchQueryとelementFilterを削除
   
   // 列分割機能のための状態
-  const [columnCount, setColumnCount] = useState(1); // デフォルト値を1に変更
-  const [columnLabels, setColumnLabels] = useState(['列1']); // 初期値も1列分だけに変更
+  const [columnCount, setColumnCount] = useState(3); // デフォルト値を3に変更
+  const [columnLabels, setColumnLabels] = useState(['性能厨（メタ編成特化）', 'オフメタ編成も極めたい', 'キャラ愛厨']); // 3列分の名前を設定
   const [characterColumnAssignments, setCharacterColumnAssignments] = useState<Record<string, number>>(() => {
     // 初期状態では、キャラクターを最初の列に割り当てる
     const assignments: Record<string, number> = {};
