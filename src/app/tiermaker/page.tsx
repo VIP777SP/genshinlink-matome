@@ -512,12 +512,12 @@ const ColumnDropArea = ({
       ref={columnRef}
       key={`column-${columnIndex}`} 
       className={`flex-1 min-h-28 p-2 flex flex-wrap gap-2 
-        ${isColumnOver ? 'bg-amber-50 dark:bg-amber-900/20' : 'bg-white/50 dark:bg-gray-800/50'} 
-        transition-colors relative`}
+        ${isColumnOver ? 'bg-amber-50/70 dark:bg-amber-900/30 ring-2 ring-amber-400/40 dark:ring-amber-600/30' : 'bg-white/50 dark:bg-gray-800/50'} 
+        transition-all duration-200 relative rounded-sm`}
       data-column-index={columnIndex}
     >
       {/* 列のヘッダー表示（オプション） */}
-      <div className="absolute top-0 left-0 right-0 text-xs text-center text-gray-400 dark:text-gray-500 -mt-4">
+      <div className="absolute top-0 left-0 right-0 text-xs text-center text-gray-500 dark:text-gray-400 -mt-4 font-medium">
         {columnLabels[columnIndex] || `列 ${columnIndex + 1}`}
       </div>
       
@@ -532,8 +532,13 @@ const ColumnDropArea = ({
           />
         ))}
         {charactersInColumn.length === 0 && (
-          <div className="w-full h-24 flex items-center justify-center text-gray-400 dark:text-gray-500 italic">
-            ここにドラッグ
+          <div className="w-full h-24 flex items-center justify-center text-gray-400 dark:text-gray-500 italic transition-opacity duration-200">
+            <div className="px-4 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-sm flex items-center opacity-70 hover:opacity-100">
+              <svg className="w-5 h-5 mr-2 opacity-60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 4V20M4 12H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              ここにドラッグ
+            </div>
           </div>
         )}
       </div>
@@ -628,16 +633,19 @@ const TierRow = React.memo(({
   return (
     <div 
       ref={ref} 
-      className={`flex w-full items-stretch mb-0 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} transition-colors`}
+      className={`flex w-full items-stretch mb-0 border-2 rounded-sm ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} transition-all duration-200 hover:shadow-md ${isOver ? 'shadow-amber-200 dark:shadow-amber-900/30' : ''}`}
       style={{ minHeight: '120px' }}
     >
       {/* 左側のTier名ラベル */}
-      <div className="w-16 sm:w-20 flex-shrink-0 relative">
+      <div className="w-16 sm:w-20 flex-shrink-0 relative overflow-hidden">
         {/* 背景色 - tier.colorを直接使用 */}
         <div 
           className={`${tier.color} absolute inset-0 w-full h-full`}
           aria-hidden="true"
         ></div>
+        
+        {/* キラキラエフェクト - グラデーションで立体感を出す */}
+        <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-white/20 to-transparent"></div>
         
         {/* コンテンツ - 相対位置で背景の上に配置 */}
         <div className="relative z-10 flex items-center justify-center w-full h-full">
@@ -649,13 +657,13 @@ const TierRow = React.memo(({
               onChange={(e) => setEditingName(e.target.value)}
               onKeyDown={handleNameKeyDown}
               onBlur={saveNameEdit}
-              className="relative z-10 w-12 sm:w-16 text-center px-1 py-0.5 border border-blue-400 dark:border-blue-600 rounded bg-white/90 dark:bg-gray-800/90 text-gray-800 dark:text-gray-200"
+              className="relative z-10 w-12 sm:w-16 text-center px-1 py-0.5 border-2 border-blue-400 dark:border-blue-600 rounded bg-white/90 dark:bg-gray-800/90 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Tier名"
             />
           ) : (
             <div
               onClick={startNameEdit}
-              className="text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md cursor-pointer hover:bg-white/20 rounded px-2 py-1 transition-colors"
+              className="text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md cursor-pointer hover:bg-white/20 rounded px-2 py-1 transition-colors flex items-center"
             >
               {tier.name}
               <span className="ml-1 opacity-50 text-xs">✎</span>
@@ -665,7 +673,7 @@ const TierRow = React.memo(({
       </div>
       
       {/* キャラクタードロップエリア - 常に分割表示 */}
-      <div className="flex flex-row flex-1 min-h-[120px] border-box divide-x-2 divide-gray-300 dark:divide-gray-600">
+      <div className="flex flex-row flex-1 min-h-[120px] border-box divide-x-2 divide-gray-300/50 dark:divide-gray-600/50 bg-white/50 dark:bg-gray-800/50 transition-all duration-200">
         {Array.from({ length: columnCount }).map((_, index) => (
           <ColumnDropArea
             key={`column-${index}`}
@@ -1852,9 +1860,9 @@ export default function TierMakerPage() {
           <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">{isEditMode && customTemplate ? customTemplate.name : selectedTemplate.name}</h2>
           
           {/* 列ラベルヘッダー */}
-          <div className="flex border-t-2 border-l-2 border-r-2 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700">
+          <div className="flex border-t-2 border-l-2 border-r-2 border-gray-300 dark:border-gray-600 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-t-lg overflow-hidden shadow-sm">
             {/* 左側のスペース - Tier名ラベルと同じ幅 */}
-            <div className="w-16 sm:w-20 flex-shrink-0"></div>
+            <div className="w-16 sm:w-20 flex-shrink-0 bg-gradient-to-r from-gray-200/50 to-gray-100/50 dark:from-gray-700/50 dark:to-gray-800/50"></div>
             
             {/* 列ラベル */}
             <div className="flex-1 flex">
@@ -1871,13 +1879,13 @@ export default function TierMakerPage() {
                       onChange={(e) => setEditingLabelValue(e.target.value)}
                       onKeyDown={handleLabelKeyDown}
                       onBlur={saveLabelEdit}
-                      className="w-full px-2 py-1 text-center border border-blue-400 dark:border-blue-600 rounded bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+                      className="w-full px-2 py-1 text-center border-2 border-blue-400 dark:border-blue-600 rounded bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder={`列${index + 1}`}
                     />
                   ) : (
                     <div 
                       onClick={() => startLabelEdit(index)}
-                      className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 rounded px-2 py-1 transition-colors"
+                      className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 rounded px-2 py-1 transition-colors flex items-center justify-center"
                     >
                       {label}
                       <span className="ml-1 opacity-50 text-xs">✎</span>
@@ -1888,7 +1896,7 @@ export default function TierMakerPage() {
             </div>
           </div>
           
-          <div className="border-t-2 border-l-2 border-r-2 border-gray-300 dark:border-gray-600 rounded-t-lg overflow-hidden">
+          <div className="border-l-2 border-r-2 border-b-2 border-gray-300 dark:border-gray-600 rounded-b-lg overflow-hidden shadow-lg">
             {(isEditMode && customTemplate ? customTemplate.tiers : selectedTemplate.tiers).map((tier, index, array) => (
               <div 
                 key={tier.id} 
@@ -2092,7 +2100,7 @@ export default function TierMakerPage() {
           {/* 武器Tierリスト */}
           <div className="mb-8">
             <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">{isWeaponEditMode && customWeaponTemplate ? customWeaponTemplate.name : selectedWeaponTemplate.name}</h2>
-            <div className="border-t-2 border-l-2 border-r-2 border-gray-300 dark:border-gray-600 rounded-t-lg overflow-hidden">
+            <div className="border-2 border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden shadow-lg">
               {(isWeaponEditMode && customWeaponTemplate ? customWeaponTemplate.tiers : selectedWeaponTemplate.tiers).map((tier, index, array) => (
                 <div 
                   key={tier.id} 
