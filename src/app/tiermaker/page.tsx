@@ -516,11 +516,6 @@ const ColumnDropArea = ({
         transition-all duration-200 relative rounded-sm`}
       data-column-index={columnIndex}
     >
-      {/* 列のヘッダー表示（オプション） */}
-      <div className="absolute top-0 left-0 right-0 text-xs text-center text-gray-500 dark:text-gray-400 -mt-4 font-medium">
-        {columnLabels[columnIndex] || `列 ${columnIndex + 1}`}
-      </div>
-      
       {/* キャラクターカード */}
       <div className="w-full flex flex-wrap gap-2">
         {charactersInColumn.map(character => (
