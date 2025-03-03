@@ -181,7 +181,7 @@ interface TierRowProps {
     name: string;
     color: string;
   };
-  rowIndex: number; // 行インデックスを追加
+  rowIndex?: number; // オプショナルに変更
   charactersInTier: Character[];
   onDrop: (characterId: string, tierId: string) => void;
   // 分割表示のためのプロパティを追加
@@ -398,7 +398,7 @@ interface WeaponTierRowProps {
     name: string;
     color: string;
   };
-  rowIndex: number; // 行インデックスを追加
+  rowIndex?: number; // オプショナルに変更
   weaponsInTier: Weapon[];
   onDrop: (weaponId: string, tierId: string) => void;
 }
@@ -435,18 +435,15 @@ const WeaponTierRow = React.memo(({ tier, weaponsInTier, onDrop }: WeaponTierRow
       ref={ref} 
       className={`flex items-stretch mb-0 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} transition-colors`}
     >
-      {/* 左側のTier名ラベル - 行インデックスに基づく色を使用 */}
+      {/* 左側のTier名ラベル - 直接色を適用 */}
       <div 
         className={`${bgColorClass} w-16 sm:w-20 flex-shrink-0 flex items-center justify-center relative overflow-hidden`}
         style={{
           minHeight: '7rem',
           height: '100%',
-          backgroundImage: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(0,0,0,0.3) 100%)'
         }}
       >
-        {/* 表のヘッダーセルのような装飾 */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-white/30"></div>
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/20"></div>
+        {/* 上下の装飾バーを削除 */}
         
         {/* テキスト - py-6を削除して親要素に高さを任せる */}
         <span className="relative z-10 text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md">
@@ -664,40 +661,20 @@ const TierRow = React.memo(({
       ref={ref} 
       className={`flex items-stretch mb-0 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} transition-colors`}
     >
-      {/* 左側のTier名ラベル - 行インデックスに基づく色を使用 */}
+      {/* 左側のTier名ラベル - 直接色を適用 */}
       <div 
         className={`${bgColorClass} w-16 sm:w-20 flex-shrink-0 flex items-center justify-center relative overflow-hidden`}
         style={{
           minHeight: '7rem',
-          height: '100%', // 親要素の高さに合わせて伸縮
-          backgroundImage: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(0,0,0,0.3) 100%)'
+          height: '100%',
         }}
       >
-        {/* 表のヘッダーセルのような装飾 - 絶対位置で配置して確実に広がるように */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-white/30"></div>
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/20"></div>
+        {/* 上下の装飾バーを削除 */}
         
-        {/* テキスト - 編集可能に変更 */}
-        {isEditingName ? (
-          <input
-            ref={nameInputRef}
-            type="text"
-            value={editingName}
-            onChange={(e) => setEditingName(e.target.value)}
-            onKeyDown={handleNameKeyDown}
-            onBlur={saveNameEdit}
-            className="relative z-10 w-12 sm:w-16 text-center px-1 py-0.5 border border-blue-400 dark:border-blue-600 rounded bg-white/90 dark:bg-gray-800/90 text-gray-800 dark:text-gray-200"
-            placeholder="Tier名"
-          />
-        ) : (
-          <div
-            onClick={startNameEdit}
-            className="relative z-10 text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md cursor-pointer hover:bg-white/20 rounded px-2 py-1 transition-colors"
-          >
-            {tier.name}
-            <span className="ml-1 opacity-50 text-xs">✎</span>
-          </div>
-        )}
+        {/* テキスト - py-6を削除して親要素に高さを任せる */}
+        <span className="relative z-10 text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md">
+          {tier.name}
+        </span>
       </div>
       
       {/* キャラクタードロップエリア - 常に分割表示 */}
