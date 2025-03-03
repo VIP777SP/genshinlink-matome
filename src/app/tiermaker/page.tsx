@@ -622,31 +622,10 @@ const TierRow = React.memo(({
         )}
       </div>
       
-      {/* キャラクタードロップエリア - 分割表示かどうかで表示を切り替え */}
-      {true ? ( // isSplitView を true に固定
-        // 分割表示時の表示
-        <div className="flex flex-col flex-1 min-h-[120px]">
-          {Array.from({ length: columnCount }).map((_, index) => renderColumnDropArea(index))}
-        </div>
-      ) : (
-        // 通常表示時の表示（このブロックは実行されませんが、コードの一貫性のために残します）
-        // ... existing code ...
-        <div className="flex-1 min-h-28 p-2 flex flex-wrap gap-2 bg-white/50 dark:bg-gray-800/50 border-l border-gray-300 dark:border-gray-600">
-          {charactersInTier.map(character => (
-            <CharacterCard 
-              key={character.id} 
-              character={character} 
-              onDrop={onDrop} 
-              currentTier={tier.id} 
-            />
-          ))}
-          {charactersInTier.length === 0 && (
-            <div className="w-full h-24 flex items-center justify-center text-gray-400 dark:text-gray-500 italic">
-              ここにキャラクターをドラッグ
-            </div>
-          )}
-        </div>
-      )}
+      {/* キャラクタードロップエリア - 常に分割表示 */}
+      <div className="flex flex-row flex-1 min-h-[120px]">
+        {Array.from({ length: columnCount }).map((_, index) => renderColumnDropArea(index))}
+      </div>
     </div>
   );
 });
@@ -664,8 +643,8 @@ export default function TierMakerPage() {
   // searchQueryとelementFilterを削除
   
   // 列分割機能のための状態
-  const [columnCount, setColumnCount] = useState(2);
-  const [columnLabels, setColumnLabels] = useState(['列1', '列2']);
+  const [columnCount, setColumnCount] = useState(1); // デフォルト値を1に変更
+  const [columnLabels, setColumnLabels] = useState(['列1']); // 初期値も1列分だけに変更
   const [characterColumnAssignments, setCharacterColumnAssignments] = useState<Record<string, number>>(() => {
     // 初期状態では、キャラクターを最初の列に割り当てる
     const assignments: Record<string, number> = {};
@@ -1615,15 +1594,15 @@ export default function TierMakerPage() {
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => {
-                    if (columnCount > 2) {
+                    if (columnCount > 1) { // 最小値を1に変更
                       setColumnCount(columnCount - 1);
                       // 列ラベル配列を更新
                       setColumnLabels(prevLabels => prevLabels.slice(0, columnCount - 1));
                     }
                   }}
-                  disabled={columnCount <= 2}
+                  disabled={columnCount <= 1} // 最小値を1に変更
                   className={`px-3 py-1 rounded-lg ${
-                    columnCount <= 2 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-red-500 text-white hover:bg-red-600'
+                    columnCount <= 1 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-red-500 text-white hover:bg-red-600'
                   }`}
                   title="列数を減らす"
                 >
