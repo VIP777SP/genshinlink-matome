@@ -1667,7 +1667,7 @@ export default function TierMakerPage() {
                 >
                   -
                 </button>
-                <span className="text-lg font-medium">{columnCount}</span>
+                <span className="text-lg font-medium">列数 {columnCount}</span>
                 <button
                   onClick={() => {
                     setColumnCount(columnCount + 1);
@@ -1683,7 +1683,7 @@ export default function TierMakerPage() {
 
               <button
                 onClick={toggleEditMode}
-                className={`px-4 py-2 rounded-lg text-white ${
+                className={`hidden px-4 py-2 rounded-lg text-white ${
                   isEditMode ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'
                 } transition-colors`}
               >
@@ -1691,7 +1691,7 @@ export default function TierMakerPage() {
               </button>
             </div>
             {/* 操作ヒント */}
-            <div className="text-xs text-gray-600 dark:text-gray-400 mt-2">
+            <div className="hidden text-xs text-gray-600 dark:text-gray-400 mt-2">
               <p>ヒント: 列ラベルをクリックして編集できます。</p>
             </div>
           </div>
