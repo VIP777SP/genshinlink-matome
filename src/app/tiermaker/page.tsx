@@ -433,15 +433,13 @@ const WeaponTierRow = React.memo(({ tier, weaponsInTier, onDrop }: WeaponTierRow
   return (
     <div 
       ref={ref} 
-      className={`flex items-stretch mb-0 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} transition-colors`}
+      className={`flex w-full items-stretch mb-0 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} transition-colors`}
+      style={{ minHeight: '120px' }}
     >
-      {/* 左側のTier名ラベル - セル全体に色を適用 */}
+      {/* 左側のTier名ラベル - より確実に色を適用 */}
       <div 
-        className={`${bgColorClass} w-16 sm:w-20 flex-shrink-0 flex items-center justify-center relative`}
-        style={{
-          minHeight: '7rem',
-          height: '100%', // 親要素の高さに合わせる
-        }}
+        className={`${bgColorClass} w-16 sm:w-20 flex-shrink-0 flex items-center justify-center`}
+        style={{ height: 'auto', minHeight: '100%' }}
       >
         {/* テキスト */}
         <span className="relative z-10 text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md">
@@ -657,15 +655,13 @@ const TierRow = React.memo(({
   return (
     <div 
       ref={ref} 
-      className={`flex items-stretch mb-0 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} transition-colors`}
+      className={`flex w-full items-stretch mb-0 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} transition-colors`}
+      style={{ minHeight: '120px' }}
     >
-      {/* 左側のTier名ラベル - セル全体に色を適用 */}
+      {/* 左側のTier名ラベル - より確実に色を適用 */}
       <div 
-        className={`${bgColorClass} w-16 sm:w-20 flex-shrink-0 flex items-center justify-center relative`}
-        style={{
-          minHeight: '7rem',
-          height: '100%', // 親要素の高さに合わせる
-        }}
+        className={`${bgColorClass} w-16 sm:w-20 flex-shrink-0 flex items-center justify-center`}
+        style={{ height: 'auto', minHeight: '100%' }}
       >
         {/* テキスト - 編集可能に変更 */}
         {isEditingName ? (
@@ -1913,7 +1909,10 @@ export default function TierMakerPage() {
           
           <div className="border-t-2 border-l-2 border-r-2 border-gray-300 dark:border-gray-600 rounded-t-lg overflow-hidden">
             {(isEditMode && customTemplate ? customTemplate.tiers : selectedTemplate.tiers).map((tier, index, array) => (
-              <div key={tier.id} className={`${index === array.length - 1 ? 'rounded-b-lg overflow-hidden' : ''}`}>
+              <div 
+                key={tier.id} 
+                className={`flex flex-col ${index === array.length - 1 ? 'rounded-b-lg overflow-hidden' : ''}`}
+              >
                 <TierRow 
                   tier={tier}
                   charactersInTier={getCharactersInTier(tier.id)}
@@ -2114,7 +2113,10 @@ export default function TierMakerPage() {
             <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">{isWeaponEditMode && customWeaponTemplate ? customWeaponTemplate.name : selectedWeaponTemplate.name}</h2>
             <div className="border-t-2 border-l-2 border-r-2 border-gray-300 dark:border-gray-600 rounded-t-lg overflow-hidden">
               {(isWeaponEditMode && customWeaponTemplate ? customWeaponTemplate.tiers : selectedWeaponTemplate.tiers).map((tier, index, array) => (
-                <div key={tier.id} className={`${index === array.length - 1 ? 'rounded-b-lg overflow-hidden' : ''}`}>
+                <div 
+                  key={tier.id} 
+                  className={`flex flex-col ${index === array.length - 1 ? 'rounded-b-lg overflow-hidden' : ''}`}
+                >
                   <WeaponTierRow 
                     tier={tier}
                     weaponsInTier={getWeaponsInTier(tier.id)}
