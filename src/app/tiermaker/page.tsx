@@ -1875,9 +1875,6 @@ export default function TierMakerPage() {
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent dark:from-white/5 dark:to-transparent pointer-events-none"></div>
                   <div className="absolute -right-6 -top-6 w-12 h-12 bg-gradient-to-br from-blue-100/20 to-indigo-200/10 dark:from-blue-500/10 dark:to-indigo-600/5 rounded-full blur-md group-hover:scale-125 transition-transform duration-300"></div>
                   
-                  {/* 列番号インジケーター */}
-                  <div className="absolute top-0.5 right-1.5 text-[10px] text-gray-400/70 dark:text-gray-500/70 font-mono">{index + 1}</div>
-                  
                   {editingLabelIndex === index ? (
                     <input
                       ref={labelEditInputRef}
