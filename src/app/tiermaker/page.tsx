@@ -74,6 +74,8 @@ interface TierTemplate {
     name: string;
     color: string;
   }[];
+  defaultColumnCount?: number; // デフォルト列数
+  defaultColumnLabels?: string[]; // デフォルト列ラベル
 }
 
 // 利用可能なテンプレート
@@ -88,7 +90,9 @@ const templates: TierTemplate[] = [
       { id: 'c', name: 'C', color: 'bg-green-500' },
       { id: 'd', name: 'D', color: 'bg-blue-500' },
       { id: 'e', name: 'E', color: 'bg-purple-500' },
-    ]
+    ],
+    defaultColumnCount: 2,
+    defaultColumnLabels: ['アタッカー', 'サポーター']
   },
   {
     id: 'favorite',
@@ -98,7 +102,9 @@ const templates: TierTemplate[] = [
       { id: 'like', name: '好き', color: 'bg-purple-500' },
       { id: 'ok', name: '普通', color: 'bg-blue-500' },
       { id: 'dislike', name: '嫌い', color: 'bg-gray-500' },
-    ]
+    ],
+    defaultColumnCount: 2,
+    defaultColumnLabels: ['男キャラ', '女キャラ']
   },
   {
     id: 'wanted',
@@ -108,7 +114,9 @@ const templates: TierTemplate[] = [
       { id: 'want', name: '欲しい', color: 'bg-orange-500' },
       { id: 'maybe', name: '検討中', color: 'bg-yellow-500' },
       { id: 'skip', name: 'スキップ', color: 'bg-gray-500' },
-    ]
+    ],
+    defaultColumnCount: 2,
+    defaultColumnLabels: ['性能が魅力的', 'キャラが魅力的']
   },
   {
     id: 'should-pull',
@@ -119,7 +127,9 @@ const templates: TierTemplate[] = [
       { id: 'situational', name: '状況次第', color: 'bg-yellow-500' },
       { id: 'optional', name: 'お好みで', color: 'bg-green-500' },
       { id: 'skip', name: 'スキップ推奨', color: 'bg-gray-500' },
-    ]
+    ],
+    defaultColumnCount: 3,
+    defaultColumnLabels: ['性能厨（メタ編成特化）', 'オフメタ編成も極めたい', 'キャラ愛厨']
   }
 ];
 
@@ -135,7 +145,9 @@ const weaponTemplates: TierTemplate[] = [
       { id: 'weapon-c', name: 'C', color: 'bg-green-500' },
       { id: 'weapon-d', name: 'D', color: 'bg-blue-500' },
       { id: 'weapon-e', name: 'E', color: 'bg-purple-500' },
-    ]
+    ],
+    defaultColumnCount: 2,
+    defaultColumnLabels: ['DPS武器', 'サポート武器']
   },
   {
     id: 'weapon-favorite',
@@ -145,7 +157,9 @@ const weaponTemplates: TierTemplate[] = [
       { id: 'weapon-like', name: '好き', color: 'bg-purple-500' },
       { id: 'weapon-ok', name: '普通', color: 'bg-blue-500' },
       { id: 'weapon-dislike', name: '嫌い', color: 'bg-gray-500' },
-    ]
+    ],
+    defaultColumnCount: 2,
+    defaultColumnLabels: ['見た目重視', '性能重視']
   },
   {
     id: 'weapon-wanted',
@@ -155,7 +169,9 @@ const weaponTemplates: TierTemplate[] = [
       { id: 'weapon-want', name: '欲しい', color: 'bg-orange-500' },
       { id: 'weapon-maybe', name: '検討中', color: 'bg-yellow-500' },
       { id: 'weapon-skip', name: 'スキップ', color: 'bg-gray-500' },
-    ]
+    ],
+    defaultColumnCount: 2,
+    defaultColumnLabels: ['既存キャラ向け', '将来のキャラ向け']
   }
 ];
 
@@ -770,6 +786,16 @@ export default function TierMakerPage() {
       } catch (error) {
         console.error('武器用カスタムテンプレートの読み込みに失敗しました', error);
       }
+    }
+  }, []);
+  
+  // 初期ロード時にデフォルトテンプレートの列設定を適用
+  useEffect(() => {
+    // 初期値として選択されているテンプレートの設定を適用
+    const defaultTemplate = templates[0];
+    if (defaultTemplate.defaultColumnCount && defaultTemplate.defaultColumnLabels) {
+      setColumnCount(defaultTemplate.defaultColumnCount);
+      setColumnLabels(defaultTemplate.defaultColumnLabels);
     }
   }, []);
   
@@ -1604,6 +1630,43 @@ export default function TierMakerPage() {
     }
   };
 
+  // テンプレート選択時の処理
+  const handleTemplateSelect = (template: TierTemplate) => {
+    // テンプレートを選択
+    setSelectedTemplate(template);
+    
+    // テンプレートに設定されている場合、列数と列名を適用
+    if (template.defaultColumnCount) {
+      setColumnCount(template.defaultColumnCount);
+    }
+    
+    if (template.defaultColumnLabels && template.defaultColumnLabels.length > 0) {
+      setColumnLabels(template.defaultColumnLabels);
+      
+      // 列数とラベル数を合わせるための処理
+      const newCount = template.defaultColumnLabels.length;
+      if (newCount !== columnCount) {
+        setColumnCount(newCount);
+      }
+      
+      // キャラクターの列割り当てをリセット
+      const newAssignments: Record<string, number> = {};
+      tierMakerCharacters.forEach(char => {
+        // デフォルトでは最初の列に割り当て
+        newAssignments[char.id] = 0;
+      });
+      setCharacterColumnAssignments(newAssignments);
+    }
+  };
+
+  // 武器テンプレート選択時の処理
+  const handleWeaponTemplateSelect = (template: TierTemplate) => {
+    // テンプレートを選択
+    setSelectedWeaponTemplate(template);
+    
+    // 武器の場合は列設定は必要ないので何もしない
+  };
+
   return (
     <DndProvider backend={MultiBackend} options={HTML5toTouch}>
       <div style={{ position: 'relative', zIndex: 9999 }}>
@@ -1709,7 +1772,7 @@ export default function TierMakerPage() {
                 <div key={template.id} className="relative group">
                   <button
                     className={`px-4 py-2 rounded-lg ${selectedTemplate.id === template.id ? 'bg-amber-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'} hover:bg-amber-400 dark:hover:bg-amber-600 transition-colors`}
-                    onClick={() => setSelectedTemplate(template)}
+                    onClick={() => handleTemplateSelect(template)}
                   >
                     {template.name}
                   </button>
@@ -1962,7 +2025,7 @@ export default function TierMakerPage() {
                   <div key={template.id} className="relative group">
                     <button
                       className={`px-4 py-2 rounded-lg ${selectedWeaponTemplate.id === template.id ? 'bg-amber-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'} hover:bg-amber-400 dark:hover:bg-amber-600 transition-colors`}
-                      onClick={() => setSelectedWeaponTemplate(template)}
+                      onClick={() => handleWeaponTemplateSelect(template)}
                     >
                       {template.name}
                     </button>
