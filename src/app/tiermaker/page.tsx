@@ -1869,8 +1869,15 @@ export default function TierMakerPage() {
               {columnLabels.map((label, index) => (
                 <div 
                   key={`header-column-${index}`} 
-                  className="flex-1 p-2 text-center font-medium text-gray-700 dark:text-gray-300 border-l border-gray-300 dark:border-gray-600 relative"
+                  className="flex-1 p-2 text-center font-medium text-gray-700 dark:text-gray-300 border-l border-gray-300 dark:border-gray-600 relative overflow-hidden group"
                 >
+                  {/* 装飾的な背景エフェクト */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent dark:from-white/5 dark:to-transparent pointer-events-none"></div>
+                  <div className="absolute -right-6 -top-6 w-12 h-12 bg-gradient-to-br from-blue-100/20 to-indigo-200/10 dark:from-blue-500/10 dark:to-indigo-600/5 rounded-full blur-md group-hover:scale-125 transition-transform duration-300"></div>
+                  
+                  {/* 列番号インジケーター */}
+                  <div className="absolute top-0.5 right-1.5 text-[10px] text-gray-400/70 dark:text-gray-500/70 font-mono">{index + 1}</div>
+                  
                   {editingLabelIndex === index ? (
                     <input
                       ref={labelEditInputRef}
@@ -1879,16 +1886,19 @@ export default function TierMakerPage() {
                       onChange={(e) => setEditingLabelValue(e.target.value)}
                       onKeyDown={handleLabelKeyDown}
                       onBlur={saveLabelEdit}
-                      className="w-full px-2 py-1 text-center border-2 border-blue-400 dark:border-blue-600 rounded bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-2 py-1 text-center border-2 border-blue-400 dark:border-blue-600 rounded bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 relative z-10"
                       placeholder={`列${index + 1}`}
                     />
                   ) : (
                     <div 
                       onClick={() => startLabelEdit(index)}
-                      className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 rounded px-2 py-1 transition-colors flex items-center justify-center"
+                      className="cursor-pointer hover:bg-white/30 dark:hover:bg-gray-600/50 rounded px-2 py-1 transition-all duration-200 flex items-center justify-center relative z-10 group-hover:scale-105 group-hover:shadow-sm"
                     >
-                      {label}
-                      <span className="ml-1 opacity-50 text-xs">✎</span>
+                      <span className="relative z-10">{label}</span>
+                      <span className="ml-1 opacity-50 text-xs group-hover:opacity-80 transition-opacity">✎</span>
+                      
+                      {/* 下線アクセント（ホバー時に表示） */}
+                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-amber-300/0 via-amber-300/70 to-amber-300/0 dark:from-amber-500/0 dark:via-amber-500/70 dark:to-amber-500/0 group-hover:w-full transition-all duration-300"></div>
                     </div>
                   )}
                 </div>
