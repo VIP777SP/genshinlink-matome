@@ -601,6 +601,11 @@ export default function TierMakerPage() {
     return assignments;
   });
   
+  // インプレース編集のための状態
+  const [editingLabelIndex, setEditingLabelIndex] = useState<number | null>(null);
+  const [editingLabelValue, setEditingLabelValue] = useState('');
+  const labelEditInputRef = useRef<HTMLInputElement>(null);
+  
   // 武器Tiermaker用の状態
   const [selectedWeaponTemplate, setSelectedWeaponTemplate] = useState<TierTemplate>(weaponTemplates[0]);
   const [weaponTiers, setWeaponTiers] = useState<Record<string, string[]>>({
@@ -1394,6 +1399,50 @@ export default function TierMakerPage() {
     }
   }, [isSplitView, columnCount, columnLabels, characterColumnAssignments, changeCharacterColumn]);
 
+  // 列ラベル編集のハンドラ関数
+  const startLabelEdit = (index: number) => {
+    setEditingLabelIndex(index);
+    setEditingLabelValue(columnLabels[index]);
+    // 次のレンダリングでフォーカスさせるためのタイムアウト
+    setTimeout(() => {
+      if (labelEditInputRef.current) {
+        labelEditInputRef.current.focus();
+        labelEditInputRef.current.select();
+      }
+    }, 10);
+  };
+
+  const saveLabelEdit = () => {
+    if (editingLabelIndex !== null) {
+      handleColumnLabelChange(editingLabelIndex, editingLabelValue);
+      setEditingLabelIndex(null);
+    }
+  };
+
+  const handleLabelKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      saveLabelEdit();
+    } else if (e.key === 'Escape') {
+      setEditingLabelIndex(null);
+    }
+  };
+
+  // 編集中のラベル外をクリックしたときのイベントリスナー
+  useEffect(() => {
+    if (editingLabelIndex !== null) {
+      const handleClickOutside = (e: MouseEvent) => {
+        if (labelEditInputRef.current && !labelEditInputRef.current.contains(e.target as Node)) {
+          saveLabelEdit();
+        }
+      };
+
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [editingLabelIndex, editingLabelValue]);
+
   return (
     <DndProvider backend={MultiBackend} options={HTML5toTouch}>
       <div style={{ position: 'relative', zIndex: 9999 }}>
@@ -1691,9 +1740,28 @@ export default function TierMakerPage() {
                   {columnLabels.map((label, index) => (
                     <div 
                       key={`header-column-${index}`} 
-                      className="flex-1 p-2 text-center font-medium text-gray-700 dark:text-gray-300 border-l border-gray-300 dark:border-gray-600"
+                      className="flex-1 p-2 text-center font-medium text-gray-700 dark:text-gray-300 border-l border-gray-300 dark:border-gray-600 relative"
                     >
-                      {label}
+                      {editingLabelIndex === index ? (
+                        <input
+                          ref={labelEditInputRef}
+                          type="text"
+                          value={editingLabelValue}
+                          onChange={(e) => setEditingLabelValue(e.target.value)}
+                          onKeyDown={handleLabelKeyDown}
+                          onBlur={saveLabelEdit}
+                          className="w-full px-2 py-1 text-center border border-blue-400 dark:border-blue-600 rounded bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+                          placeholder={`列${index + 1}`}
+                        />
+                      ) : (
+                        <div 
+                          onClick={() => startLabelEdit(index)}
+                          className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 rounded px-2 py-1 transition-colors"
+                        >
+                          {label}
+                          <span className="ml-1 opacity-50 text-xs">✎</span>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
