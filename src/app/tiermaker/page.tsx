@@ -409,15 +409,6 @@ const WeaponTierRow = React.memo(({ tier, weaponsInTier, onDrop }: WeaponTierRow
   // ref と drop を接続
   drop(ref);
 
-  // インデックスをIDから取得
-  const tierIndex = tier.id.replace('weapon-', '').charAt(0).toLowerCase().charCodeAt(0) - 'a'.charCodeAt(0);
-  
-  // 有効なインデックスの場合はそれを使い、そうでない場合はフォールバックとしてランダムな色を使用
-  const colorIndex = tierIndex >= 0 && tierIndex < tierColors.length ? tierIndex : Math.floor(Math.random() * tierColors.length);
-  
-  // インデックスに基づいて色を選択
-  const bgColorClass = tierColors[colorIndex];
-
   return (
     <div 
       ref={ref} 
@@ -634,11 +625,6 @@ const TierRow = React.memo(({
   
   console.log(`TierRow ${tier.id} rendering with ${charactersInTier.length} characters`);
   
-  // インデックスをIDから取得 - 削除
-  // const tierIndex = tier.id.charAt(0).toLowerCase().charCodeAt(0) - 'a'.charCodeAt(0);
-  // const colorIndex = tierIndex >= 0 && tierIndex < tierColors.length ? tierIndex : Math.floor(Math.random() * tierColors.length);
-  // const bgColorClass = tierColors[colorIndex];
-
   return (
     <div 
       ref={ref} 
