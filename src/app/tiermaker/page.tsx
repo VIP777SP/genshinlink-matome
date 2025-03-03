@@ -541,35 +541,56 @@ const TierRow = React.memo(({
       characterColumnAssignments[char.id] === columnIndex
     );
     
-    // ドロップ時に列情報も一緒に渡す関数
-    const handleDropWithColumn = (characterId: string, tierId: string) => {
-      // 通常のドロップ処理を呼び出す
-      onDrop(characterId, tierId);
-      
-      // 列の割り当ても自動的に行う
-      if (changeCharacterColumn) {
-        changeCharacterColumn(characterId, columnIndex);
-      }
-    };
+    // 各列固有のドロップハンドラを定義
+    const columnRef = useRef<HTMLDivElement>(null);
+    const [{ isColumnOver }, dropColumn] = useDrop<DragItem, any, { isColumnOver: boolean }>({
+      accept: ItemTypes.CHARACTER,
+      drop: (item) => {
+        console.log(`Dropped character ${item.id} to tier ${tier.id}, column ${columnIndex}`);
+        onDrop(item.id, tier.id);
+        
+        // 列の割り当ても自動的に行う
+        if (changeCharacterColumn) {
+          changeCharacterColumn(item.id, columnIndex);
+        }
+        
+        return { id: tier.id, column: columnIndex };
+      },
+      collect: (monitor) => ({
+        isColumnOver: !!monitor.isOver(),
+      }),
+    });
+    
+    // refをマージ
+    dropColumn(columnRef);
     
     return (
       <div 
+        ref={columnRef}
         key={`column-${columnIndex}`} 
-        className="flex-1 min-h-28 p-2 flex flex-wrap gap-2 bg-white/50 dark:bg-gray-800/50 border-l border-gray-300 dark:border-gray-600 relative"
+        className={`flex-1 min-h-28 p-2 flex flex-wrap gap-2 
+          ${isColumnOver ? 'bg-amber-50 dark:bg-amber-900/20' : 'bg-white/50 dark:bg-gray-800/50'} 
+          transition-colors relative`}
+        data-column-index={columnIndex}
       >
+        {/* 列のヘッダー表示（オプション） */}
+        <div className="absolute top-0 left-0 right-0 text-xs text-center text-gray-400 dark:text-gray-500 -mt-4">
+          {columnLabels[columnIndex] || `列 ${columnIndex + 1}`}
+        </div>
+        
         {/* キャラクターカード */}
         <div className="w-full flex flex-wrap gap-2">
           {charactersInColumn.map(character => (
             <CharacterCard 
               key={character.id} 
               character={character} 
-              onDrop={handleDropWithColumn} // 列情報付きのドロップハンドラを使用
+              onDrop={onDrop} // 通常のドロップハンドラに戻す
               currentTier={tier.id} 
             />
           ))}
           {charactersInColumn.length === 0 && (
             <div className="w-full h-24 flex items-center justify-center text-gray-400 dark:text-gray-500 italic">
-              ここにキャラクターをドラッグ
+              ここにドラッグ
             </div>
           )}
         </div>
@@ -615,7 +636,7 @@ const TierRow = React.memo(({
       </div>
       
       {/* キャラクタードロップエリア - 常に分割表示 */}
-      <div className="flex flex-row flex-1 min-h-[120px]">
+      <div className="flex flex-row flex-1 min-h-[120px] border-box divide-x-2 divide-gray-300 dark:divide-gray-600">
         {Array.from({ length: columnCount }).map((_, index) => renderColumnDropArea(index))}
       </div>
     </div>
