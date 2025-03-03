@@ -18,6 +18,18 @@ import { TwitterShareButton, TwitterIcon } from 'react-share';
 import { characters as sourceCharacters } from '@/utils/characters';
 import { weapons as sourceWeapons } from '@/data/weapons';
 
+// Tier行の背景色の配列
+const tierColors = [
+  'bg-red-600',      // S
+  'bg-orange-500',   // A
+  'bg-yellow-500',   // B
+  'bg-green-500',    // C
+  'bg-blue-500',     // D
+  'bg-indigo-500',   // E
+  'bg-purple-500',   // F
+  'bg-pink-500',     // その他
+];
+
 // react-dnd用のマルチバックエンド設定
 const HTML5toTouch = {
   backends: [
@@ -169,6 +181,7 @@ interface TierRowProps {
     name: string;
     color: string;
   };
+  rowIndex: number; // 行インデックスを追加
   charactersInTier: Character[];
   onDrop: (characterId: string, tierId: string) => void;
   // 分割表示のためのプロパティを追加
@@ -385,6 +398,7 @@ interface WeaponTierRowProps {
     name: string;
     color: string;
   };
+  rowIndex: number; // 行インデックスを追加
   weaponsInTier: Weapon[];
   onDrop: (weaponId: string, tierId: string) => void;
 }
@@ -407,17 +421,26 @@ const WeaponTierRow = React.memo(({ tier, weaponsInTier, onDrop }: WeaponTierRow
   // ref と drop を接続
   drop(ref);
 
+  // インデックスをIDから取得
+  const tierIndex = tier.id.replace('weapon-', '').charAt(0).toLowerCase().charCodeAt(0) - 'a'.charCodeAt(0);
+  
+  // 有効なインデックスの場合はそれを使い、そうでない場合はフォールバックとしてランダムな色を使用
+  const colorIndex = tierIndex >= 0 && tierIndex < tierColors.length ? tierIndex : Math.floor(Math.random() * tierColors.length);
+  
+  // インデックスに基づいて色を選択
+  const bgColorClass = tierColors[colorIndex];
+
   return (
     <div 
       ref={ref} 
       className={`flex items-stretch mb-0 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} transition-colors`}
     >
-      {/* 左側のTier名ラベル - スタイリッシュなデザインに変更 */}
+      {/* 左側のTier名ラベル - 行インデックスに基づく色を使用 */}
       <div 
-        className={`${tier.color} w-16 sm:w-20 flex-shrink-0 flex items-center justify-center relative overflow-hidden`}
+        className={`${bgColorClass} w-16 sm:w-20 flex-shrink-0 flex items-center justify-center relative overflow-hidden`}
         style={{
           minHeight: '7rem',
-          height: '100%', // 親要素の高さに合わせて伸縮
+          height: '100%',
           backgroundImage: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(0,0,0,0.3) 100%)'
         }}
       >
@@ -625,14 +648,25 @@ const TierRow = React.memo(({
   
   console.log(`TierRow ${tier.id} rendering with ${charactersInTier.length} characters`);
   
+  // インデックスをIDから取得
+  // s -> 0, a -> 1, b -> 2, ...
+  // tier.idの最初の文字を取得して、小文字に変換
+  const tierIndex = tier.id.charAt(0).toLowerCase().charCodeAt(0) - 'a'.charCodeAt(0);
+  
+  // 有効なインデックスの場合はそれを使い、そうでない場合はフォールバックとしてランダムな色を使用
+  const colorIndex = tierIndex >= 0 && tierIndex < tierColors.length ? tierIndex : Math.floor(Math.random() * tierColors.length);
+  
+  // インデックスに基づいて色を選択
+  const bgColorClass = tierColors[colorIndex];
+
   return (
     <div 
       ref={ref} 
       className={`flex items-stretch mb-0 border-2 ${isOver ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-700'} transition-colors`}
     >
-      {/* 左側のTier名ラベル - 実装改善 */}
+      {/* 左側のTier名ラベル - 行インデックスに基づく色を使用 */}
       <div 
-        className={`${tier.color} w-16 sm:w-20 flex-shrink-0 flex items-center justify-center relative overflow-hidden`}
+        className={`${bgColorClass} w-16 sm:w-20 flex-shrink-0 flex items-center justify-center relative overflow-hidden`}
         style={{
           minHeight: '7rem',
           height: '100%', // 親要素の高さに合わせて伸縮
