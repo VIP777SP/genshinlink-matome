@@ -1542,7 +1542,7 @@ export default function TierMakerPage() {
 
   // キャラクターの複製処理関数
   const duplicateCharacter = useCallback((character: Character, newId: string, targetTier: string) => {
-    console.log(`キャラクター ${character.name} を複製します。新ID: ${newId}`);
+    console.log(`キャラクター ${character.name} を複製します。新ID: ${newId}, ターゲットティア: ${targetTier}`);
     
     // 複製したキャラクターオブジェクトを作成
     const duplicatedCharacter: Character = {
@@ -1554,43 +1554,24 @@ export default function TierMakerPage() {
     setCharacterTiers(prev => {
       const newState = { ...prev };
       
-      // 未割り当て以外のティアに複製する場合
-      if (targetTier !== 'unassigned') {
-        // 指定されたティアが存在しない場合は作成
-        if (!newState[targetTier]) {
-          newState[targetTier] = [];
-        }
-        
-        // 元のキャラクターの位置を探す
-        const originalIndex = newState[targetTier].findIndex(id => id === character.id);
-        
-        if (originalIndex !== -1) {
-          // 元のキャラクターの隣に配置
-          const newCharacters = [...newState[targetTier]];
-          newCharacters.splice(originalIndex + 1, 0, newId);
-          newState[targetTier] = newCharacters;
-        } else {
-          // 元のキャラクターが見つからない場合は末尾に追加
-          newState[targetTier] = [...newState[targetTier], newId];
-        }
+      // 指定されたティアが存在しない場合は作成
+      if (!newState[targetTier]) {
+        newState[targetTier] = [];
+      }
+      
+      // 元のキャラクターの位置を探す
+      const originalIndex = newState[targetTier].findIndex(id => id === character.id);
+      
+      if (originalIndex !== -1) {
+        // 元のキャラクターの隣に配置
+        const newCharacters = [...newState[targetTier]];
+        newCharacters.splice(originalIndex + 1, 0, newId);
+        newState[targetTier] = newCharacters;
+        console.log(`${targetTier}内の元キャラクターの位置: ${originalIndex}, 新キャラクターの位置: ${originalIndex + 1}`);
       } else {
-        // 未割り当てエリアの場合は、そこに追加
-        if (!newState['unassigned']) {
-          newState['unassigned'] = [];
-        }
-        
-        // 元のキャラクターの位置を探す
-        const originalIndex = newState['unassigned'].findIndex(id => id === character.id);
-        
-        if (originalIndex !== -1) {
-          // 元のキャラクターの隣に配置
-          const newCharacters = [...newState['unassigned']];
-          newCharacters.splice(originalIndex + 1, 0, newId);
-          newState['unassigned'] = newCharacters;
-        } else {
-          // 元のキャラクターが見つからない場合は末尾に追加
-          newState['unassigned'] = [...newState['unassigned'], newId];
-        }
+        // 元のキャラクターが見つからない場合は末尾に追加
+        newState[targetTier] = [...newState[targetTier], newId];
+        console.log(`${targetTier}内に元キャラクターが見つからないため末尾に追加`);
       }
       
       return newState;
