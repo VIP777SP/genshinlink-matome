@@ -235,6 +235,7 @@ declare global {
     _tiermakerFunctions?: {
       duplicateCharacter: (character: Character, newId: string, currentTier: string) => Character;
     };
+    _tiermakerCharacters?: Character[];
   }
 }
 
@@ -269,74 +270,97 @@ const CharacterCard = ({
   // 複製処理を実行する関数
   const handleDuplicate = (e: React.MouseEvent) => {
     e.stopPropagation();
-    console.log(`[DEBUG] 複製ボタンがクリックされました - キャラクター:${character.name}, ID:${character.id}, 現在のティア:${currentTier}`);
+    
+    // 複製ボタンがクリックされたこと
+    console.log(`[DEBUG] 複製ボタンがクリックされました - キャラクター: ${character.name} (${character.id}) ティア: ${currentTier}`);
     
     try {
-      // 一意なIDを生成（元のID + _copy_ + タイムスタンプ）
-      const timestamp = Date.now();
-      const newId = `${character.id}_copy_${timestamp}`;
-      console.log(`[DEBUG] 新ID生成: ${newId}`);
-      
-      // 複製したキャラクターオブジェクトを作成
-      const duplicatedCharacter: Character = {
-        ...character,
-        id: newId,
-      };
-      
-      // 直接状態を更新する
-      if (setCharacterTiers && setCharacterColumnAssignments && tierMakerCharacters) {
-        // 1. 複製したキャラクターを指定のティアに追加
-        setCharacterTiers(prev => {
-          const newState = { ...prev };
-          
-          // 指定されたティアが存在しない場合は作成
-          if (!newState[currentTier]) {
-            newState[currentTier] = [];
-          }
-          
-          // 元のキャラクターの位置を探す
-          console.log(`[DEBUG] 元キャラクターの位置検索 - ティア: ${currentTier}`);
-          const originalIndex = newState[currentTier].findIndex(id => id === character.id);
-          console.log(`[DEBUG] 元キャラクター(${character.id})の正確な位置: ${originalIndex}`);
-          
-          if (originalIndex !== -1) {
-            // 元のキャラクターの隣に配置
-            const newCharacters = [...newState[currentTier]];
-            newCharacters.splice(originalIndex + 1, 0, newId);
-            console.log(`${currentTier}内の元キャラクターの位置: ${originalIndex}, 新キャラクターの位置: ${originalIndex + 1}`);
-            newState[currentTier] = newCharacters;
-            console.log(`[DEBUG] 更新後の${currentTier}の内容:`, newState[currentTier]);
-          } else {
-            // 元のキャラクターが見つからない場合は末尾に追加
-            console.log(`[WARNING] 元キャラクターが${currentTier}に見つかりませんでした。末尾に追加します。`);
-            newState[currentTier] = [...newState[currentTier], newId];
-          }
-          
-          return newState;
-        });
-        
-        // 2. 列割り当ても設定（元のキャラクターと同じ列に配置）
-        setCharacterColumnAssignments(prev => {
-          const newAssignments = { ...prev };
-          // 元のキャラクターの列番号を取得
-          const columnIndex = prev[character.id] || 0;
-          console.log(`[DEBUG] 列割り当て - 新キャラクター: ${newId}, 割り当て列: ${columnIndex}`);
-          // 複製キャラクターにも同じ列番号を割り当て
-          newAssignments[newId] = columnIndex;
-          return newAssignments;
-        });
-        
-        // 3. tierMakerCharactersも更新
-        tierMakerCharacters.push(duplicatedCharacter);
-        console.log(`[DEBUG] tierMakerCharactersに追加完了 - 現在の長さ: ${tierMakerCharacters.length}`);
-        
-        // 成功メッセージ
-        console.log(`キャラクター「${character.name}」を複製しました。元のキャラクターの隣に配置されています。`);
-      } else {
-        console.error('[ERROR] 状態更新関数が未定義です。CharacterCardにpropsが正しく渡されているか確認してください。');
+      if (!characterTiers || !setCharacterTiers || !tierMakerCharacters) {
+        // グローバル関数のフォールバックを使用
+        if (window._tiermakerFunctions?.duplicateCharacter) {
+          const newCharacter = window._tiermakerFunctions.duplicateCharacter(character, `${character.id}_copy_${Date.now()}`, currentTier);
+          console.log(`[DEBUG] グローバル関数を使用してキャラクターを複製: ${newCharacter.id}`);
+        } else if (window.tiermakerDuplicateCharacter) {
+          window.tiermakerDuplicateCharacter(character, `${character.id}_copy_${Date.now()}`, currentTier);
+          console.log(`[DEBUG] レガシーグローバル関数を使用してキャラクターを複製`);
+        } else {
+          console.error('複製関数が見つかりません');
+        }
+        return;
       }
+
+      // 新しいIDを生成
+      const newId = `${character.id}_copy_${Date.now()}`;
+      console.log(`[DEBUG] 新ID生成: ${newId}`);
+
+      // 新しいキャラクターを作成
+      const newCharacter: Character = {
+        ...character,
+        id: newId
+      };
+
+      // 現在のティアでの位置を検索
+      console.log(`[DEBUG] 元キャラクターの位置検索 - ティア: ${currentTier}`);
+      const currentTierCharacters = [...(characterTiers[currentTier] || [])];
+      const originalIndex = currentTierCharacters.indexOf(character.id);
+      console.log(`[DEBUG] 元キャラクター(${character.id})の正確な位置: ${originalIndex}`);
+
+      // 新しいキャラクターを追加（元のキャラクターの隣に）
+      if (originalIndex !== -1) {
+        // 元のキャラクターが見つかった場合、その隣に新キャラを挿入
+        currentTierCharacters.splice(originalIndex + 1, 0, newId);
+        
+        // 確実に表示順序を維持するために、新しい配列を作成
+        const updatedTier = [...currentTierCharacters];
+        
+        console.log(`${currentTier}内の元キャラクターの位置: ${originalIndex}, 新キャラクターの位置: ${originalIndex + 1}`);
+        console.log(`[DEBUG] 更新後の${currentTier}の内容:`, updatedTier);
+        
+        // 状態を更新
+        setCharacterTiers(prev => ({
+          ...prev,
+          [currentTier]: updatedTier
+        }));
+      } else {
+        // 元のキャラクターが見つからない場合（起きるべきではない）
+        console.error(`元のキャラクターが${currentTier}内で見つかりませんでした。末尾に追加します。`);
+        setCharacterTiers(prev => ({
+          ...prev,
+          [currentTier]: [...(prev[currentTier] || []), newId]
+        }));
+      }
+
+      // 新しいキャラクターをキャラクターリストに追加
+      if (setCharacterColumnAssignments && characterColumnAssignments) {
+        // 元のキャラクターと同じ列に割り当て
+        const column = characterColumnAssignments[character.id] || 0;
+        console.log(`[DEBUG] 列割り当て - 新キャラクター: ${newId}, 割り当て列: ${column}`);
+        setCharacterColumnAssignments(prev => ({
+          ...prev,
+          [newId]: column
+        }));
+      }
+
+      // tierMakerCharactersに複製したキャラクターを追加
+      const allCharacters = [...tierMakerCharacters, newCharacter];
+      
+      // ここでStateを直接変更せずに、親コンポーネントの状態更新関数を呼び出す
+      // この場合、TierMakerPageコンポーネントでcharactersステートを更新する必要があります
+      
+      // グローバルに登録されたキャラクター一覧を更新
+      window._tiermakerCharacters = allCharacters;
+      
+      // 強制的に再レンダリングをトリガーするため、わずかなタイムアウトを設定
+      setTimeout(() => {
+        console.log('[DEBUG] 複製完了 - UIを更新しています');
+        // 状態を更新して再レンダリングをトリガー
+        if (setCharacterTiers) {
+          setCharacterTiers(prev => ({...prev}));
+        }
+      }, 50);
+
     } catch (error) {
-      console.error('[ERROR] 複製処理中にエラーが発生しました:', error);
+      console.error('キャラクター複製中にエラーが発生しました:', error);
     }
   };
   
@@ -1577,7 +1601,24 @@ export default function TierMakerPage() {
     // ref と drop を接続
     drop(ref);
 
-    const unassignedCharacters = getUnassignedCharacters();
+    // キャラクターリストを取得し、characterTiers['unassigned']の順序どおりに表示する
+    const unassignedCharacters = React.useMemo(() => {
+      console.log('[DEBUG] UnassignedCharactersArea - レンダリング開始');
+      // IDの順序を取得
+      const characterIds = characterTiers['unassigned'] || [];
+      
+      // 順序に従ってキャラクターオブジェクトを取得
+      const orderedCharacters = characterIds.map(id => {
+        return tierMakerCharacters.find(char => char.id === id);
+      }).filter((char): char is Character => char !== undefined);
+      
+      console.log(`[DEBUG] UnassignedCharactersArea - 表示キャラクター数: ${orderedCharacters.length}`);
+      if (orderedCharacters.length > 0) {
+        console.log(`[DEBUG] 最初の5キャラクター: ${orderedCharacters.slice(0, 5).map(c => c.id).join(', ')}`);
+      }
+      
+      return orderedCharacters;
+    }, [characterTiers]);
     
     return (
       <div 
@@ -1759,6 +1800,9 @@ export default function TierMakerPage() {
         duplicateCharacter
       };
       
+      // キャラクターリストも登録
+      window._tiermakerCharacters = tierMakerCharacters;
+      
       window.tiermakerState = {
         isSplitView: true, // 常にtrueとして設定
         columnCount,
@@ -1771,7 +1815,7 @@ export default function TierMakerPage() {
       
       console.log('[DEBUG] グローバル関数の登録完了 - duplicateCharacter関数を更新しました');
     }
-  }, [columnCount, columnLabels, characterColumnAssignments, changeCharacterColumn, duplicateCharacter, deleteCharacter]);
+  }, [columnCount, columnLabels, characterColumnAssignments, changeCharacterColumn, duplicateCharacter, deleteCharacter, tierMakerCharacters]);
 
   // 列ラベル編集のハンドラ関数
   const startLabelEdit = (index: number) => {
