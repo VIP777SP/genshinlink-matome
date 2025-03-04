@@ -221,6 +221,9 @@ declare global {
     tiermakerChangeCharacterColumn?: (characterId: string, columnIndex: number) => void;
     tiermakerDuplicateCharacter?: (character: Character, newId: string, currentTier: string) => void;
     tiermakerDeleteCharacter?: (characterId: string) => void;
+    _tiermakerFunctions?: {
+      duplicateCharacter: (character: Character, newId: string, currentTier: string) => Character;
+    };
   }
 }
 
@@ -247,15 +250,27 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
   const handleDuplicate = (e: React.MouseEvent) => {
     e.stopPropagation();
     
-    // メインコンポーネントで定義された複製関数を呼び出す
-    if (typeof window !== 'undefined' && window.tiermakerDuplicateCharacter) {
-      const newId = `${character.id}_copy_${Date.now()}`;
-      
-      // 現在のティアとカラム情報を一緒に渡して、元の位置の近くに複製を配置
-      window.tiermakerDuplicateCharacter(character, newId, currentTier);
+    console.log(`[DEBUG] 複製ボタンがクリックされました - キャラクター:${character.name}, ID:${character.id}, 現在のティア:${currentTier}`);
+    
+    const newId = `${character.id}_copy_${Date.now()}`;
+    console.log(`[DEBUG] 新ID生成: ${newId}`);
+    
+    // グローバル関数があれば使用、なければバックアップを使用
+    if (typeof window !== 'undefined') {
+      if (window.tiermakerDuplicateCharacter) {
+        console.log(`[DEBUG] グローバル関数を使用します`);
+        window.tiermakerDuplicateCharacter(character, newId, currentTier);
+      } else if (window._tiermakerFunctions && window._tiermakerFunctions.duplicateCharacter) {
+        console.log('[DEBUG] バックアップグローバル変数から関数を取得しました');
+        window._tiermakerFunctions.duplicateCharacter(character, newId, currentTier);
+      } else {
+        console.error('[ERROR] window.tiermakerDuplicateCharacterが未定義です！グローバル関数が正しく登録されていません。');
+      }
       
       // 複製成功メッセージ
       console.log(`キャラクター「${character.name}」を複製しました。元のキャラクターの隣に配置されています。`);
+    } else {
+      console.error('[ERROR] クライアントサイドでの実行ではありません');
     }
   };
   
@@ -1596,6 +1611,8 @@ export default function TierMakerPage() {
     // tierMakerCharactersも更新（参照用）
     tierMakerCharacters.push(duplicatedCharacter);
     console.log(`[DEBUG] tierMakerCharactersに追加完了 - 現在の長さ: ${tierMakerCharacters.length}`);
+    
+    return duplicatedCharacter; // 作成したキャラクターを返す
   }, [tierMakerCharacters]);
 
   // キャラクターの完全削除処理関数
@@ -1635,6 +1652,11 @@ export default function TierMakerPage() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       console.log('[DEBUG] グローバル関数の登録を更新します');
+      
+      // バックアップ用のオブジェクトを作成
+      window._tiermakerFunctions = {
+        duplicateCharacter
+      };
       
       window.tiermakerState = {
         isSplitView: true, // 常にtrueとして設定
