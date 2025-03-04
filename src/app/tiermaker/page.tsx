@@ -188,6 +188,12 @@ interface CharacterCardProps {
   character: Character;
   onDrop: (characterId: string, tierId: string) => void;
   currentTier: string;
+  // 直接状態更新するために必要なpropsを追加
+  characterTiers?: Record<string, string[]>;
+  setCharacterTiers?: React.Dispatch<React.SetStateAction<Record<string, string[]>>>;
+  characterColumnAssignments?: Record<string, number>;
+  setCharacterColumnAssignments?: React.Dispatch<React.SetStateAction<Record<string, number>>>;
+  tierMakerCharacters?: Character[];
 }
 
 interface TierRowProps {
@@ -207,6 +213,11 @@ interface TierRowProps {
   changeCharacterColumn?: (characterId: string, newColumnIndex: number) => void;
   // 行ラベル（Tier名）編集用のコールバック関数
   onTierNameEdit?: (tierId: string, newName: string) => void;
+  // キャラクター複製用のプロパティを追加
+  characterTiers?: Record<string, string[]>;
+  setCharacterTiers?: React.Dispatch<React.SetStateAction<Record<string, string[]>>>;
+  setCharacterColumnAssignments?: React.Dispatch<React.SetStateAction<Record<string, number>>>;
+  tierMakerCharacters?: Character[];
 }
 
 // Windowオブジェクトの型拡張
@@ -228,7 +239,16 @@ declare global {
 }
 
 // キャラクターカードコンポーネント
-const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) => {
+const CharacterCard = ({ 
+  character, 
+  onDrop, 
+  currentTier,
+  characterTiers,
+  setCharacterTiers,
+  characterColumnAssignments,
+  setCharacterColumnAssignments,
+  tierMakerCharacters
+}: CharacterCardProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const [showMenu, setShowMenu] = useState(false);
   
@@ -252,25 +272,73 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
     
     console.log(`[DEBUG] 複製ボタンがクリックされました - キャラクター:${character.name}, ID:${character.id}, 現在のティア:${currentTier}`);
     
-    const newId = `${character.id}_copy_${Date.now()}`;
-    console.log(`[DEBUG] 新ID生成: ${newId}`);
+    // 必要なpropsが渡されているか確認
+    if (!setCharacterTiers || !setCharacterColumnAssignments || !tierMakerCharacters) {
+      console.error('[ERROR] 複製に必要なpropsが渡されていません');
+      return;
+    }
     
-    // グローバル関数があれば使用、なければバックアップを使用
-    if (typeof window !== 'undefined') {
-      if (window.tiermakerDuplicateCharacter) {
-        console.log(`[DEBUG] グローバル関数を使用します`);
-        window.tiermakerDuplicateCharacter(character, newId, currentTier);
-      } else if (window._tiermakerFunctions && window._tiermakerFunctions.duplicateCharacter) {
-        console.log('[DEBUG] バックアップグローバル変数から関数を取得しました');
-        window._tiermakerFunctions.duplicateCharacter(character, newId, currentTier);
-      } else {
-        console.error('[ERROR] window.tiermakerDuplicateCharacterが未定義です！グローバル関数が正しく登録されていません。');
-      }
+    try {
+      // 複製用の新しいIDを生成
+      const newId = `${character.id}_copy_${Date.now()}`;
+      console.log(`[DEBUG] 新ID生成: ${newId}`);
+      
+      // 複製したキャラクターオブジェクトを作成
+      const duplicatedCharacter: Character = {
+        ...character,
+        id: newId,
+      };
+      
+      // 直接状態更新関数を使用して更新する
+      // 1. 複製したキャラクターを指定のティアに追加
+      setCharacterTiers(prev => {
+        const newState = { ...prev };
+        
+        // 指定されたティアが存在しない場合は作成
+        if (!newState[currentTier]) {
+          newState[currentTier] = [];
+        }
+        
+        // 元のキャラクターの位置を探す
+        const originalIndex = newState[currentTier].findIndex(id => id === character.id);
+        
+        console.log(`[DEBUG] 元キャラクターの位置検索 - ティア: ${currentTier}, 結果: ${originalIndex}`);
+        
+        if (originalIndex !== -1) {
+          // 元のキャラクターの隣に配置
+          const newCharacters = [...newState[currentTier]];
+          newCharacters.splice(originalIndex + 1, 0, newId);
+          newState[currentTier] = newCharacters;
+          console.log(`${currentTier}内の元キャラクターの位置: ${originalIndex}, 新キャラクターの位置: ${originalIndex + 1}`);
+        } else {
+          // 元のキャラクターが見つからない場合は末尾に追加
+          newState[currentTier] = [...newState[currentTier], newId];
+          console.log(`${currentTier}内に元キャラクターが見つからないため末尾に追加`);
+        }
+        
+        console.log(`[DEBUG] 更新後の${currentTier}の内容:`, newState[currentTier]);
+        return newState;
+      });
+      
+      // 2. 列割り当ても設定（元のキャラクターと同じ列に配置）
+      setCharacterColumnAssignments(prev => {
+        const newAssignments = { ...prev };
+        // 元のキャラクターの列を取得（デフォルトは0）
+        const originalColumn = prev[character.id] || 0;
+        // 同じ列に配置
+        newAssignments[newId] = originalColumn;
+        console.log(`[DEBUG] 列割り当て - 新キャラクター: ${newId}, 割り当て列: ${originalColumn}`);
+        return newAssignments;
+      });
+      
+      // 3. tierMakerCharactersも更新（参照用）
+      tierMakerCharacters.push(duplicatedCharacter);
+      console.log(`[DEBUG] tierMakerCharactersに追加完了 - 現在の長さ: ${tierMakerCharacters.length}`);
       
       // 複製成功メッセージ
       console.log(`キャラクター「${character.name}」を複製しました。元のキャラクターの隣に配置されています。`);
-    } else {
-      console.error('[ERROR] クライアントサイドでの実行ではありません');
+    } catch (error) {
+      console.error('[ERROR] 複製処理中にエラーが発生しました:', error);
     }
   };
   
@@ -514,6 +582,11 @@ interface ColumnDropAreaProps {
   columnLabels: string[];
   onDrop: (characterId: string, tierId: string) => void;
   changeCharacterColumn?: (characterId: string, newColumnIndex: number) => void;
+  // 下記のプロパティを追加
+  characterTiers?: Record<string, string[]>;
+  setCharacterTiers?: React.Dispatch<React.SetStateAction<Record<string, string[]>>>;
+  setCharacterColumnAssignments?: React.Dispatch<React.SetStateAction<Record<string, number>>>;
+  tierMakerCharacters?: Character[];
 }
 
 // 列ドロップエリアコンポーネント
@@ -524,7 +597,12 @@ const ColumnDropArea = ({
   characterColumnAssignments,
   columnLabels,
   onDrop,
-  changeCharacterColumn
+  changeCharacterColumn,
+  // 下記のプロパティを追加
+  characterTiers,
+  setCharacterTiers,
+  setCharacterColumnAssignments,
+  tierMakerCharacters
 }: ColumnDropAreaProps) => {
   // フィルタリングロジックを変更 - isSplitView は常に true
   const charactersInColumn = charactersInTier.filter(char => 
@@ -570,7 +648,12 @@ const ColumnDropArea = ({
             key={character.id} 
             character={character} 
             onDrop={onDrop} // 通常のドロップハンドラに戻す
-            currentTier={tier.id} 
+            currentTier={tier.id}
+            characterTiers={characterTiers}
+            setCharacterTiers={setCharacterTiers}
+            characterColumnAssignments={characterColumnAssignments}
+            setCharacterColumnAssignments={setCharacterColumnAssignments}
+            tierMakerCharacters={tierMakerCharacters}
           />
         ))}
         {charactersInColumn.length === 0 && (
@@ -726,6 +809,10 @@ const TierRow = React.memo(({
             columnLabels={columnLabels}
             onDrop={onDrop}
             changeCharacterColumn={changeCharacterColumn}
+            characterTiers={characterTiers}
+            setCharacterTiers={setCharacterTiers}
+            setCharacterColumnAssignments={setCharacterColumnAssignments}
+            tierMakerCharacters={tierMakerCharacters}
           />
         ))}
       </div>
@@ -1496,6 +1583,11 @@ export default function TierMakerPage() {
               character={char}
               onDrop={handleDrop}
               currentTier="unassigned"
+              characterTiers={characterTiers}
+              setCharacterTiers={setCharacterTiers}
+              characterColumnAssignments={characterColumnAssignments}
+              setCharacterColumnAssignments={setCharacterColumnAssignments}
+              tierMakerCharacters={tierMakerCharacters}
             />
           ))
         ) : (
@@ -2107,6 +2199,10 @@ export default function TierMakerPage() {
                   characterColumnAssignments={characterColumnAssignments}
                   changeCharacterColumn={changeCharacterColumn}
                   onTierNameEdit={handleDirectTierNameEdit}
+                  characterTiers={characterTiers}
+                  setCharacterTiers={setCharacterTiers}
+                  setCharacterColumnAssignments={setCharacterColumnAssignments}
+                  tierMakerCharacters={tierMakerCharacters}
                 />
                 {index < array.length - 1 && <div className="border-b border-gray-300 dark:border-gray-600"></div>}
               </div>
