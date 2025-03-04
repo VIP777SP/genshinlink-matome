@@ -1550,6 +1550,8 @@ export default function TierMakerPage() {
       id: newId,
     };
     
+    console.log(`[DEBUG] 複製処理開始 - 対象キャラクター: ${character.name}, ID: ${character.id}, ターゲットティア: ${targetTier}`);
+    
     // 複製したキャラクターを指定のティアに追加
     setCharacterTiers(prev => {
       const newState = { ...prev };
@@ -1561,6 +1563,8 @@ export default function TierMakerPage() {
       
       // 元のキャラクターの位置を探す
       const originalIndex = newState[targetTier].findIndex(id => id === character.id);
+      
+      console.log(`[DEBUG] 元キャラクターの位置検索 - ティア: ${targetTier}, 結果: ${originalIndex}`);
       
       if (originalIndex !== -1) {
         // 元のキャラクターの隣に配置
@@ -1574,6 +1578,7 @@ export default function TierMakerPage() {
         console.log(`${targetTier}内に元キャラクターが見つからないため末尾に追加`);
       }
       
+      console.log(`[DEBUG] 更新後の${targetTier}の内容:`, newState[targetTier]);
       return newState;
     });
     
@@ -1584,12 +1589,14 @@ export default function TierMakerPage() {
       const originalColumn = prev[character.id] || 0;
       // 同じ列に配置
       newAssignments[newId] = originalColumn;
+      console.log(`[DEBUG] 列割り当て - 新キャラクター: ${newId}, 割り当て列: ${originalColumn}`);
       return newAssignments;
     });
     
     // tierMakerCharactersも更新（参照用）
     tierMakerCharacters.push(duplicatedCharacter);
-  }, []);
+    console.log(`[DEBUG] tierMakerCharactersに追加完了 - 現在の長さ: ${tierMakerCharacters.length}`);
+  }, [tierMakerCharacters]);
 
   // キャラクターの完全削除処理関数
   const deleteCharacter = useCallback((characterId: string) => {
@@ -1624,9 +1631,11 @@ export default function TierMakerPage() {
     }
   }, []);
 
-  // グローバル状態と関数を設定
+  // グローバルな状態と関数の登録
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      console.log('[DEBUG] グローバル関数の登録を更新します');
+      
       window.tiermakerState = {
         isSplitView: true, // 常にtrueとして設定
         columnCount,
@@ -1636,6 +1645,8 @@ export default function TierMakerPage() {
       window.tiermakerChangeCharacterColumn = changeCharacterColumn;
       window.tiermakerDuplicateCharacter = duplicateCharacter;
       window.tiermakerDeleteCharacter = deleteCharacter;
+      
+      console.log('[DEBUG] グローバル関数の登録完了 - duplicateCharacter関数を更新しました');
     }
   }, [columnCount, columnLabels, characterColumnAssignments, changeCharacterColumn, duplicateCharacter, deleteCharacter]);
 
