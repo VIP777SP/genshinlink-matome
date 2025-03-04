@@ -186,7 +186,7 @@ const weaponTemplates: TierTemplate[] = [
 // コンポーネントProps型定義
 interface CharacterCardProps {
   character: Character;
-  onDrop: (characterId: string, tierId: string) => void;
+  onDrop: (characterId: string, dropTargetId: string) => void;
   currentTier: string;
   // 直接状態更新するために必要なpropsを追加
   characterTiers?: Record<string, string[]>;
@@ -194,6 +194,10 @@ interface CharacterCardProps {
   characterColumnAssignments?: Record<string, number>;
   setCharacterColumnAssignments?: React.Dispatch<React.SetStateAction<Record<string, number>>>;
   tierMakerCharacters?: Character[];
+  // 凸数表示モード用のプロパティを追加
+  showConstellations?: boolean;
+  constellation?: number;
+  changeConstellation?: (characterId: string, value: number) => void;
 }
 
 interface TierRowProps {
@@ -218,6 +222,10 @@ interface TierRowProps {
   setCharacterTiers?: React.Dispatch<React.SetStateAction<Record<string, string[]>>>;
   setCharacterColumnAssignments?: React.Dispatch<React.SetStateAction<Record<string, number>>>;
   tierMakerCharacters?: Character[];
+  // 凸数表示モード用のプロパティを追加
+  showConstellations?: boolean;
+  characterConstellations?: Record<string, number>;
+  changeConstellation?: (characterId: string, value: number) => void;
 }
 
 // Windowオブジェクトの型拡張
@@ -248,10 +256,16 @@ const CharacterCard = ({
   setCharacterTiers,
   characterColumnAssignments,
   setCharacterColumnAssignments,
-  tierMakerCharacters
+  tierMakerCharacters,
+  // 凸数表示モード用のプロパティ
+  showConstellations,
+  constellation = 0,
+  changeConstellation
 }: CharacterCardProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const [showMenu, setShowMenu] = useState(false);
+  // 凸数選択UI表示用の状態を追加
+  const [showConstellationSelector, setShowConstellationSelector] = useState(false);
   
   const [dragProps, drag] = useDrag({
     type: ItemTypes.CHARACTER,
@@ -399,15 +413,61 @@ const CharacterCard = ({
       window.tiermakerChangeCharacterColumn(character.id, columnIndex);
     }
   };
+  
+  // 凸数クリック時のハンドラ
+  const handleConstellationClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // プルダウン表示切り替え
+    setShowConstellationSelector(!showConstellationSelector);
+  };
+  
+  // 凸数選択時のハンドラ
+  const selectConstellation = (value: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (changeConstellation) {
+      changeConstellation(character.id, value);
+    }
+    setShowConstellationSelector(false);
+  };
+  
+  // 凸数セレクター外のクリックを検知して閉じる
+  useEffect(() => {
+    if (showConstellationSelector) {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (ref.current && !ref.current.contains(event.target as Node)) {
+          setShowConstellationSelector(false);
+        }
+      };
+      
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [showConstellationSelector]);
+  
+  // 凸数によって色を変える関数
+  const getConstellationColorClass = (constValue: number): string => {
+    switch(constValue) {
+      case 0: return 'bg-gray-500 dark:bg-gray-600';
+      case 1: return 'bg-blue-500 dark:bg-blue-600';
+      case 2: return 'bg-purple-500 dark:bg-purple-600';
+      case 3: return 'bg-indigo-500 dark:bg-indigo-600';
+      case 4: return 'bg-pink-500 dark:bg-pink-600';
+      case 5: return 'bg-yellow-500 dark:bg-yellow-600';
+      case 6: return 'bg-red-500 dark:bg-red-600';
+      default: return 'bg-gray-500 dark:bg-gray-600';
+    }
+  };
 
   return (
     <div
       ref={ref}
-      className={`relative rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-move ${
+      className={`relative rounded-lg overflow-visible shadow-sm hover:shadow-md transition-shadow cursor-move ${
         isDragging ? 'opacity-50' : 'opacity-100'
       } ${isDuplicate ? 'ring-2 ring-blue-500 dark:ring-blue-600 shadow-md shadow-blue-300 dark:shadow-blue-900/30' : ''}`}
       style={{ width: '60px', height: '60px' }}
-      title={`${character.name}${isDuplicate ? ' (複製)' : ''}`} // 複製されている場合はタイトルにも表示
+      title={`${character.name}${isDuplicate ? ' (複製)' : ''}`}
     >
       <img
         src={character.iconUrl}
@@ -416,7 +476,40 @@ const CharacterCard = ({
         style={{ imageRendering: 'auto' }}
       />
       
-      {/* 削除/未割り当てに戻すボタン */}
+      {/* 凸数表示 */}
+      {showConstellations && (
+        <button
+          onClick={handleConstellationClick}
+          className={`absolute top-0 left-0 w-5 h-5 rounded-br-lg ${getConstellationColorClass(constellation || 0)} text-white flex items-center justify-center text-xs font-bold opacity-90 hover:opacity-100 transition-all hover:scale-110 z-10`}
+          title={`凸数: ${constellation || 0} (クリックで変更)`}
+        >
+          {constellation}
+        </button>
+      )}
+      
+      {/* 凸数選択UI（プルダウン） */}
+      {showConstellations && showConstellationSelector && (
+        <div 
+          className="absolute top-0 left-0 z-50 w-5"
+          style={{ top: '20px' }}
+        >
+          <div 
+            className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-1 border border-gray-300 dark:border-gray-600 flex flex-col gap-1 w-10"
+          >
+            {[0, 1, 2, 3, 4, 5, 6].map(value => (
+              <button
+                key={value}
+                onClick={(e) => selectConstellation(value, e)}
+                className={`w-full py-1 rounded-md ${getConstellationColorClass(value)} text-white hover:brightness-110 flex items-center justify-center text-xs font-bold ${value === constellation ? 'ring-1 ring-white scale-105' : ''}`}
+              >
+                {value}凸
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {/* 残りの既存UIパーツ */}
       {showRemoveButton && (
         <button
           onClick={handleDelete}
@@ -427,7 +520,6 @@ const CharacterCard = ({
         </button>
       )}
       
-      {/* 複製ボタン */}
       <button
         onClick={handleDuplicate}
         className="absolute bottom-0 right-0 w-5 h-5 rounded-tl-lg bg-blue-500 text-white flex items-center justify-center text-xs opacity-80 hover:opacity-100 transition-all hover:scale-110"
@@ -612,6 +704,10 @@ interface ColumnDropAreaProps {
   setCharacterTiers?: React.Dispatch<React.SetStateAction<Record<string, string[]>>>;
   setCharacterColumnAssignments?: React.Dispatch<React.SetStateAction<Record<string, number>>>;
   tierMakerCharacters?: Character[];
+  // 凸数表示モード用のプロパティを追加
+  showConstellations?: boolean;
+  characterConstellations?: Record<string, number>;
+  changeConstellation?: (characterId: string, value: number) => void;
 }
 
 // 列ドロップエリアコンポーネント
@@ -627,7 +723,11 @@ const ColumnDropArea = ({
   characterTiers,
   setCharacterTiers,
   setCharacterColumnAssignments,
-  tierMakerCharacters
+  tierMakerCharacters,
+  // 凸数表示モード用のプロパティを追加
+  showConstellations,
+  characterConstellations = {}, // デフォルト値を空のオブジェクトに設定
+  changeConstellation
 }: ColumnDropAreaProps) => {
   // フィルタリングロジックを変更 - isSplitView は常に true
   const charactersInColumn = charactersInTier.filter(char => 
@@ -679,6 +779,10 @@ const ColumnDropArea = ({
             characterColumnAssignments={characterColumnAssignments}
             setCharacterColumnAssignments={setCharacterColumnAssignments}
             tierMakerCharacters={tierMakerCharacters}
+            // 凸数表示モード用のプロパティ
+            showConstellations={showConstellations}
+            constellation={characterConstellations[character.id] || 0}
+            changeConstellation={changeConstellation}
           />
         ))}
         {charactersInColumn.length === 0 && (
@@ -712,7 +816,11 @@ const TierRow = ({
   characterTiers,
   setCharacterTiers,
   setCharacterColumnAssignments,
-  tierMakerCharacters
+  tierMakerCharacters,
+  // 凸数表示モード用のプロパティを追加
+  showConstellations,
+  characterConstellations,
+  changeConstellation
 }: TierRowProps) => {
   console.log(`TierRow ${tier.id} rendering with ${charactersInTier.length} characters`);
   if (charactersInTier.length > 0) {
@@ -849,6 +957,10 @@ const TierRow = ({
             setCharacterTiers={setCharacterTiers}
             setCharacterColumnAssignments={setCharacterColumnAssignments}
             tierMakerCharacters={tierMakerCharacters}
+            // 凸数表示モード用のプロパティを追加
+            showConstellations={showConstellations}
+            characterConstellations={characterConstellations}
+            changeConstellation={changeConstellation}
           />
         ))}
       </div>
@@ -881,6 +993,9 @@ export default function TierMakerPage() {
     return assignments;
   });
   
+  // 凸数表示モード用の状態を追加
+  // 注：この宣言は後半部分（2074行目付近）と重複しているため削除
+
   // インプレース編集のための状態
   const [editingLabelIndex, setEditingLabelIndex] = useState<number | null>(null);
   const [editingLabelValue, setEditingLabelValue] = useState('');
@@ -1641,6 +1756,9 @@ export default function TierMakerPage() {
               characterColumnAssignments={characterColumnAssignments}
               setCharacterColumnAssignments={setCharacterColumnAssignments}
               tierMakerCharacters={tierMakerCharacters}
+              showConstellations={showConstellations}
+              constellation={characterConstellations[char.id] || 0}
+              changeConstellation={changeConstellation}
             />
           ))
         ) : (
@@ -1953,6 +2071,32 @@ export default function TierMakerPage() {
     // 武器の場合は列設定は必要ないので何もしない
   };
 
+  // 凸数表示モード用の状態を追加
+  const [showConstellations, setShowConstellations] = useState(false);
+  const [characterConstellations, setCharacterConstellations] = useState<Record<string, number>>(() => {
+    // 初期状態では、すべてのキャラクターの凸数を0に設定
+    const constellations: Record<string, number> = {};
+    tierMakerCharacters.forEach(char => {
+      constellations[char.id] = 0;
+    });
+    return constellations;
+  });
+  
+  // 凸数を変更する関数
+  const changeConstellation = useCallback((characterId: string, value: number) => {
+    if (value >= 0 && value <= 6) {
+      setCharacterConstellations(prev => ({
+        ...prev,
+        [characterId]: value
+      }));
+    }
+  }, []);
+
+  // 凸数表示モードを切り替える関数
+  const toggleConstellationMode = () => {
+    setShowConstellations(prev => !prev);
+  };
+
   return (
     <DndProvider backend={MultiBackend} options={HTML5toTouch}>
       <div style={{ position: 'relative', zIndex: 9999 }}>
@@ -2034,6 +2178,17 @@ export default function TierMakerPage() {
                   +
                 </button>
               </div>
+
+              {/* 凸数表示モード切り替えボタン */}
+              <button
+                onClick={toggleConstellationMode}
+                className={`px-4 py-2 rounded-lg text-white ${
+                  showConstellations ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-600 hover:bg-gray-700'
+                } transition-colors`}
+                title="凸数表示モードを切り替え"
+              >
+                {showConstellations ? '凸数表示: ON' : '凸数表示: OFF'}
+              </button>
 
               <button
                 onClick={toggleEditMode}
@@ -2273,6 +2428,9 @@ export default function TierMakerPage() {
                   setCharacterTiers={setCharacterTiers}
                   setCharacterColumnAssignments={setCharacterColumnAssignments}
                   tierMakerCharacters={tierMakerCharacters}
+                  showConstellations={showConstellations}
+                  characterConstellations={characterConstellations}
+                  changeConstellation={changeConstellation}
                 />
                 {index < array.length - 1 && <div className="border-b border-gray-300 dark:border-gray-600"></div>}
               </div>
