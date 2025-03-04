@@ -220,6 +220,7 @@ declare global {
     };
     tiermakerChangeCharacterColumn?: (characterId: string, columnIndex: number) => void;
     tiermakerDuplicateCharacter?: (character: Character, newId: string, currentTier: string) => void;
+    tiermakerDeleteCharacter?: (characterId: string) => void;
   }
 }
 
@@ -260,8 +261,28 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
   // ref と drag を接続
   drag(ref);
   
-  // 未割り当てエリアからのみ削除できるようにする
-  const showRemoveButton = currentTier !== 'unassigned';
+  // 削除ボタンを表示する条件：
+  // 1. 未割り当てエリア以外にあるとき（従来の動作）
+  // 2. 複製されたカードである場合（新たに追加）
+  const showRemoveButton = currentTier !== 'unassigned' || isDuplicate;
+  
+  // カードを完全に削除する関数（複製カード用）
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    // 複製カードの場合は完全に削除
+    if (isDuplicate) {
+      if (typeof window !== 'undefined' && window.tiermakerDeleteCharacter) {
+        window.tiermakerDeleteCharacter(character.id);
+      } else {
+        // window関数がない場合は通常の未割り当てに戻す動作
+        onDrop(character.id, 'unassigned');
+      }
+    } else {
+      // オリジナルカードは通常通り未割り当てに戻す
+      onDrop(character.id, 'unassigned');
+    }
+  };
   
   // 列を変更する機能
   const changeColumn = (columnIndex: number) => {
@@ -286,15 +307,12 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
         style={{ imageRendering: 'auto' }}
       />
       
-      {/* 削除ボタン */}
+      {/* 削除/未割り当てに戻すボタン */}
       {showRemoveButton && (
         <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onDrop(character.id, 'unassigned');
-          }}
-          className="absolute top-0 right-0 w-5 h-5 rounded-bl-lg bg-red-500 text-white flex items-center justify-center text-xs opacity-80 hover:opacity-100"
-          title="Tierから削除"
+          onClick={handleDelete}
+          className={`absolute top-0 right-0 w-5 h-5 rounded-bl-lg ${isDuplicate ? 'bg-red-600' : 'bg-red-500'} text-white flex items-center justify-center text-xs opacity-80 hover:opacity-100 transition-all hover:scale-110`}
+          title={isDuplicate ? "完全に削除" : "Tierから削除"}
         >
           ×
         </button>
@@ -1556,6 +1574,39 @@ export default function TierMakerPage() {
     tierMakerCharacters.push(duplicatedCharacter);
   }, []);
 
+  // キャラクターの完全削除処理関数
+  const deleteCharacter = useCallback((characterId: string) => {
+    console.log(`キャラクター ${characterId} を完全に削除します`);
+    
+    // すべてのティアからこのキャラクターを削除
+    setCharacterTiers(prev => {
+      const newState = { ...prev };
+      
+      // すべてのティアをチェック
+      Object.keys(newState).forEach(tierId => {
+        // このキャラクターIDを持つものを除外
+        if (newState[tierId] && newState[tierId].includes(characterId)) {
+          newState[tierId] = newState[tierId].filter(id => id !== characterId);
+        }
+      });
+      
+      return newState;
+    });
+    
+    // 列割り当ても削除
+    setCharacterColumnAssignments(prev => {
+      const newAssignments = { ...prev };
+      delete newAssignments[characterId];
+      return newAssignments;
+    });
+    
+    // tierMakerCharactersからも削除（可能な場合）
+    const index = tierMakerCharacters.findIndex(c => c.id === characterId);
+    if (index !== -1) {
+      tierMakerCharacters.splice(index, 1);
+    }
+  }, []);
+
   // グローバル状態と関数を設定
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -1567,8 +1618,9 @@ export default function TierMakerPage() {
       };
       window.tiermakerChangeCharacterColumn = changeCharacterColumn;
       window.tiermakerDuplicateCharacter = duplicateCharacter;
+      window.tiermakerDeleteCharacter = deleteCharacter;
     }
-  }, [columnCount, columnLabels, characterColumnAssignments, changeCharacterColumn, duplicateCharacter]);
+  }, [columnCount, columnLabels, characterColumnAssignments, changeCharacterColumn, duplicateCharacter, deleteCharacter]);
 
   // 列ラベル編集のハンドラ関数
   const startLabelEdit = (index: number) => {
