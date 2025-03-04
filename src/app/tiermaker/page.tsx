@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -250,6 +250,10 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
     if (typeof window !== 'undefined' && window.tiermakerDuplicateCharacter) {
       const newId = `${character.id}_copy_${Date.now()}`;
       window.tiermakerDuplicateCharacter(character, newId, 'unassigned');
+      
+      // 複製成功メッセージ（オプション）
+      // ここではUIによるフィードバックのみで十分ですが、必要に応じてメッセージ表示も可能
+      console.log(`キャラクター「${character.name}」を複製しました。利用可能なキャラクターに追加されています。`);
     }
   };
   
@@ -271,9 +275,9 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
       ref={ref}
       className={`relative rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-move ${
         isDragging ? 'opacity-50' : 'opacity-100'
-      } ${isDuplicate ? 'ring-2 ring-blue-400 dark:ring-blue-600' : ''}`}
+      } ${isDuplicate ? 'ring-2 ring-blue-500 dark:ring-blue-600 shadow-md shadow-blue-300 dark:shadow-blue-900/30' : ''}`}
       style={{ width: '60px', height: '60px' }}
-      title={character.name} // titleでホバー時の標準ツールチップを表示
+      title={`${character.name}${isDuplicate ? ' (複製)' : ''}`} // 複製されている場合はタイトルにも表示
     >
       <img
         src={character.iconUrl}
@@ -299,10 +303,10 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
       {/* 複製ボタン */}
       <button
         onClick={handleDuplicate}
-        className="absolute bottom-0 right-0 w-5 h-5 rounded-tl-lg bg-blue-500 text-white flex items-center justify-center text-xs opacity-80 hover:opacity-100"
+        className="absolute bottom-0 right-0 w-5 h-5 rounded-tl-lg bg-blue-500 text-white flex items-center justify-center text-xs opacity-80 hover:opacity-100 transition-all hover:scale-110"
         title="このキャラクターを複製"
       >
-        +
+        ⎘
       </button>
     </div>
   );
@@ -1518,7 +1522,7 @@ export default function TierMakerPage() {
   UnassignedWeaponsArea.displayName = 'UnassignedWeaponsArea';
 
   // キャラクターの複製処理関数
-  const duplicateCharacter = (character: Character, newId: string, targetTier: string) => {
+  const duplicateCharacter = useCallback((character: Character, newId: string, targetTier: string) => {
     console.log(`キャラクター ${character.name} を複製します。新ID: ${newId}`);
     
     // 複製したキャラクターオブジェクトを作成
@@ -1526,13 +1530,6 @@ export default function TierMakerPage() {
       ...character,
       id: newId,
     };
-    
-    // 既存のキャラクターリストに複製を追加
-    const updatedCharacters = [...tierMakerCharacters, duplicatedCharacter];
-    
-    // tierMakerCharactersを更新（UIに反映させるため）
-    // 注: この処理だけでは不十分な場合があります
-    // tierMakerCharactersは読み取り専用の場合、別の方法で更新が必要
     
     // 複製したキャラクターを指定のティアに追加
     setCharacterTiers(prev => {
@@ -1554,7 +1551,10 @@ export default function TierMakerPage() {
       ...prev,
       [newId]: 0
     }));
-  };
+    
+    // tierMakerCharactersも更新（参照用）
+    tierMakerCharacters.push(duplicatedCharacter);
+  }, []);
 
   // グローバル状態と関数を設定
   useEffect(() => {
@@ -1568,7 +1568,7 @@ export default function TierMakerPage() {
       window.tiermakerChangeCharacterColumn = changeCharacterColumn;
       window.tiermakerDuplicateCharacter = duplicateCharacter;
     }
-  }, [columnCount, columnLabels, characterColumnAssignments, changeCharacterColumn]);
+  }, [columnCount, columnLabels, characterColumnAssignments, changeCharacterColumn, duplicateCharacter]);
 
   // 列ラベル編集のハンドラ関数
   const startLabelEdit = (index: number) => {
