@@ -250,11 +250,12 @@ const CharacterCard = ({ character, onDrop, currentTier }: CharacterCardProps) =
     // メインコンポーネントで定義された複製関数を呼び出す
     if (typeof window !== 'undefined' && window.tiermakerDuplicateCharacter) {
       const newId = `${character.id}_copy_${Date.now()}`;
-      window.tiermakerDuplicateCharacter(character, newId, 'unassigned');
       
-      // 複製成功メッセージ（オプション）
-      // ここではUIによるフィードバックのみで十分ですが、必要に応じてメッセージ表示も可能
-      console.log(`キャラクター「${character.name}」を複製しました。利用可能なキャラクターに追加されています。`);
+      // 現在のティアとカラム情報を一緒に渡して、元の位置の近くに複製を配置
+      window.tiermakerDuplicateCharacter(character, newId, currentTier);
+      
+      // 複製成功メッセージ
+      console.log(`キャラクター「${character.name}」を複製しました。元のキャラクターの隣に配置されています。`);
     }
   };
   
@@ -1553,22 +1554,57 @@ export default function TierMakerPage() {
     setCharacterTiers(prev => {
       const newState = { ...prev };
       
-      // 指定されたティアが存在しない場合は作成
-      if (!newState[targetTier]) {
-        newState[targetTier] = [];
+      // 未割り当て以外のティアに複製する場合
+      if (targetTier !== 'unassigned') {
+        // 指定されたティアが存在しない場合は作成
+        if (!newState[targetTier]) {
+          newState[targetTier] = [];
+        }
+        
+        // 元のキャラクターの位置を探す
+        const originalIndex = newState[targetTier].findIndex(id => id === character.id);
+        
+        if (originalIndex !== -1) {
+          // 元のキャラクターの隣に配置
+          const newCharacters = [...newState[targetTier]];
+          newCharacters.splice(originalIndex + 1, 0, newId);
+          newState[targetTier] = newCharacters;
+        } else {
+          // 元のキャラクターが見つからない場合は末尾に追加
+          newState[targetTier] = [...newState[targetTier], newId];
+        }
+      } else {
+        // 未割り当てエリアの場合は、そこに追加
+        if (!newState['unassigned']) {
+          newState['unassigned'] = [];
+        }
+        
+        // 元のキャラクターの位置を探す
+        const originalIndex = newState['unassigned'].findIndex(id => id === character.id);
+        
+        if (originalIndex !== -1) {
+          // 元のキャラクターの隣に配置
+          const newCharacters = [...newState['unassigned']];
+          newCharacters.splice(originalIndex + 1, 0, newId);
+          newState['unassigned'] = newCharacters;
+        } else {
+          // 元のキャラクターが見つからない場合は末尾に追加
+          newState['unassigned'] = [...newState['unassigned'], newId];
+        }
       }
-      
-      // 複製キャラクターを追加
-      newState[targetTier] = [...newState[targetTier], newId];
       
       return newState;
     });
     
-    // 列割り当ても設定（最初の列にデフォルト割り当て）
-    setCharacterColumnAssignments(prev => ({
-      ...prev,
-      [newId]: 0
-    }));
+    // 列割り当ても設定（元のキャラクターと同じ列に配置）
+    setCharacterColumnAssignments(prev => {
+      const newAssignments = { ...prev };
+      // 元のキャラクターの列を取得（デフォルトは0）
+      const originalColumn = prev[character.id] || 0;
+      // 同じ列に配置
+      newAssignments[newId] = originalColumn;
+      return newAssignments;
+    });
     
     // tierMakerCharactersも更新（参照用）
     tierMakerCharacters.push(duplicatedCharacter);
