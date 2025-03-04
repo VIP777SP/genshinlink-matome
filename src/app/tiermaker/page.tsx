@@ -342,22 +342,25 @@ const CharacterCard = ({
       }
 
       // tierMakerCharactersに複製したキャラクターを追加
-      const allCharacters = [...tierMakerCharacters, newCharacter];
+      // 重要: 直接push()ではなく新しい配列を作成して参照を更新する
+      const newTierMakerCharacters = [...tierMakerCharacters];
+      newTierMakerCharacters.push(newCharacter);
       
-      // ここでStateを直接変更せずに、親コンポーネントの状態更新関数を呼び出す
-      // この場合、TierMakerPageコンポーネントでcharactersステートを更新する必要があります
+      // グローバル変数を更新
+      window._tiermakerCharacters = newTierMakerCharacters;
       
-      // グローバルに登録されたキャラクター一覧を更新
-      window._tiermakerCharacters = allCharacters;
-      
-      // 強制的に再レンダリングをトリガーするため、わずかなタイムアウトを設定
-      setTimeout(() => {
-        console.log('[DEBUG] 複製完了 - UIを更新しています');
-        // 状態を更新して再レンダリングをトリガー
-        if (setCharacterTiers) {
-          setCharacterTiers(prev => ({...prev}));
+      // tierMakerCharactersを直接更新 - これは参照を維持します
+      for (let i = 0; i < newTierMakerCharacters.length; i++) {
+        if (i >= tierMakerCharacters.length) {
+          tierMakerCharacters.push(newTierMakerCharacters[i]);
+        } else if (i === tierMakerCharacters.length - 1 && 
+                  newTierMakerCharacters[i].id === newCharacter.id) {
+          tierMakerCharacters[i] = newCharacter;
         }
-      }, 50);
+      }
+      
+      console.log(`[DEBUG] tierMakerCharactersを更新しました。現在の長さ: ${tierMakerCharacters.length}`);
+      console.log(`[DEBUG] 最後の要素ID: ${tierMakerCharacters[tierMakerCharacters.length-1]?.id}`);
 
     } catch (error) {
       console.error('キャラクター複製中にエラーが発生しました:', error);
@@ -1618,7 +1621,7 @@ export default function TierMakerPage() {
       }
       
       return orderedCharacters;
-    }, [characterTiers]);
+    }, [characterTiers, tierMakerCharacters]);
     
     return (
       <div 
@@ -1751,11 +1754,25 @@ export default function TierMakerPage() {
     });
     
     // tierMakerCharactersも更新（参照用）
-    tierMakerCharacters.push(duplicatedCharacter);
-    console.log(`[DEBUG] tierMakerCharactersに追加完了 - 現在の長さ: ${tierMakerCharacters.length}`);
+    // 重要: 直接push()するのではなく、安全に追加する
+    const existingIndex = tierMakerCharacters.findIndex(c => c.id === duplicatedCharacter.id);
+    if (existingIndex === -1) {
+      // まだ存在しない場合は追加
+      tierMakerCharacters.push(duplicatedCharacter);
+      console.log(`[DEBUG] tierMakerCharactersに新しいキャラクターを追加しました。ID: ${duplicatedCharacter.id}`);
+    } else {
+      // すでに存在する場合は置き換え
+      tierMakerCharacters[existingIndex] = duplicatedCharacter;
+      console.log(`[DEBUG] tierMakerCharactersの既存キャラクターを更新しました。ID: ${duplicatedCharacter.id}`);
+    }
+    
+    // グローバル変数を更新
+    window._tiermakerCharacters = [...tierMakerCharacters];
+    
+    console.log(`[DEBUG] 複製完了 - tierMakerCharactersの現在の長さ: ${tierMakerCharacters.length}`);
     
     return duplicatedCharacter; // 作成したキャラクターを返す
-  }, [tierMakerCharacters]);
+  }, [tierMakerCharacters, setCharacterTiers, setCharacterColumnAssignments]);
 
   // キャラクターの完全削除処理関数
   const deleteCharacter = useCallback((characterId: string) => {
