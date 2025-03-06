@@ -525,7 +525,13 @@ const CharacterCard = ({
         className="absolute bottom-0 right-0 w-5 h-5 rounded-tl-lg bg-blue-500 text-white flex items-center justify-center text-xs opacity-80 hover:opacity-100 transition-all hover:scale-110"
         title="このキャラクターを複製"
       >
-        ⎘
+        {/* シンプルな長方形のコピーアイコン */}
+        <div className="relative w-3 h-3 flex items-center justify-center">
+          {/* 後ろの長方形 */}
+          <div className="absolute w-2.5 h-2.5 bg-white rounded-sm transform translate-x-0.5 -translate-y-0.5"></div>
+          {/* 前の長方形 */}
+          <div className="absolute w-2.5 h-2.5 bg-white/90 rounded-sm transform -translate-x-0.5 translate-y-0.5 border border-blue-200"></div>
+        </div>
       </button>
     </div>
   );
