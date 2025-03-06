@@ -1076,12 +1076,21 @@ export default function TierMakerPage() {
     
     console.log('Tiers初期化:', initialTiers);
     setCharacterTiers(initialTiers);
-  }, [selectedTemplate]);
+  }, [selectedTemplate, tierMakerCharacters]);
   
-  // テンプレート変更時にキャラクターの配置をリセット
+  // 初回レンダリング時にのみTierを初期化する
+  // selectedTemplateが変わる度に初期化すると、tier名編集時などに配置がリセットされる
+  const [initializedTemplates, setInitializedTemplates] = useState<string[]>([]);
+  
   useEffect(() => {
-    initializeTiers();
-  }, [initializeTiers]);
+    // そのテンプレートが初期化済みかチェック
+    if (!initializedTemplates.includes(selectedTemplate.id)) {
+      // まだ初期化されていないテンプレートの場合のみ初期化を実行
+      initializeTiers();
+      // 初期化済みとしてマーク
+      setInitializedTemplates(prev => [...prev, selectedTemplate.id]);
+    }
+  }, [selectedTemplate.id, initializeTiers, initializedTemplates]);
   
   // 武器Tierの初期化 - useCallbackでメモ化
   const initializeWeaponTiers = React.useCallback(() => {
@@ -2068,13 +2077,11 @@ export default function TierMakerPage() {
     }
     
     // ティア表を初期化 - 新しいテンプレート選択時のみ実行
-    // Tierを変更しただけのときは実行しない
-    if (!currentCharacterTiers['unassigned'] || currentCharacterTiers['unassigned'].length === 0) {
-      // すでにキャラクターが配置済みの場合は初期化しない
-      return;
-    }
+    // テンプレート変更時は常に新しく初期化
+    // このテンプレートが初期化済みリストに追加
+    setInitializedTemplates(prev => [...prev, template.id]);
     
-    // 初期配置する場合の処理
+    // ティア表の初期化
     const initialTiers: Record<string, string[]> = {};
     
     // ティアごとに空の配列を作成
