@@ -2037,6 +2037,9 @@ export default function TierMakerPage() {
 
   // テンプレート選択時の処理
   const handleTemplateSelect = (template: TierTemplate) => {
+    // 現在のキャラクター配置を保存
+    const currentCharacterTiers = { ...characterTiers };
+    
     // テンプレートを選択
     setSelectedTemplate(template);
     
@@ -2054,7 +2057,8 @@ export default function TierMakerPage() {
         setColumnCount(newCount);
       }
       
-      // キャラクターの列割り当てをリセット
+      // キャラクターの列割り当てをリセット - ただし tier変更時は保持するように変更する
+      // テンプレート選択時だけ全てリセット
       const newAssignments: Record<string, number> = {};
       tierMakerCharacters.forEach(char => {
         // デフォルトでは最初の列に割り当て
@@ -2062,6 +2066,27 @@ export default function TierMakerPage() {
       });
       setCharacterColumnAssignments(newAssignments);
     }
+    
+    // ティア表を初期化 - 新しいテンプレート選択時のみ実行
+    // Tierを変更しただけのときは実行しない
+    if (!currentCharacterTiers['unassigned'] || currentCharacterTiers['unassigned'].length === 0) {
+      // すでにキャラクターが配置済みの場合は初期化しない
+      return;
+    }
+    
+    // 初期配置する場合の処理
+    const initialTiers: Record<string, string[]> = {};
+    
+    // ティアごとに空の配列を作成
+    template.tiers.forEach(tier => {
+      initialTiers[tier.id] = [];
+    });
+    
+    // 未配置エリアにすべてのキャラクターを初期配置
+    initialTiers['unassigned'] = tierMakerCharacters.map(char => char.id);
+    
+    // 状態を更新
+    setCharacterTiers(initialTiers);
   };
 
   // 武器テンプレート選択時の処理
