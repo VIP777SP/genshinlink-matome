@@ -2029,8 +2029,9 @@ export default function TierMakerPage() {
         tiers: updatedTiers
       };
       
-      // テンプレートを更新
+      // テンプレートを更新するが、characterTiersは維持する
       setSelectedTemplate(updatedTemplate);
+      // ここでcharacterTiersを更新しないことで、キャラクターの配置情報は保持される
     }
   };
 
