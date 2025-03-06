@@ -931,10 +931,16 @@ const TierRow = ({
           ) : (
             <div
               onClick={startNameEdit}
-              className="text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md cursor-pointer hover:bg-white/20 rounded px-2 py-1 transition-colors flex items-center"
+              className="text-white font-bold text-sm sm:text-base tracking-wider drop-shadow-md cursor-pointer hover:bg-white/20 rounded px-2 py-1 transition-colors flex items-center group relative"
             >
               {tier.name}
-              <span className="ml-1 opacity-50 text-xs">✎</span>
+              {/* 鉛筆マークを削除し、代わりにホバー時のエフェクトを追加 */}
+              <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-white/50 group-hover:w-full transition-all duration-200"></div>
+              <div className="absolute top-0 left-0 w-full h-full rounded bg-white/0 group-hover:bg-white/10 transition-all duration-200"></div>
+              {/* ホバー時のみ表示されるツールチップ */}
+              <div className="absolute left-1/2 -translate-x-1/2 -top-7 bg-black/70 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                クリックして編集
+              </div>
             </div>
           )}
         </div>
@@ -2232,9 +2238,14 @@ export default function TierMakerPage() {
                 {isEditMode ? '編集を適用' : 'ティアをカスタマイズ'}
               </button>
             </div>
-            {/* 操作ヒント */}
-            <div className="hidden text-xs text-gray-600 dark:text-gray-400 mt-2">
-              <p>ヒント: 列ラベルをクリックして編集できます。</p>
+            {/* 操作ヒント - hiddenを削除して表示 */}
+            <div className="text-sm text-gray-600 dark:text-gray-400 mt-2 p-2 bg-gray-100 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
+              <p className="font-medium mb-1">操作ヒント:</p>
+              <ul className="list-disc list-inside text-xs space-y-1">
+                <li>行ラベル（ティア名）と列ラベルは<span className="font-semibold text-amber-600 dark:text-amber-400">直接クリック</span>して編集できます</li>
+                <li>キャラクターは各ティアにドラッグ＆ドロップで配置できます</li>
+                <li>列の数は上部の「＋」「−」ボタンで調整できます</li>
+              </ul>
             </div>
           </div>
           
@@ -2430,10 +2441,16 @@ export default function TierMakerPage() {
                         display: 'block',
                         transform: label.length > 6 ? `scale(${Math.max(0.7, 1 - (label.length - 6) * 0.05)})` : 'scale(1)'
                       }}>{label}</span>
-                      <span className="ml-1 opacity-50 text-xs group-hover:opacity-80 transition-opacity">✎</span>
                       
-                      {/* 下線アクセント（ホバー時に表示） */}
-                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-amber-300/0 via-amber-300/70 to-amber-300/0 dark:from-amber-500/0 dark:via-amber-500/70 dark:to-amber-500/0 group-hover:w-full transition-all duration-300"></div>
+                      {/* 鉛筆マークを削除し、代わりに下線エフェクトのみ表示 */}
+                      
+                      {/* 下線アクセント（常に表示、ホバー時に太くなる） */}
+                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 h-0.5 bg-gradient-to-r from-amber-300/0 via-amber-300/50 to-amber-300/0 dark:from-amber-500/0 dark:via-amber-500/50 dark:to-amber-500/0 group-hover:w-4/5 group-hover:via-amber-300/90 dark:group-hover:via-amber-500/90 transition-all duration-300"></div>
+                      
+                      {/* ホバー時のみ表示されるツールチップ */}
+                      <div className="absolute left-1/2 -translate-x-1/2 -top-7 bg-black/70 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                        クリックして編集
+                      </div>
                     </div>
                   )}
                 </div>
