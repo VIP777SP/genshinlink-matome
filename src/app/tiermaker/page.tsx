@@ -522,19 +522,19 @@ const CharacterCard = ({
       
       <button
         onClick={handleDuplicate}
-        className="absolute bottom-0 right-0 w-5 h-5 rounded-tl-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-xs opacity-90 hover:opacity-100 transition-all hover:scale-110 shadow-inner shadow-blue-300 overflow-hidden group"
+        className="absolute bottom-0 right-0 w-4 h-4 rounded-tl-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-xs opacity-90 hover:opacity-100 transition-all hover:scale-110 shadow-inner shadow-blue-300 overflow-hidden group"
         title="このキャラクターを複製"
       >
         {/* スタイリッシュな長方形のコピーアイコン */}
-        <div className="relative w-3 h-3 flex items-center justify-center transform group-hover:rotate-3 transition-transform">
+        <div className="relative w-2.5 h-2.5 flex items-center justify-center transform group-hover:rotate-3 transition-transform">
           {/* きらめき効果 */}
           <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-sm"></div>
           
           {/* 後ろの長方形 */}
-          <div className="absolute w-2.5 h-2.5 bg-white rounded-sm transform translate-x-0.5 -translate-y-0.5 shadow-sm"></div>
+          <div className="absolute w-2 h-2 bg-white rounded-sm transform translate-x-0.5 -translate-y-0.5 shadow-sm"></div>
           
           {/* 前の長方形 */}
-          <div className="absolute w-2.5 h-2.5 bg-gradient-to-br from-blue-50 to-white rounded-sm transform -translate-x-0.5 translate-y-0.5 border border-blue-200 shadow-sm group-hover:from-blue-100 transition-colors duration-200"></div>
+          <div className="absolute w-2 h-2 bg-gradient-to-br from-blue-50 to-white rounded-sm transform -translate-x-0.5 translate-y-0.5 border border-blue-200 shadow-sm group-hover:from-blue-100 transition-colors duration-200"></div>
         </div>
       </button>
     </div>
