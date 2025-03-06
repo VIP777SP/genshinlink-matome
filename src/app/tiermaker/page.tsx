@@ -110,9 +110,9 @@ const templates: TierTemplate[] = [
     id: 'wanted',
     name: '引きたいキャラTier',
     tiers: [
-      { id: 'must', name: '必須', color: 'bg-red-600' },
+      { id: 'must', name: '引く', color: 'bg-red-600' },
       { id: 'want', name: '欲しい', color: 'bg-orange-500' },
-      { id: 'maybe', name: '検討中', color: 'bg-yellow-500' },
+      { id: 'maybe', name: 'ちょっとほしい', color: 'bg-yellow-500' },
       { id: 'skip', name: 'スキップ', color: 'bg-gray-500' },
     ],
     defaultColumnCount: 2,
@@ -122,7 +122,7 @@ const templates: TierTemplate[] = [
     id: 'should-pull',
     name: '引くべきキャラティア',
     tiers: [
-      { id: 'must-pull', name: '必引き', color: 'bg-red-600' },
+      { id: 'must-pull', name: '確保必須', color: 'bg-red-600' },
       { id: 'good-to-have', name: '推奨', color: 'bg-orange-500' },
       { id: 'situational', name: '状況次第', color: 'bg-yellow-500' },
       { id: 'optional', name: 'お好みで', color: 'bg-green-500' },
