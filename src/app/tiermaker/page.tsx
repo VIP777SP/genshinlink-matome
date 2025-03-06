@@ -513,10 +513,10 @@ const CharacterCard = ({
       {showRemoveButton && (
         <button
           onClick={handleDelete}
-          className={`absolute top-0 right-0 w-5 h-5 rounded-bl-lg ${isDuplicate ? 'bg-red-600' : 'bg-red-500'} text-white flex items-center justify-center text-xs opacity-80 hover:opacity-100 transition-all hover:scale-110`}
+          className={`absolute top-0 right-0 w-4 h-4 rounded-bl-lg ${isDuplicate ? 'bg-gradient-to-br from-red-500 to-rose-600' : 'bg-gradient-to-br from-red-400 to-red-600'} text-white flex items-center justify-center text-xs opacity-90 hover:opacity-100 transition-all hover:scale-110 shadow-inner shadow-red-300 overflow-hidden group`}
           title={isDuplicate ? "完全に削除" : "Tierから削除"}
         >
-          ×
+          <span className="relative block transform group-hover:rotate-90 transition-transform duration-200 text-sm font-bold">×</span>
         </button>
       )}
       
