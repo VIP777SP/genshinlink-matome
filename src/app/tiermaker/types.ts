@@ -9,9 +9,9 @@ export interface Weapon {
   name: string;
   type: WeaponType;
   rarity: 3 | 4 | 5;
-  baseAtk: number;
-  subStat: string;
-  passive: string;
+  baseAtk?: number;
+  subStat?: string;
+  passive?: string;
   imageUrl: string;
   iconUrl: string;
 }
