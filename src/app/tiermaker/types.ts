@@ -23,7 +23,7 @@ export interface Character {
   element: ElementType;
   weapon: WeaponType;
   rarity: RarityType;
-  region: string;
+  region?: string;
   description?: string;
   imageUrl?: string;
   iconUrl: string;
