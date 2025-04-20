@@ -41,3 +41,7 @@ export default {
   },
   plugins: [],
 } satisfies Config;
+
+module.exports = {
+  important:true,
+}
